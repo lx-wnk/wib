@@ -1,0 +1,29 @@
+{
+  "name": "tracker",
+  "version": "0.0.1",
+  "description": "Time tracking tool for ci people",
+  "keywords": [
+    "tracker",
+    "cli",
+    "time tracking"
+  ],
+  "author": "Alexander Wink <tracking@jinnoflife.com> (https://github.com/jinnoflife)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jinnoflife/tracker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jinnoflife/tracker/issues"
+  },
+  "homepage": "https://github.com/jinnoflife/tracker#readme",
+  "main": "main.js",
+  "bin": {
+    "tracker": "./bin/index.js"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-google": "^0.14.0"
+  },
+  "scripts": {}
+}
