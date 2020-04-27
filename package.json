@@ -1,5 +1,5 @@
 {
-  "name": "tracker",
+  "name": "eni",
   "version": "0.0.1",
   "description": "Time tracking tool for ci people",
   "keywords": [
@@ -7,28 +7,31 @@
     "cli",
     "time tracking"
   ],
-  "author": "Alexander Wink <tracking@jinnoflife.com> (https://github.com/jinnoflife)",
+  "author": "Alexander Wink <eni@jinnoflife.com> (https://github.com/jinnoflife)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jinnoflife/tracker.git"
+    "url": "git+https://github.com/jinnoflife/eni.git"
   },
   "bugs": {
-    "url": "https://github.com/jinnoflife/tracker/issues"
+    "url": "https://github.com/jinnoflife/eni/issues"
   },
-  "homepage": "https://github.com/jinnoflife/tracker#readme",
+  "homepage": "https://github.com/jinnoflife/eni#readme",
   "main": "bin/index.js",
   "bin": {
     "tracker": "./bin/index.js"
+  },
+  "dependencies": {
+    "commander": "^5.1.0",
+    "minimist": "^1.2.5",
+    "yargs": "^15.3.1"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
     "eslint-config-google": "^0.14.0"
   },
-  "scripts": {},
-  "dependencies": {
-    "commander": "^5.1.0",
-    "minimist": "^1.2.5",
-    "yargs": "^15.3.1"
+  "scripts": {
+    "lint": "./node_modules/.bin/eslint src/",
+    "fix": "./node_modules/.bin/eslint --fix src/"
   }
 }

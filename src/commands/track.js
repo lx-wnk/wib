@@ -4,29 +4,19 @@ const {Command} = require('commander');
 module.exports.commandSetup = () => {
   return new Command('track')
       .alias('t')
-      .option('-t, --time', 'Specify tracker')
-      .option('-r, --read', 'Read specific tracker')
-      .option('-l, --list', 'List all tracker')
+      .description('Time tracker handling')
+      .option('-d, --delete', 'Delete specific tracker')
       .action(this.handle);
 };
 module.exports.handle = (args, options, logger) => {
-    const me = this;
+  const me = this;
 
-    if (true === args.read) {
-        console.log(this.getTracker(options[0]));
-        return;
-    }
+  if (true === args.delete) {
+    me.removeTimeTracker(options[0]);
+  }
 
-    if (true === args.list) {
-        console.log(this.getTracker());
-        return;
-    }
-
-    //TODO implement time specific
-
-    me.createTimeTracker(options[0], options[1]);
+  me.createTimeTracker(options[0], options.slice(1).join(' '));
 };
-
 module.exports.createTimeTracker = (key, message) => {
   const writtenData = dataHandler.readData();
 
@@ -34,19 +24,27 @@ module.exports.createTimeTracker = (key, message) => {
     writtenData.trackedTime = {};
   }
 
-  writtenData.trackedTime[key] = message;
+  const trackerAmount = Object.entries(writtenData.trackedTime).length;
+
+  writtenData.trackedTime[0 < trackerAmount ? trackerAmount : 0] = {
+    'key': key,
+    'message': message,
+    'time': Date.now()
+  };
 
   dataHandler.writeData(JSON.stringify(writtenData));
 };
-module.exports.readAllTracker = () => {
-    console.log(this.getTracker());
-};
-module.exports.getTracker = (key) => {
-    const writtenData = dataHandler.readData();
+module.exports.removeTimeTracker = (key) => {
+  const writtenData = dataHandler.readData();
 
-    if (key === undefined) {
-        return JSON.stringify(writtenData.notes);
-    }
+  if (writtenData.trackedTime === undefined) {
+    writtenData.trackedTime = {};
 
-    return JSON.stringify(writtenData.notes[key]);
+    return;
+  }
+
+  writtenData.trackedTime[key] = undefined;
+  // TODO reorder tracked times
+
+  dataHandler.writeData(JSON.stringify(writtenData));
 };

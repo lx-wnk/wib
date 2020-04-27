@@ -4,6 +4,7 @@ const {Command} = require('commander');
 module.exports.commandSetup = () => {
   return new Command('note')
       .alias('n')
+      .description('Note handling')
       .option('-d, --delete', 'Delete')
       .option('-e, --edit', 'Edit')
       .option('-l, --list', 'List')
@@ -25,7 +26,7 @@ module.exports.handle = (args, options, logger) => {
 
   if (true === args.delete) {
     this.deleteNote(options[0]);
-      return;
+    return;
   }
 
   if (true === args.edit) {
@@ -33,9 +34,7 @@ module.exports.handle = (args, options, logger) => {
     return;
   }
 
-  for (key in options) {
-    me.createNote(options[key]);
-  }
+  me.createNote(options.join(' '));
 };
 module.exports.createNote = (message, key) => {
   const writtenData = dataHandler.readData();
@@ -50,7 +49,11 @@ module.exports.createNote = (message, key) => {
     key = 0 < noteAmount ? noteAmount : 0;
   }
 
-  writtenData.notes[key] = message;
+  writtenData.notes[key] = {
+    'message': message,
+    'time': Date.now()
+  };
+
   dataHandler.writeData(JSON.stringify(writtenData));
 };
 module.exports.editNote = (key, message) => {
@@ -68,6 +71,7 @@ module.exports.deleteNote = (key) => {
   }
 
   writtenData.notes[key] = undefined;
+  // TODO reorder notes
 
   console.log(`Note with key (${key}) deleted: ` + this.getNote(key));
 
