@@ -15,5 +15,7 @@ module.exports = {
     'sourceType': 'module',
   },
   'rules': {
+    'comma-dangle': 'off',
+    'yoda': ["error", "always"]
   },
 };
