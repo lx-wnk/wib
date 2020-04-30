@@ -1,4 +1,4 @@
-const dataHandler = require('../lib/data');
+const dataHelper = require('../lib/data');
 const {Command} = require('commander');
 
 module.exports.commandSetup = () => {
@@ -7,22 +7,10 @@ module.exports.commandSetup = () => {
       .description('Note handling')
       .option('-d, --delete', 'Delete')
       .option('-e, --edit', 'Edit')
-      .option('-l, --list', 'List')
-      .option('-r, --read', 'Read')
       .action(this.handle);
 };
 module.exports.handle = (args, options, logger) => {
   const me = this;
-
-  if (true === args.read) {
-    this.readNote(options[0]);
-    return;
-  }
-
-  if (true === args.list) {
-    this.readNote();
-    return;
-  }
 
   if (true === args.delete) {
     this.deleteNote(options[0]);
@@ -36,8 +24,8 @@ module.exports.handle = (args, options, logger) => {
 
   me.createNote(options.join(' '));
 };
-module.exports.createNote = (message, key) => {
-  const writtenData = dataHandler.readData();
+module.exports.createNote = (value, key) => {
+  const writtenData = dataHelper.readData();
 
   if (writtenData.notes === undefined) {
     writtenData.notes = {};
@@ -50,38 +38,40 @@ module.exports.createNote = (message, key) => {
   }
 
   writtenData.notes[key] = {
-    'message': message,
+    'value': value,
     'time': Date.now()
   };
 
-  dataHandler.writeData(JSON.stringify(writtenData));
+  console.log(`Saved note(${key}): ` + value);
+
+  dataHelper.writeData(JSON.stringify(writtenData));
 };
-module.exports.editNote = (key, message) => {
+module.exports.editNote = (key, value) => {
   console.log(`Old value of note(${key}): ` + this.getNote(key));
 
-  this.createNote(message, key);
+  this.createNote(value, key);
 
   console.log(`New value of note(${key}): ` + this.getNote(key));
 };
-module.exports.deleteNote = (key) => {
-  const writtenData = dataHandler.readData();
+module.exports.deleteNote = (deleteKey) => {
+  const writtenData = dataHelper.readData(),
+    deletedNote = writtenData.notes[deleteKey];
 
-  if (writtenData.notes === undefined || writtenData.notes[key] === undefined) {
+  if (writtenData.notes === undefined || deletedNote === undefined) {
     return;
   }
 
-  writtenData.notes[key] = undefined;
-  // TODO reorder notes
+  writtenData.notes[deleteKey] = undefined;
 
-  console.log(`Note with key (${key}) deleted: ` + this.getNote(key));
+  console.log(`Note with key (${deleteKey}) deleted: ` + deletedNote.value);
 
-  dataHandler.writeData(JSON.stringify(writtenData));
+  dataHelper.writeData(JSON.stringify(writtenData));
 };
 module.exports.readNote = () => {
   console.log(this.getNote());
 };
 module.exports.getNote = (key) => {
-  const writtenData = dataHandler.readData();
+  const writtenData = dataHelper.readData();
 
   if (key === undefined) {
     return JSON.stringify(writtenData.notes);

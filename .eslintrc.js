@@ -17,6 +17,8 @@ module.exports = {
   'rules': {
     'comma-dangle': 'off',
     'yoda': ["error", "always"],
-    'one-var': "off"
+    'one-var': "off",
+    'no-invalid-this': "off",
+    'max-len': [2, 120, 4]
   },
 };

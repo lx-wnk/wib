@@ -1,4 +1,6 @@
-# eni (WIP)
+# (WIP) eni
+just a time tracking tool
+
 
 ## Commands
 ### track
@@ -9,8 +11,10 @@ Usage: `eni note Think about the moon`
 Usage: `eni start`
 ### stop
 Usage: `eni stop`
+### break
+Usage: `eni break`
 ### list 
 Usage: `eni list`
 
 ## Configuration
-This will place a file in your home directory `~/.eni/config.json.dist` with a sample config
+Place the [configuration](./data/config.json.dist) inside your home directory inside the folder `.eni` so that the full path would look like `~/.eni/config.json`

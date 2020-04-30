@@ -1,0 +1,27 @@
+{
+  'format': {
+    'day': {
+      'key': 'Report for date',
+      'value': '{{date}}'
+    },
+    'start': {
+      'key': 'Clocked in',
+      'value': '{{time}}'
+    },
+    'stop': {
+      'key': 'Clocked out',
+      'value': '{{time}}'
+    },
+    'break': {
+      'key': 'Break duration'
+    },
+    'note': {
+      'key': 'Note({{id}}) [{{time}}]',
+      'value': '{{value}}'
+    },
+    'tracker': {
+      'key': 'Track({{id}}) [{{time}}]',
+      'value': '{{key}} {{value}}'
+    }
+  }
+}

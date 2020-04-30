@@ -1,4 +1,4 @@
-const dataHandler = require('../lib/data');
+const dataHelper = require('../lib/data');
 const {Command} = require('commander');
 
 module.exports.commandSetup = () => {
@@ -17,8 +17,8 @@ module.exports.handle = (args, options, logger) => {
 
   me.createTimeTracker(options[0], options.slice(1).join(' '));
 };
-module.exports.createTimeTracker = (key, message) => {
-  const writtenData = dataHandler.readData();
+module.exports.createTimeTracker = (key, value) => {
+  const writtenData = dataHelper.readData();
 
   if (writtenData.trackedTime === undefined) {
     writtenData.trackedTime = {};
@@ -28,14 +28,14 @@ module.exports.createTimeTracker = (key, message) => {
 
   writtenData.trackedTime[0 < trackerAmount ? trackerAmount : 0] = {
     'key': key,
-    'message': message,
+    'value': value,
     'time': Date.now()
   };
 
-  dataHandler.writeData(JSON.stringify(writtenData));
+  dataHelper.writeData(JSON.stringify(writtenData));
 };
 module.exports.removeTimeTracker = (key) => {
-  const writtenData = dataHandler.readData();
+  const writtenData = dataHelper.readData();
 
   if (writtenData.trackedTime === undefined) {
     writtenData.trackedTime = {};
@@ -44,7 +44,6 @@ module.exports.removeTimeTracker = (key) => {
   }
 
   writtenData.trackedTime[key] = undefined;
-  // TODO reorder tracked times
 
-  dataHandler.writeData(JSON.stringify(writtenData));
+  dataHelper.writeData(JSON.stringify(writtenData));
 };
