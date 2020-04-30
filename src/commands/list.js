@@ -3,12 +3,12 @@ const formatHelper = require('../lib/format');
 const {Command} = require('commander');
 
 module.exports.commandSetup = () => {
-return new Command('list')
-    .alias('l')
-    .alias('status')
-    .alias('report')
-    .description('Show the list of notes and tracked times')
-    .action(this.handle);
+  return new Command('list')
+      .alias('l')
+      .alias('status')
+      .alias('report')
+      .description('Show the list of notes and tracked times')
+      .action(this.handle);
 };
 module.exports.handle = (args, options, logger) => {
   const writtenData = dataHelper.readData();

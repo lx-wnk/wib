@@ -20,15 +20,15 @@ const getFilePath = (date) => {
     date = getCurDate();
   }
 
-  return homedir + '/.eni/' + date + '.json';
+  return homedir + '/.wib/' + date + '.json';
 };
 
 /**
  * @param {string} filePath
  */
 module.exports.createFile = (filePath = getFilePath()) => {
-  if (!fs.existsSync(homedir + '/.eni')) {
-    fs.mkdirSync(homedir + '/.eni');
+  if (!fs.existsSync(homedir + '/.wib')) {
+    fs.mkdirSync(homedir + '/.wib');
   }
 
   if (!fs.existsSync(filePath)) {

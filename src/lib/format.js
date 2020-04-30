@@ -38,7 +38,7 @@ const defaultFormat = {
  * @return {{string}}
  */
 const getSpecifiedFormat = (formatName, type = 'value') => {
-  const configPath = homedir + '/.eni/config.json';
+  const configPath = homedir + '/.wib/config.json';
   let configContent = {};
 
   if (!fs.existsSync(configPath)) {

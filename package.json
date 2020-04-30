@@ -1,5 +1,5 @@
 {
-  "name": "eni",
+  "name": "wib",
   "version": "0.0.1",
   "description": "Time tracking tool for ci people",
   "keywords": [
@@ -7,16 +7,16 @@
     "cli",
     "time tracking"
   ],
-  "author": "Alexander Wink <eni@jinnoflife.com> (https://github.com/jinnoflife)",
+  "author": "Alexander Wink <wib@jinnoflife.com> (https://github.com/jinnoflife)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jinnoflife/eni.git"
+    "url": "git+https://github.com/jinnoflife/wib.git"
   },
   "bugs": {
-    "url": "https://github.com/jinnoflife/eni/issues"
+    "url": "https://github.com/jinnoflife/wib/issues"
   },
-  "homepage": "https://github.com/jinnoflife/eni#readme",
+  "homepage": "https://github.com/jinnoflife/wib#readme",
   "main": "bin/index.js",
   "bin": {
     "tracker": "./bin/index.js"
@@ -33,6 +33,6 @@
   "scripts": {
     "lint": "./node_modules/.bin/eslint src/",
     "fix": "./node_modules/.bin/eslint --fix src/",
-    "eni": "./bin/index.js"
+    "wib": "./bin/index.js"
   }
 }
