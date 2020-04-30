@@ -11,19 +11,18 @@ module.exports.commandSetup = () => {
       .action(this.handle);
 };
 module.exports.handle = (args, options, logger) => {
-  const writtenData = dataHelper.readData();
-  const output = {
-    day: {
+  const writtenData = dataHelper.readData(), output = {};
+
+  if (writtenData.start !== undefined) {
+    output.day = {
       key: formatHelper.applyFormat(writtenData.start, 'day', 'key'),
-      value: formatHelper.applyFormat({'date': writtenData.start.time}, 'day'),
-    },
-    start: {
+          value: formatHelper.applyFormat({'date': writtenData.start.time}, 'day'),
+    };
+    output.start = {
       key: formatHelper.applyFormat(writtenData.start, 'start', 'key'),
       value: formatHelper.applyFormat(writtenData.start, 'start'),
-    }
-  };
-
-
+    };
+  }
   if (writtenData.stop !== undefined) {
     output.stop = {
       key: formatHelper.applyFormat(writtenData.stop, 'stop', 'key'),

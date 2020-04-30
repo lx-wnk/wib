@@ -1,7 +1,7 @@
 {
   "name": "wib",
-  "version": "0.0.1",
-  "description": "Time tracking tool for ci people",
+  "version": "0.0.3",
+  "description": "Time tracking tool for the cli",
   "keywords": [
     "tracker",
     "cli",
@@ -19,12 +19,10 @@
   "homepage": "https://github.com/jinnoflife/wib#readme",
   "main": "bin/index.js",
   "bin": {
-    "tracker": "./bin/index.js"
+    "wib": "./bin/index.js"
   },
   "dependencies": {
-    "commander": "^5.1.0",
-    "minimist": "^1.2.5",
-    "yargs": "^15.3.1"
+    "commander": "^5.1.0"
   },
   "devDependencies": {
     "eslint": "^6.8.0",

@@ -1,20 +1,20 @@
-# (WIP) eni
+# (WIP) wib
 just a time tracking tool
 
 
 ## Commands
 ### track
-Usage: `eni track TICKET-123 "Did some stuff"`
+Usage: `wib track TICKET-123 "Did some stuff"`
 ### note
-Usage: `eni note Think about the moon`
+Usage: `wib note Think about the moon`
 ### start
-Usage: `eni start`
+Usage: `wib start`
 ### stop
-Usage: `eni stop`
+Usage: `wib stop`
 ### break
-Usage: `eni break`
+Usage: `wib break`
 ### list 
-Usage: `eni list`
+Usage: `wib list`
 
 ## Configuration
-Place the [configuration](./data/config.json.dist) inside your home directory inside the folder `.eni` so that the full path would look like `~/.eni/config.json`
+Place the [configuration](./data/config.json.dist) inside your home directory inside the folder `.wib` so that the full path would look like `~/.wib/config.json`
