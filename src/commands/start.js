@@ -8,7 +8,7 @@ module.exports.commandSetup = () => {
       .description('Save the current time as start time')
       .action(this.handle);
 };
-module.exports.handle = (args, options, logger) => {
+module.exports.handle = (args, options) => {
   const writtenData = dataHelper.readData();
   const startTime = new Date(Date.now());
 

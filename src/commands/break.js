@@ -7,7 +7,7 @@ module.exports.commandSetup = () => {
       .description('lunchtime duration (in minutes)')
       .action(this.handle);
 };
-module.exports.handle = (args, options, logger) => {
+module.exports.handle = (args, options) => {
   const writtenData = dataHelper.readData(),
     specifiedDuration = Number.parseInt(options[0]);
   let breakDuration = 30;

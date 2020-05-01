@@ -10,7 +10,7 @@ module.exports.commandSetup = () => {
       .description('Show the list of notes and tracked times')
       .action(this.handle);
 };
-module.exports.handle = (args, options, logger) => {
+module.exports.handle = () => {
   const writtenData = dataHelper.readData(), output = {};
 
   if (writtenData.start !== undefined) {
@@ -41,9 +41,9 @@ module.exports.handle = (args, options, logger) => {
     if (writtenData.stop !== undefined) {
       stopTime = new Date(writtenData.stop.time);
     }
-    passedTime =  stopTime.getTime() - (new Date(writtenData.start.time)).getTime();
+    passedTime = stopTime.getTime() - (new Date(writtenData.start.time)).getTime();
 
-    if(writtenData.break !== undefined) {
+    if (writtenData.break !== undefined) {
       passedTime -= (new Date(writtenData.break.duration)).getTime();
     }
     output[4] = {

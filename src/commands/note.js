@@ -10,7 +10,7 @@ module.exports.commandSetup = () => {
       .option('-e, --edit', 'Edit')
       .action(this.handle);
 };
-module.exports.handle = (args, options, logger) => {
+module.exports.handle = (args, options) => {
   const me = this;
 
   if (true === args.delete) {
