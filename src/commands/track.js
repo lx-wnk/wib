@@ -4,8 +4,10 @@ const {Command} = require('commander');
 module.exports.commandSetup = () => {
   return new Command('track')
       .alias('t')
-      .description('Time tracker handling')
-      .option('-d, --delete', 'Delete specific tracker')
+      .alias('wl')
+      .alias('worklog')
+      .description('Worklog handling')
+      .option('-d, --delete', 'Delete specific worklog')
       .action(this.handle);
 };
 module.exports.handle = (args, options, logger) => {
@@ -20,16 +22,16 @@ module.exports.handle = (args, options, logger) => {
 module.exports.createTimeTracker = (key, value) => {
   const writtenData = dataHelper.readData();
 
-  if (writtenData.trackedTime === undefined) {
-    writtenData.trackedTime = {};
+  if (writtenData.worklogs === undefined) {
+    writtenData.worklogs = {};
   }
 
-  const trackerAmount = Object.entries(writtenData.trackedTime).length;
+  const trackerAmount = Object.entries(writtenData.worklogs).length;
 
-  writtenData.trackedTime[0 < trackerAmount ? trackerAmount : 0] = {
+  writtenData.worklogs[0 < trackerAmount ? trackerAmount : 0] = {
     'key': key,
     'value': value,
-    'time': Date.now()
+    'time': new Date(Date.now())
   };
 
   dataHelper.writeData(JSON.stringify(writtenData));
@@ -37,13 +39,13 @@ module.exports.createTimeTracker = (key, value) => {
 module.exports.removeTimeTracker = (key) => {
   const writtenData = dataHelper.readData();
 
-  if (writtenData.trackedTime === undefined) {
-    writtenData.trackedTime = {};
+  if (writtenData.worklogs === undefined) {
+    writtenData.worklogs = {};
 
     return;
   }
 
-  writtenData.trackedTime[key] = undefined;
+  writtenData.worklogs[key] = undefined;
 
   dataHelper.writeData(JSON.stringify(writtenData));
 };

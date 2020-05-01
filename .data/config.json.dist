@@ -13,15 +13,17 @@
       'value': '{{time}}'
     },
     'break': {
-      'key': 'Break duration'
+      'key': 'Break duration',
+      'value': '{{duration}}m'
     },
     'note': {
       'key': 'Note({{id}}) [{{time}}]',
       'value': '{{value}}'
     },
     'tracker': {
-      'key': 'Track({{id}}) [{{time}}]',
-      'value': '{{key}} {{value}}'
+      'key': 'Worklog({{id}}) [{{time}}]',
+      'value': '{{duration}} {{key}} {{value}}'
     }
-  }
+  },
+  'minuteRounding': 5
 }
