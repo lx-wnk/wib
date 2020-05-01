@@ -1,56 +1,6 @@
-const fs = require('fs');
-const homedir = require('os').homedir();
-/**
- * Possible values for day: {{date}}
- * Possible values for start|stop|break: {{time}}
- * Possible values for note: {{id}}, {{key}}, {{time}}, {{value}}
- * Possible values for track: {{id}}, {{time}}, {{value}}
- */
-const defaultFormat = {
-  'day': {
-    'key': 'Report for date',
-    'value': '{{date}}'
-  },
-  'start': {
-    'key': 'Clocked in',
-    'value': '{{time}}'
-  },
-  'stop': {
-    'key': 'Clocked out',
-    'value': '{{time}}'
-  },
-  'break': {
-    'key': 'Break duration'
-  },
-  'note': {
-    'key': 'Note({{id}}) [{{time}}]',
-    'value': '{{value}}'
-  },
-  'tracker': {
-    'key': 'Track({{id}}) [{{time}}]',
-    'value': '{{key}} {{value}}'
-  }
-};
+const dataHelper = require('./data'),
+  configHelper = require('./config');
 
-/**
- * @param {{string}} formatName
- * @param {{string}}type
- * @return {{string}}
- */
-const getSpecifiedFormat = (formatName, type = 'value') => {
-  const configPath = homedir + '/.wib/config.json';
-  let configContent = {};
-
-  if (!fs.existsSync(configPath)) {
-    return defaultFormat[formatName][type];
-  }
-
-  configContent = fs.readFileSync(configPath);
-
-  if (configContent.format !== undefined && configContent.format[formatName] !== undefined) {
-    return configContent.format[formatName][type];
-  }
-};
 /**
  * @param {{string}} data
  * @return {{Object}}
@@ -96,7 +46,7 @@ const getLongestElements = (data) => {
  */
 module.exports.applyFormat = (dataObject, formatName, type = 'value') => {
   const me = this;
-  let specifiedFormat = getSpecifiedFormat(formatName, type);
+  let specifiedFormat = configHelper.getSpecifiedFormat(formatName, type);
 
   if (specifiedFormat === undefined || dataObject === undefined) {
     console.log('INVALID FORMAT: ' + formatName);
@@ -120,6 +70,11 @@ module.exports.applyFormat = (dataObject, formatName, type = 'value') => {
 
   return specifiedFormat;
 };
+/**
+ *
+ * @param {Object} notes
+ * @return {[]}
+ */
 module.exports.formatNotes = (notes) => {
   const me = this, formattedResult = [];
 
@@ -137,32 +92,95 @@ module.exports.formatNotes = (notes) => {
 
   return formattedResult;
 };
-module.exports.formatTracker = (tracker) => {
-  const me = this, formattedResult = [];
+/**
+ *
+ * @param {Object} worklogs
+ * @param {Date|null} startTime
+ * @return {[]}
+ */
+module.exports.formatTracker = (worklogs, startTime) => {
+  const me = this, formattedResult = [], writtenData = dataHelper.readData();
+  let latestTimeObject = undefined;
 
-  if (!tracker || 1 > Object.entries(tracker).length) {
+  if (!worklogs || 1 > Object.entries(worklogs).length) {
     return;
   }
 
-  Object.entries(tracker).forEach(([id, value]) => {
+  if (writtenData.start !== undefined && writtenData.start.time !== undefined) {
+    latestTimeObject = new Date(writtenData.start.time);
+  }
+
+  Object.entries(worklogs).forEach(([id, value]) => {
+    const curTimeObject = new Date(value.time);
     value.id = id;
+
+    if (writtenData.start !== undefined && writtenData.start.time !== undefined &&
+        writtenData.break !== undefined && writtenData.break.time !== undefined &&
+        latestTimeObject.getTime() <= (new Date(writtenData.break.time)).getTime() &&
+        curTimeObject.getTime() >= (new Date(writtenData.break.time)).getTime()) {
+      latestTimeObject = new Date(writtenData.break.time);
+    }
+
+    if (latestTimeObject !== undefined && value.duration === undefined) {
+      const timeBetween = new Date(Math.abs(latestTimeObject.getTime() - curTimeObject.getTime()));
+      value.duration = me.formatTime(timeBetween, 'duration');
+      latestTimeObject = curTimeObject;
+    }
+
     formattedResult.push({
-      key: me.applyFormat(value, 'tracker', 'key'),
-      value: me.applyFormat(value, 'tracker', 'value'),
+      key: me.applyFormat(value, 'worklog', 'key'),
+      value: me.applyFormat(value, 'worklog', 'value'),
     });
   });
 
   return formattedResult;
 };
-module.exports.formatTime = (time, formatType) => {
+/**
+ *
+ * @param {Date|string} time
+ * @param {string|null} formatType
+ * @param {bool} round
+ * @return {string}
+ */
+module.exports.formatTime = (time, formatType, round = true) => {
   const dateObject = new Date(time);
 
   if ('date' === formatType) {
     return dateObject.getFullYear() + '-' + dateObject.getMonth() + '-' + dateObject.getDate();
   }
 
+  if ('duration' === formatType) {
+    let formattedDuration = '';
+
+    dateObject.setSeconds(60);
+
+    if (0 < dateObject.getUTCHours()) {
+      formattedDuration += dateObject.getUTCHours() + 'h';
+    }
+    if (0 < dateObject.getUTCHours() && 0 < dateObject.getUTCMinutes()) {
+      formattedDuration += ' ';
+    }
+    if (0 < dateObject.getUTCMinutes()) {
+      if (round) {
+        formattedDuration += Math.ceil(dateObject.getUTCMinutes()/configHelper.getSpecifiedMinuteRounding())*
+            configHelper.getSpecifiedMinuteRounding();
+      } else {
+        formattedDuration += dateObject.getUTCMinutes();
+      }
+    }
+
+    return formattedDuration;
+  }
+
   return dateObject.getHours() + ':' + dateObject.getMinutes();
 };
+/**
+ *
+ * @param {Object} data
+ * @param {{longestKey: int, longestVal: int}} colLength
+ * @param {bool} isSub
+ * @return {string}
+ */
 module.exports.toTable = (data, colLength = getLongestElements(data), isSub = false) => {
   const me = this;
   let output = '',

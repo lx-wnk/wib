@@ -4,10 +4,10 @@ const {Command} = require('commander');
 module.exports.commandSetup = () => {
   return new Command('break')
       .alias('b')
-      .description('lunchtime duration')
+      .description('lunchtime duration (in minutes)')
       .action(this.handle);
 };
-module.exports.handle = (args, options, logger) => {
+module.exports.handle = (args, options) => {
   const writtenData = dataHelper.readData(),
     specifiedDuration = Number.parseInt(options[0]);
   let breakDuration = 30;
@@ -17,10 +17,11 @@ module.exports.handle = (args, options, logger) => {
   }
 
   writtenData.break = {
-    time: breakDuration
+    duration: breakDuration,
+    time: new Date(Date.now())
   };
 
   dataHelper.writeData(JSON.stringify(writtenData));
 
-  console.log('Set break duration to: ' + writtenData.break.time);
+  console.log('Set break duration to: ' + writtenData.break.duration);
 };

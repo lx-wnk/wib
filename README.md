@@ -1,3 +1,4 @@
+[![CodeFactor](https://www.codefactor.io/repository/github/jinnoflife/wib/badge)](https://www.codefactor.io/repository/github/jinnoflife/wib)
 # (WIP) wib
 just a time tracking tool
 
