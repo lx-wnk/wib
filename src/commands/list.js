@@ -16,7 +16,7 @@ module.exports.handle = (args, options, logger) => {
   if (writtenData.start !== undefined) {
     output.day = {
       key: formatHelper.applyFormat(writtenData.start, 'day', 'key'),
-          value: formatHelper.applyFormat({'date': writtenData.start.time}, 'day'),
+      value: formatHelper.applyFormat({'date': writtenData.start.time}, 'day'),
     };
     output.start = {
       key: formatHelper.applyFormat(writtenData.start, 'start', 'key'),
