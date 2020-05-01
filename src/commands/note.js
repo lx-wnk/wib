@@ -1,4 +1,5 @@
 const dataHelper = require('../lib/data');
+const formatHelper = require('../lib/format');
 const {Command} = require('commander');
 
 module.exports.commandSetup = () => {
@@ -42,33 +43,14 @@ module.exports.createNote = (value, key) => {
     'time': Date.now()
   };
 
-  console.log(`Saved note(${key}): ` + value);
-
   dataHelper.writeData(JSON.stringify(writtenData));
+
+  console.log(`Saved note(${key}): ` + formatHelper.applyFormat(this.getNote(key), 'note'));
 };
 module.exports.editNote = (key, value) => {
-  console.log(`Old value of note(${key}): ` + this.getNote(key));
+  console.log(`Old value of note(${key}): ` + formatHelper.applyFormat(this.getNote(key), 'note'));
 
   this.createNote(value, key);
-
-  console.log(`New value of note(${key}): ` + this.getNote(key));
-};
-module.exports.deleteNote = (deleteKey) => {
-  const writtenData = dataHelper.readData(),
-    deletedNote = writtenData.notes[deleteKey];
-
-  if (writtenData.notes === undefined || deletedNote === undefined) {
-    return;
-  }
-
-  writtenData.notes[deleteKey] = undefined;
-
-  console.log(`Note with key (${deleteKey}) deleted: ` + deletedNote.value);
-
-  dataHelper.writeData(JSON.stringify(writtenData));
-};
-module.exports.readNote = () => {
-  console.log(this.getNote());
 };
 module.exports.getNote = (key) => {
   const writtenData = dataHelper.readData();
@@ -77,5 +59,5 @@ module.exports.getNote = (key) => {
     return JSON.stringify(writtenData.notes);
   }
 
-  return JSON.stringify(writtenData.notes[key]);
+  return writtenData.notes[key];
 };
