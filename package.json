@@ -1,6 +1,6 @@
 {
   "name": "wib",
-  "version": "0.0.4",
+  "version": "0.0.3",
   "description": "Time tracking tool for the cli",
   "keywords": [
     "tracker",
