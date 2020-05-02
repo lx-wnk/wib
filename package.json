@@ -17,20 +17,29 @@
     "url": "https://github.com/jinnoflife/wib/issues"
   },
   "homepage": "https://github.com/jinnoflife/wib#readme",
-  "main": "bin/index.js",
+  "main": "dist/index.js",
   "bin": {
-    "wib": "./bin/index.js"
+    "wib": "./dist/index.js"
   },
   "dependencies": {
+    "@types/node": "^13.13.4",
     "commander": "^5.1.0"
   },
   "devDependencies": {
+    "@types/mocha": "^7.0.2",
+    "@typescript-eslint/eslint-plugin": "^2.30.0",
+    "@typescript-eslint/parser": "^2.30.0",
     "eslint": "^6.8.0",
-    "eslint-config-google": "^0.14.0"
+    "eslint-config-google": "^0.14.0",
+    "ts-node": "^8.9.1",
+    "typescript": "^3.8.3"
   },
   "scripts": {
-    "lint": "./node_modules/.bin/eslint bin src",
-    "fix": "./node_modules/.bin/eslint --fix bin src",
-    "wib": "./bin/index.js"
+    "build": "tsc",
+    "tsc": "tsc",
+    "dev": "tsc --watch & node dist",
+    "lint": "./node_modules/.bin/eslint src --ext .js,.jsx,.ts,.tsx",
+    "fix": "./node_modules/.bin/eslint --fix src --ext .js,.jsx,.ts,.tsx",
+    "wib": "./dist/index.js"
   }
 }
