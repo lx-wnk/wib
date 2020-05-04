@@ -23,6 +23,9 @@ module.exports = {
     "one-var": "off",
     "require-jsdoc": "off",
     "no-invalid-this": "off",
+    "@typescript-eslint/no-this-alias": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "guard-for-in": "off",
     "max-len": [2, 120, 4]
   }
 };

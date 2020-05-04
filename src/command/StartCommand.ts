@@ -1,6 +1,6 @@
 import AbstractCommand from './AbstractCommand';
-import StopStruct from '../struct/stop';
 import DataHelper from '../lib/helper/DataHelper';
+import StartStruct from '../struct/start';
 
 export default class StartCommand extends AbstractCommand {
     name = 'start';
@@ -9,15 +9,15 @@ export default class StartCommand extends AbstractCommand {
     description = 'Set the start time for the day';
 
     execute(args, options): void {
-      const start = new StopStruct();
-      console.log(options);
+      const start = new StartStruct();
+
       if (options !== undefined && options[0] !== undefined && options[0].includes(':')) {
         start.time.setHours(options[0].split(':')[0]);
         start.time.setMinutes(options[0].split(':')[1]);
       }
 
-      (new DataHelper).writeData(start.getWriteData(), 'stop');
+      (new DataHelper).writeData(start.getWriteData(), start.dataKey);
 
-      console.log(start.time.getHours() + ':' + start.time.getMinutes());
+      console.log(start.getPrintData()['key'] +' '+ start.getPrintData()['value']);
     }
 }

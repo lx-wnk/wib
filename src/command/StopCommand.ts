@@ -16,8 +16,8 @@ export default class StopCommand extends AbstractCommand {
         stop.time.setMinutes(options[0].split(':')[1]);
       }
 
-      (new DataHelper).writeData(stop.getWriteData(), 'stop');
+      (new DataHelper).writeData(stop.getWriteData(), stop.dataKey);
 
-      console.log(stop.time.getHours() + ':' + stop.time.getMinutes());
+      console.log(stop.getPrintData()['key'] +' '+ stop.getPrintData()['value']);
     }
 }

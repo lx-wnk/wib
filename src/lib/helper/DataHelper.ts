@@ -12,7 +12,7 @@ export default class DataHelper {
 
     const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
-    if (key === undefined || data[key] === undefined) {
+    if (key === undefined) {
       return data;
     }
 

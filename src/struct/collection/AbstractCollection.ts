@@ -1,10 +1,30 @@
 export default abstract class AbstractCollection {
-    abstract entries;
+    abstract entries: object;
+    abstract dataKey: string;
+
     abstract getWriteData(): object;
+
     removeEntry(key: number): void {
       this.entries[key] = undefined;
     }
+
     getAmount(): number {
-      return Object.keys(this.entries).length;
+      if (this.entries instanceof Object) {
+        return Object.keys(this.entries).length;
+      }
+
+      return 0;
+    }
+
+    abstract fromSavedData(date?: string);
+
+    getPrintData(): object {
+      const printData = {};
+
+      for (const key in this.entries) {
+        printData[key] = this.entries[key].getPrintData();
+      }
+
+      return printData;
     }
 }

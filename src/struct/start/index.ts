@@ -2,12 +2,10 @@ import AbstractStruct from '../AbstractStruct';
 
 export default class StartStruct extends AbstractStruct {
     time: Date;
+    dataKey = 'start';
 
-    constructor(time?: Date) {
+    constructor(time= new Date()) {
       super();
-      if (time === undefined) {
-        time = new Date();
-      }
 
       this.time = time;
     }
