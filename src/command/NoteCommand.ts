@@ -17,23 +17,19 @@ export default class NoteCommand extends AbstractCommand {
       }];
     description = 'Handle notes';
 
-    public execute(args, options): void {
+    public execute(args, options): string {
       if (args.delete !== undefined) {
-        (new NoteCommand()).deleteTracker(args.Delete);
-
-        return;
+        return (new NoteCommand()).deleteTracker(args.delete);
       }
 
       if (args.edit !== undefined) {
-        (new NoteCommand()).editTracker(args.edit, options.join(' '));
-
-        return;
+        return (new NoteCommand()).editTracker(args.edit, options.join(' '));
       }
 
-      (new NoteCommand()).createNote(options.join(' '));
+      return (new NoteCommand()).createNote(options.join(' '));
     }
 
-    createNote(value: string): void {
+    createNote(value: string): string {
       const notes = new NoteCollection(),
         note = new NoteStruct(notes.getAmount(), value);
 
@@ -41,20 +37,20 @@ export default class NoteCommand extends AbstractCommand {
 
       (new DataHelper).writeData(notes.getWriteData(), notes.dataKey);
 
-      console.log('Created new note with value: ' + value);
+      return 'Created new note with value: ' + value;
     }
 
-    deleteTracker(id): void {
+    deleteTracker(id): string {
       const notes = new NoteCollection();
 
       notes.entries[id] = undefined;
 
       (new DataHelper).writeData(notes.getWriteData(), notes.dataKey);
 
-      console.log('Deleted note with id: ' + id);
+      return 'Deleted note with id: ' + id;
     }
 
-    editTracker(id, value): void {
+    editTracker(id, value): string {
       const notes = new NoteCollection();
 
       if (notes.entries[id] !== undefined) {
@@ -62,5 +58,7 @@ export default class NoteCommand extends AbstractCommand {
       }
 
       (new DataHelper).writeData(notes.getWriteData(), notes.dataKey);
+
+      return 'Edited note with id: ' + id;
     }
 }

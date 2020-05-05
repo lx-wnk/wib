@@ -8,7 +8,7 @@ export default class StopCommand extends AbstractCommand {
     options = [];
     description = 'Set the stop time for the day';
 
-    public execute(args, options): void {
+    public execute(args, options): string {
       const stop = new StopStruct();
 
       if (options !== undefined && options[0] !== undefined && options[0].includes(':')) {
@@ -18,6 +18,6 @@ export default class StopCommand extends AbstractCommand {
 
       (new DataHelper).writeData(stop.getWriteData(), stop.dataKey);
 
-      console.log(stop.getPrintData()['key'] +' '+ stop.getPrintData()['value']);
+      return stop.getPrintData()['key'] +' '+ stop.getPrintData()['value'];
     }
 }

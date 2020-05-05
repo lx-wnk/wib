@@ -17,20 +17,16 @@ export default class WorklogCommand extends AbstractCommand {
       }];
     description = 'Add a new worklog';
 
-    public execute(args, options): void {
+    public execute(args, options): string {
       if (args.delete !== undefined) {
-        (new WorklogCommand()).deleteTracker(args.Delete);
-
-        return;
+        return (new WorklogCommand()).deleteTracker(args.Delete);
       }
 
       if (args.edit !== undefined) {
-        (new WorklogCommand()).editTracker(args.edit, options[0], options.slice(1).join(' '));
-
-        return;
+        return (new WorklogCommand()).editTracker(args.edit, options[0], options.slice(1).join(' '));
       }
 
-      (new WorklogCommand()).createTimeTracker(options[0], options.slice(1).join(' '));
+      return (new WorklogCommand()).createTimeTracker(options[0], options.slice(1).join(' '));
     }
 
     createTimeTracker(key: string, value: string): void {
@@ -41,7 +37,7 @@ export default class WorklogCommand extends AbstractCommand {
 
       (new DataHelper).writeData(worklogs.getWriteData(), worklogs.dataKey);
 
-      console.log(worklog.getPrintData(null));
+      return worklog.getPrintData(null);
     }
 
     deleteTracker(id): void {
@@ -51,7 +47,7 @@ export default class WorklogCommand extends AbstractCommand {
 
       (new DataHelper).writeData(worklogs.getWriteData(), worklogs.dataKey);
 
-      console.log('Deleted worklog with id: ' + id);
+      return 'Deleted worklog with id: ' + id;
     }
 
     editTracker(id, key, value): void {
@@ -63,5 +59,7 @@ export default class WorklogCommand extends AbstractCommand {
       }
 
       (new DataHelper).writeData(worklogs.getWriteData(), worklogs.dataKey);
+
+      return 'Edited worklog with id: ' + id;
     }
 }

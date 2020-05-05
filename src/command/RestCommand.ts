@@ -9,7 +9,7 @@ export default class RestCommand extends AbstractCommand {
     options = [];
     description = 'Add a new rest';
 
-    public execute(): void {
+    public execute(): string {
       const worklogs = new WorklogCollection(),
         rest = new WorklogStruct(worklogs.getAmount(), 'Break', 'Break', new Date(), 'rest');
 
@@ -17,6 +17,6 @@ export default class RestCommand extends AbstractCommand {
 
       (new DataHelper).writeData(worklogs.getWriteData(), worklogs.dataKey);
 
-      console.log('Rest ended at: ' + rest.time.getHours() + ':' + rest.time.getMinutes());
+      return 'Rest ended at: ' + rest.time.getHours() + ':' + rest.time.getMinutes();
     }
 }

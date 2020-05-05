@@ -8,7 +8,7 @@ export default class StartCommand extends AbstractCommand {
     options = [];
     description = 'Set the start time for the day';
 
-    execute(args, options): void {
+    execute(args, options): string {
       const start = new StartStruct();
 
       if (options !== undefined && options[0] !== undefined && options[0].includes(':')) {
@@ -18,6 +18,6 @@ export default class StartCommand extends AbstractCommand {
 
       (new DataHelper).writeData(start.getWriteData(), start.dataKey);
 
-      console.log(start.getPrintData()['key'] +' '+ start.getPrintData()['value']);
+      return start.getPrintData()['key'] +' '+ start.getPrintData()['value'];
     }
 }

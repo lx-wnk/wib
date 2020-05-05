@@ -12,7 +12,7 @@ export default class ListCommand extends AbstractCommand {
     description = 'Show the report';
     options = [];
 
-    execute(): void {
+    execute(): string {
       const tableData ={
           '4_worklogs': (new WorklogCollection()).getPrintData(),
           '3_notes': (new NoteCollection()).getPrintData()
@@ -32,8 +32,8 @@ export default class ListCommand extends AbstractCommand {
         tableData['2_workDuration'] = (new WorkDurationHelper).getWorkDuration();
       }
 
-      console.log((new FormatHelper().toTable(
+      return (new FormatHelper().toTable(
           Object.keys(tableData).sort().reduce((r, k) => (r[k] = tableData[k], r), {})
-      )));
+      ));
     }
 }

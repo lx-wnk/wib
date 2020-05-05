@@ -1,4 +1,5 @@
 import * as Command from 'commander';
+import OutputHelper from '../lib/helper/OutputHelper';
 
 export default abstract class AbstractCommand {
     abstract name: string;
@@ -17,10 +18,12 @@ export default abstract class AbstractCommand {
         newCommand.alias(aliasName);
       });
       newCommand.description(this.description)
-          .action(this.execute);
+          .action((args, opts) => {
+            OutputHelper.log(this.execute(args, opts));
+          });
 
       return newCommand;
     }
 
-    abstract execute(args, options: Array<any>): void;
+    abstract execute(args, options: Array<any>): string;
 }
