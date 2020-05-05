@@ -18,4 +18,4 @@ Usage: `wib break`
 Usage: `wib list`
 
 ## Configuration
-Place the [configuration](./data/config.json.dist) inside your home directory inside the folder `.wib` so that the full path would look like `~/.wib/config.json`
+Place the [configuration](./.data/config.json.dist) inside your home directory inside the folder `.wib` so that the full path would look like `~/.wib/config.json`

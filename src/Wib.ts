@@ -4,6 +4,7 @@ import StartCommand from './command/StartCommand';
 import StopCommand from './command/StopCommand';
 import RestCommand from './command/RestCommand';
 import WorklogCommand from './command/WorklogCommand';
+import NoteCommand from './command/NoteCommand';
 
 class Wib {
     public program: Command.Command;
@@ -17,7 +18,7 @@ class Wib {
     }
 
     init(): void {
-      this.program.version(`v${this.version}`, '-v, --vers', 'output the current version');
+      this.program.version(`v${this.version}`, '-v, --vers', 'Outputs the current version');
 
       this.getCommands();
     }
@@ -28,6 +29,7 @@ class Wib {
       this.program.addCommand((new ListCommand()).init());
       this.program.addCommand((new RestCommand()).init());
       this.program.addCommand((new WorklogCommand()).init());
+      this.program.addCommand((new NoteCommand()).init());
     }
 }
 export default new Wib().program;

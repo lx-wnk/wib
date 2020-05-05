@@ -11,11 +11,9 @@ export default class WorkDurationHelper {
       breakDuration = {
         hour: 0,
         minute: 0
-      };
-    let workDuration = stop.time.getTime() - start.time.getTime(),
-      previousWorklog;
-
-    console.log(new Date(workDuration));
+      },
+      workDuration = new Date(stop.time.getTime() - start.time.getTime());
+    let previousWorklog;
 
     for (const key in worklogs.entries) {
       const curWorklog = worklogs.entries[key];
@@ -23,7 +21,7 @@ export default class WorkDurationHelper {
 
       curWorklog.time = new Date(curWorklog.time);
       if ('rest' === curWorklog.dataKey) {
-        if (previousWorklog === undefined) {
+        if (undefined === previousWorklog) {
           timeDiff = new Date(curWorklog.time.getTime() - start.time.getTime());
         } else {
           timeDiff = new Date(curWorklog.time.getTime() - previousWorklog.time.getTime());
@@ -36,16 +34,14 @@ export default class WorkDurationHelper {
       previousWorklog = curWorklog;
     }
 
-    workDuration = new Date(workDuration);
-
-    workDuration.setHours(workDuration.getUTCHours() - breakDuration.hour);
-    workDuration.setMinutes(workDuration.getUTCMinutes() - breakDuration.minute);
-
-    console.log(breakDuration);
-    console.log(workDuration);
+    workDuration.setUTCHours(workDuration.getUTCHours() - breakDuration.hour);
+    workDuration.setUTCMinutes(workDuration.getUTCMinutes() - breakDuration.minute);
 
     if (0 >= workDuration.getUTCHours() && 0 >= workDuration.getUTCMinutes()) {
-      return 0;
+      return {
+        key: undefined,
+        value: undefined
+      };
     }
 
     return {

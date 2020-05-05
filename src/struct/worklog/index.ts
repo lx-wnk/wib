@@ -1,5 +1,4 @@
 import AbstractStruct from '../AbstractStruct';
-import FormatHelper from '../../lib/helper/FormatHelper';
 
 export default class WorklogStruct extends AbstractStruct {
     id: number;
@@ -28,15 +27,12 @@ export default class WorklogStruct extends AbstractStruct {
       };
     }
 
-    getPrintData(previousDate: Date): object {
+    getWorklogPrintData(previousDate: Date): object {
       const writeData = this.getWriteData();
       if (previousDate !== undefined && writeData['time'] !== undefined) {
         writeData['duration'] = new Date((new Date(writeData['time'])).getTime() - (new Date(previousDate).getTime()));
       }
 
-      return {
-        'key': (new FormatHelper()).applyFormat(writeData, this.dataKey, 'key'),
-        'value': (new FormatHelper()).applyFormat(writeData, this.dataKey),
-      };
+      return this.getPrintData(writeData);
     }
 }

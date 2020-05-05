@@ -40,10 +40,10 @@ export default abstract class AbstractStruct {
       return this;
     }
 
-    getPrintData(): object {
+    getPrintData(dataObject = this.getWriteData()): object {
       return {
-        'key': (new FormatHelper()).applyFormat(this.getWriteData(), this.dataKey, 'key'),
-        'value': (new FormatHelper()).applyFormat(this.getWriteData(), this.dataKey)
+        'key': (new FormatHelper()).applyFormat(dataObject, this.dataKey, 'key'),
+        'value': (new FormatHelper()).applyFormat(dataObject, this.dataKey)
       };
     }
 }

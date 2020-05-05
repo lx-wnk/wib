@@ -53,7 +53,7 @@ export default class FormatHelper {
 
       if (replaceVal !== undefined) {
         if (['time', 'date', 'duration'].includes(key)) {
-          if ('rest' === formatName) {
+          if ('rest' === formatName || 'workDuration' === formatName) {
             replaceVal = me.formatTime(replaceVal, key, false);
           } else {
             replaceVal = me.formatTime(replaceVal, key);

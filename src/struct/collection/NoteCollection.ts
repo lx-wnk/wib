@@ -1,11 +1,10 @@
 import AbstractCollection from './AbstractCollection';
 import DataHelper from '../../lib/helper/DataHelper';
-import WorklogStruct from '../worklog';
-import StartStruct from '../start';
+import NoteStruct from '../note';
 
-export default class WorklogCollection extends AbstractCollection {
-    entries: {string?: WorklogStruct};
-    dataKey = (new WorklogStruct).dataKey;
+export default class NoteCollection extends AbstractCollection {
+    entries: {string?: NoteStruct};
+    dataKey = (new NoteStruct).dataKey;
 
     constructor() {
       super();
@@ -25,13 +24,13 @@ export default class WorklogCollection extends AbstractCollection {
       }
 
       for (const key in objData) {
-        this.entries[key] = (new WorklogStruct(null)).fromObject(objData[key]);
+        this.entries[key] = (new NoteStruct(null)).fromObject(objData[key]);
       }
 
       return this;
     }
 
-    addEntry(entry: WorklogStruct): void {
+    addEntry(entry: NoteStruct): void {
       this.entries[entry.id] = entry;
     }
 
@@ -53,13 +52,11 @@ export default class WorklogCollection extends AbstractCollection {
 
     getPrintData(): object {
       const printData = [];
-      let startTime = (new StartStruct().fromSavedData()).time;
 
       for (const key in this.entries) {
-        const curEntry = this.entries[key].getWorklogPrintData(startTime);
+        const curEntry = this.entries[key].getPrintData();
 
         printData.push(curEntry);
-        startTime = new Date(this.entries[key].time);
       }
 
       return printData;

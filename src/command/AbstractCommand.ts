@@ -4,7 +4,7 @@ export default abstract class AbstractCommand {
     abstract name: string;
     abstract description: string;
     abstract aliases: Array<string>;
-    abstract options: Array<{flag: string; description: string|null; defaultValue: string|boolean}>;
+    abstract options: Array<{flag: string; description: string|null; defaultValue?: string|boolean}>;
 
     init(): Command.Command {
       const newCommand = new Command.Command(this.name);

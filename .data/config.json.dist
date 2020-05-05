@@ -12,15 +12,19 @@
       'key': 'Clocked out',
       'value': '{{time}}'
     },
-    'break': {
-      'key': 'Break duration',
-      'value': '{{duration}}m'
+    'rest': {
+      'key': 'Break({{id}}) [{{time}}]',
+      'value': '{{duration}}'
+    },
+    'workDuration': {
+      'key': 'Worked time',
+      'value': '{{duration}}'
     },
     'note': {
       'key': 'Note({{id}}) [{{time}}]',
       'value': '{{value}}'
     },
-    'tracker': {
+    'worklogs': {
       'key': 'Worklog({{id}}) [{{time}}]',
       'value': '{{duration}} {{key}} {{value}}'
     }
