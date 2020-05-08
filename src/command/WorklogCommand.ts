@@ -19,7 +19,7 @@ export default class WorklogCommand extends AbstractCommand {
 
     public execute(args, options): string {
       if (args.delete !== undefined) {
-        return (new WorklogCommand()).deleteTracker(args.Delete);
+        return (new WorklogCommand()).deleteTracker(args.delete);
       }
 
       if (args.edit !== undefined) {
@@ -29,7 +29,7 @@ export default class WorklogCommand extends AbstractCommand {
       return (new WorklogCommand()).createTimeTracker(options[0], options.slice(1).join(' '));
     }
 
-    createTimeTracker(key: string, value: string): void {
+    createTimeTracker(key: string, value: string): string {
       const worklogs = new WorklogCollection(),
         worklog = new WorklogStruct(worklogs.getAmount(), key, value);
 
@@ -37,10 +37,10 @@ export default class WorklogCommand extends AbstractCommand {
 
       (new DataHelper).writeData(worklogs.getWriteData(), worklogs.dataKey);
 
-      return worklog.getPrintData(null);
+      return 'Created a new worklog with value: ' + key + ' ' + value;
     }
 
-    deleteTracker(id): void {
+    deleteTracker(id): string {
       const worklogs = new WorklogCollection();
 
       worklogs.entries[id] = undefined;
@@ -50,7 +50,7 @@ export default class WorklogCommand extends AbstractCommand {
       return 'Deleted worklog with id: ' + id;
     }
 
-    editTracker(id, key, value): void {
+    editTracker(id, key, value): string {
       const worklogs = new WorklogCollection();
 
       if (worklogs.entries[id] !== undefined) {

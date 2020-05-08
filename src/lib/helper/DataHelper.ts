@@ -3,7 +3,7 @@ import {homedir} from 'os';
 const mainPath = homedir + '/.wib/';
 
 export default class DataHelper {
-  readAllData(key?: string, date?: string): Record<string, any> {
+  readAllData(key?: string, date?: number): Record<string, any> {
     const filePath = this.getFilePath(date);
 
     if (!fs.existsSync(filePath)) {
@@ -12,6 +12,10 @@ export default class DataHelper {
 
     const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
+    if (data === undefined) {
+      return {};
+    }
+
     if (key === undefined) {
       return data;
     }
@@ -19,9 +23,9 @@ export default class DataHelper {
     return data[key];
   }
 
-  writeData(data: Record<string, any>, key: string, date?: string): void {
+  writeData(data: Record<string, any>, key?: string, date?: number): void {
     const filePath = this.getFilePath(date);
-    const allData = this.readAllData(date);
+    const keyData = this.readAllData(undefined, date);
 
     if (key === undefined) {
       fs.writeFileSync(this.getFilePath(), JSON.stringify(data));
@@ -29,9 +33,9 @@ export default class DataHelper {
       return;
     }
 
-    allData[key] = data;
+    keyData[key] = data;
 
-    fs.writeFileSync(filePath, JSON.stringify(allData));
+    fs.writeFileSync(filePath, JSON.stringify(keyData));
   }
 
   createFile(filePath = this.getFilePath(null)): void {
@@ -44,13 +48,14 @@ export default class DataHelper {
     }
   }
 
-  getFilePath(date: string = this.getCurDate()): string {
-    return mainPath + date + '.json';
+  getFilePath(date?: number): string {
+    const selectedDate = date === undefined ? new Date() : new Date(date);
+    const foramttedDate = this.formatDate(selectedDate);
+    return mainPath + foramttedDate + '.json';
   }
 
-  getCurDate(): string {
-    const today = new Date();
-    return today.getFullYear() + '_' + String(today.getMonth() + 1).padStart(2, '0') +
-            '_' + String(today.getDate()).padStart(2, '0');
+  formatDate(date: Date): string {
+    return date.getFullYear() + '_' + String(date.getMonth() + 1).padStart(2, '0') +
+        '_' + String(date.getDate()).padStart(2, '0');
   }
 }

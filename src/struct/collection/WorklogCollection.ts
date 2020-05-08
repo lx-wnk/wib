@@ -7,13 +7,13 @@ export default class WorklogCollection extends AbstractCollection {
     entries: {string?: WorklogStruct};
     dataKey = (new WorklogStruct).dataKey;
 
-    constructor() {
+    constructor(date?: number) {
       super();
 
-      this.fromSavedData();
+      this.fromSavedData(date);
     }
 
-    fromSavedData(date?: string): this {
+    fromSavedData(date?: number): this {
       const objData = (new DataHelper()).readAllData(this.dataKey, date);
 
       if (this.entries === undefined) {
@@ -52,8 +52,12 @@ export default class WorklogCollection extends AbstractCollection {
     }
 
     getPrintData(): object {
+      return this.getCalculatedPrintData((new StartStruct().fromSavedData()));
+    }
+
+    getCalculatedPrintData(startStruct: StartStruct): object {
       const printData = [];
-      let startTime = (new StartStruct().fromSavedData()).time;
+      let startTime = startStruct.time;
 
       for (const key in this.entries) {
         const curEntry = this.entries[key].getWorklogPrintData(startTime);

@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import StopCommand from '../../src/command/StopCommand';
 
 describe('Stop command', () => {
-  const constantDate = new Date('2020-04-04T02:20:24.000Z');
+  const constantDate = new Date(require('../data.json').testDate);
   beforeEach(function() {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
@@ -15,15 +15,14 @@ describe('Stop command', () => {
       }
     };
   });
-  it('Should return specified time', () => {
-    const commandResult = (new StopCommand()).execute(null, ['8:0']);
-
-    chai.expect('Clocked out '+ '08:00').to.equal(commandResult);
-  });
-
-  it('should return the specified time without setting it', () => {
+  it('Set stop time', () => {
     const commandResult = (new StopCommand()).execute(null, []);
 
-    chai.expect('Clocked out '+ '08:00').to.equal(commandResult);
+    chai.expect('Clocked out '+ '06:20').to.equal(commandResult);
+  });
+  it('Set specific stop time', () => {
+    const commandResult = (new StopCommand()).execute(null, ['6:20']);
+
+    chai.expect('Clocked out '+ '06:20').to.equal(commandResult);
   });
 });

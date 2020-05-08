@@ -1,13 +1,13 @@
 export default class OutputHelper {
-  static log(value): void {
+  static log(value: string): void {
     console.log(value);
   }
 
-  static error(value): void {
+  static error(value: string): void {
     console.error(value);
   }
 
-  static table(value): void {
+  static table(value: string): void {
     console.table(value);
   }
 }

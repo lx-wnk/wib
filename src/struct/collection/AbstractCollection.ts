@@ -16,7 +16,7 @@ export default abstract class AbstractCollection {
       return 0;
     }
 
-    abstract fromSavedData(date?: string);
+    abstract fromSavedData(date?: number);
 
     getPrintData(): object {
       const printData = {};

@@ -6,13 +6,13 @@ export default class NoteCollection extends AbstractCollection {
     entries: {string?: NoteStruct};
     dataKey = (new NoteStruct).dataKey;
 
-    constructor() {
+    constructor(date?: number) {
       super();
 
-      this.fromSavedData();
+      this.fromSavedData(date);
     }
 
-    fromSavedData(date?: string): this {
+    fromSavedData(date?: number): this {
       const objData = (new DataHelper()).readAllData(this.dataKey, date);
 
       if (this.entries === undefined) {

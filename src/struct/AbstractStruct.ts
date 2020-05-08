@@ -6,7 +6,7 @@ export default abstract class AbstractStruct {
 
     abstract getWriteData(): object;
 
-    fromSavedData(date?: string, key?: number|string): this {
+    fromSavedData(date?: number, key?: number|string): this {
       let objData = (new DataHelper()).readAllData(this.dataKey, date);
 
       if (objData === undefined) {

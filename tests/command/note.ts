@@ -3,11 +3,13 @@ import * as chai from 'chai';
 import NoteCommand from '../../src/command/NoteCommand';
 
 describe('Note command', () => {
-  const constantDate = new Date('2020-04-04T02:20:24.000Z');
-  const argumentMock = {
-    delete: undefined,
-    edit: undefined
-  };
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const testData = require('../data.json'),
+    constantDate = new Date(testData.testDate),
+    argumentMock = {
+      delete: undefined,
+      edit: undefined
+    };
   beforeEach(function() {
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
@@ -20,15 +22,15 @@ describe('Note command', () => {
     };
   });
   it('Create note', () => {
-    const commandResult = (new NoteCommand()).execute(argumentMock, ['test1', 'test2', 'test3']);
+    const commandResult = (new NoteCommand()).execute(argumentMock, testData.note.createData);
 
-    chai.expect('Created new note with value: '+ 'test1 test2 test3').to.equal(commandResult);
+    chai.expect('Created new note with value: '+ testData.note.createData.join(' ')).to.equal(commandResult);
   });
 
   it('Edit note', () => {
     argumentMock.edit = 1;
 
-    const commandResult = (new NoteCommand()).execute(argumentMock, []);
+    const commandResult = (new NoteCommand()).execute(argumentMock, testData.note.editData);
 
     chai.expect('Edited note with id: '+ '1').to.equal(commandResult);
   });

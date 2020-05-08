@@ -4,11 +4,18 @@ import WorklogCollection from '../../struct/collection/WorklogCollection';
 import FormatHelper from './FormatHelper';
 
 export default class WorkDurationHelper {
-  getWorkDuration(): object {
-    const start = (new StartStruct()).fromSavedData(),
-      stop = (new StopStruct()).fromSavedData(),
-      worklogs = (new WorklogCollection()).fromSavedData(),
-      breakDuration = {
+  getWorkDuration(start?: StartStruct, stop?: StopStruct, worklogs?: WorklogCollection): object {
+    if (start === undefined) {
+      start = (new StartStruct()).fromSavedData();
+    }
+    if (stop === undefined) {
+      stop = (new StopStruct()).fromSavedData();
+    }
+    if (worklogs === undefined) {
+      worklogs = (new WorklogCollection()).fromSavedData();
+    }
+
+    const breakDuration = {
         hour: 0,
         minute: 0
       },
@@ -20,6 +27,7 @@ export default class WorkDurationHelper {
       let timeDiff;
 
       curWorklog.time = new Date(curWorklog.time);
+
       if ('rest' === curWorklog.dataKey) {
         if (undefined === previousWorklog) {
           timeDiff = new Date(curWorklog.time.getTime() - start.time.getTime());
