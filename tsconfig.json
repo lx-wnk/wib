@@ -3,7 +3,10 @@
     "target": "es6",
     "module": "commonjs",
     "outDir": "dist",
-    "sourceMap": true
+    "sourceMap": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   },
   "files": [
     "./node_modules/@types/mocha/index.d.ts",
@@ -14,8 +17,5 @@
   ],
   "exclude": [
     "node_modules"
-  ],
-  "compilerOptions": {
-    "experimentalDecorators": true
-  }
+  ]
 }

@@ -102,10 +102,9 @@ export default class FormatHelper {
     return ('0' + dateObject.getHours()).slice(-2) + ':' + ('0' + dateObject.getMinutes()).slice(-2);
   }
 
-  toTable(data, colLength = this.getLongestElements(data), isSub = false): string {
+  toTable(data, colLength = this.getLongestElements(data), isSub = false, output = ''): string {
     const me = this;
-    let output = '',
-      loopAmount = Object.values(data).length + 1;
+    let loopAmount = Object.keys(data).length + 1;
 
     if (isSub) {
       loopAmount--;
@@ -114,7 +113,7 @@ export default class FormatHelper {
     for (let a = 0; a < loopAmount; a++) {
       const curObject = Object.values(data)[a];
 
-      if (!isSub) {
+      if (!isSub && '-' !== output.charAt(output.length-2)) {
         for (let b = 0; b < colLength['key'] + colLength['value'] + 5; b++) {
           output += '-';
         }
@@ -122,20 +121,24 @@ export default class FormatHelper {
 
       if (curObject !== undefined) {
         if (Array.isArray(curObject) && 0 < curObject.length) {
-          output += me.toTable(curObject, colLength, true);
+          output = me.toTable(curObject, colLength, true, output);
         } else {
           const curKey = curObject['key'];
           const curVal = curObject['value'];
 
           if (curKey !== undefined && curVal !== undefined) {
-            output += '\n| ' + curKey;
+            if (0 < output.length && '\n' !== output.charAt(output.length-1)) {
+              output += '\n';
+            }
+            output += '| ' + curKey;
             output += ' '.repeat(colLength['key'] - curKey.toString().length);
             output += '| ' + curVal;
             output += ' '.repeat(colLength['value'] - curVal.toString().length) + '|';
           }
         }
       }
-      if (a + 1 !== loopAmount && !isSub) {
+
+      if (a + 1 !== loopAmount && !isSub && '\n' !== output.charAt(output.length-1) && 0 < output.length) {
         output += '\n';
       }
     }

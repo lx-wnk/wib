@@ -5,6 +5,7 @@ import StartCommand from '../../src/command/StartCommand';
 describe('Start command', () => {
   const constantDate = new Date(require('../data.json').testDate);
   beforeEach(function() {
+    process.env.TZ = 'Europe/Berlin';
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     // eslint-disable-next-line no-global-assign
@@ -16,13 +17,9 @@ describe('Start command', () => {
     };
   });
   it('Set start time', () => {
-    const commandResult = (new StartCommand()).execute(null, []);
-
-    chai.expect('Clocked in '+ '06:20').to.equal(commandResult);
+    chai.expect('Clocked in '+ '06:20').to.equal((new StartCommand()).execute(null, []));
   });
   it('Set specific start time', () => {
-    const commandResult = (new StartCommand()).execute(null, ['6:20']);
-
-    chai.expect('Clocked in '+ '06:20').to.equal(commandResult);
+    chai.expect('Clocked in '+ '06:20').to.equal((new StartCommand()).execute(null, ['6:20']));
   });
 });

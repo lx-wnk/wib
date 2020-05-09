@@ -1,6 +1,7 @@
 import 'mocha';
 import * as chai from 'chai';
 import NoteCommand from '../../src/command/NoteCommand';
+import * as responsePrefix from '../../src/command/response.json';
 
 describe('Note command', () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -11,6 +12,7 @@ describe('Note command', () => {
       edit: undefined
     };
   beforeEach(function() {
+    process.env.TZ = 'Europe/Berlin';
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     // eslint-disable-next-line no-global-assign
@@ -22,23 +24,18 @@ describe('Note command', () => {
     };
   });
   it('Create note', () => {
-    const commandResult = (new NoteCommand()).execute(argumentMock, testData.note.createData);
-
-    chai.expect('Created new note with value: '+ testData.note.createData.join(' ')).to.equal(commandResult);
+    chai.expect(responsePrefix.note.create + testData.note.createData.join(' '))
+        .to.equal((new NoteCommand()).execute(argumentMock, testData.note.createData));
   });
 
   it('Edit note', () => {
     argumentMock.edit = 1;
 
-    const commandResult = (new NoteCommand()).execute(argumentMock, testData.note.editData);
-
-    chai.expect('Edited note with id: '+ '1').to.equal(commandResult);
+    chai.expect(responsePrefix.note.edit+ '1').to.equal((new NoteCommand()).execute(argumentMock, testData.note.editData));
   });
 
   it('Delete note', () => {
     argumentMock.delete = 1;
-    const commandResult = (new NoteCommand()).execute(argumentMock, []);
-
-    chai.expect('Deleted note with id: '+ '1').to.equal(commandResult);
+    chai.expect(responsePrefix.note.delete+ '1').to.equal((new NoteCommand()).execute(argumentMock, []));
   });
 });

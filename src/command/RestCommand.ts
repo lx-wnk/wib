@@ -2,6 +2,8 @@ import AbstractCommand from './AbstractCommand';
 import DataHelper from '../lib/helper/DataHelper';
 import WorklogCollection from '../struct/collection/WorklogCollection';
 import WorklogStruct from '../struct/worklog';
+import * as responsePrefix from './response.json';
+
 
 export default class RestCommand extends AbstractCommand {
     name = 'rest';
@@ -17,6 +19,6 @@ export default class RestCommand extends AbstractCommand {
 
       (new DataHelper).writeData(worklogs.getWriteData(), worklogs.dataKey);
 
-      return 'Rest ended at: ' + rest.time.getHours() + ':' + rest.time.getMinutes();
+      return responsePrefix.rest.create + rest.time.getHours() + ':' + rest.time.getMinutes();
     }
 }

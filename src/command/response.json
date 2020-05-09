@@ -1,0 +1,15 @@
+{
+  "rest": {
+    "create": "Rest ended at: "
+  },
+  "note": {
+    "create": "Created new note with value: ",
+    "edit": "Edited note with id: ",
+    "delete": "Deleted note with id: "
+  },
+  "worklog": {
+    "create": "Created a new worklog with value: ",
+    "edit": "Edited worklog with id: ",
+    "delete": "Deleted worklog with id: "
+  }
+}

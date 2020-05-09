@@ -12,7 +12,7 @@ export default class WorklogStruct extends AbstractStruct {
 
       this.id = id;
       this.key = key;
-      this.value = key;
+      this.value = value;
       this.time = time;
       this.dataKey = dataKey;
     }

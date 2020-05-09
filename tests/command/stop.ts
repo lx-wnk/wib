@@ -5,6 +5,7 @@ import StopCommand from '../../src/command/StopCommand';
 describe('Stop command', () => {
   const constantDate = new Date(require('../data.json').testDate);
   beforeEach(function() {
+    process.env.TZ = 'Europe/Berlin';
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     // eslint-disable-next-line no-global-assign
@@ -16,13 +17,9 @@ describe('Stop command', () => {
     };
   });
   it('Set stop time', () => {
-    const commandResult = (new StopCommand()).execute(null, []);
-
-    chai.expect('Clocked out '+ '06:20').to.equal(commandResult);
+    chai.expect('Clocked out '+ '06:20').to.equal((new StopCommand()).execute(null, []));
   });
   it('Set specific stop time', () => {
-    const commandResult = (new StopCommand()).execute(null, ['6:20']);
-
-    chai.expect('Clocked out '+ '06:20').to.equal(commandResult);
+    chai.expect('Clocked out '+ '06:20').to.equal((new StopCommand()).execute(null, ['6:20']));
   });
 });

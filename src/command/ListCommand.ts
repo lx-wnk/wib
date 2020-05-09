@@ -5,6 +5,7 @@ import FormatHelper from '../lib/helper/FormatHelper';
 import WorklogCollection from '../struct/collection/WorklogCollection';
 import WorkDurationHelper from '../lib/helper/WorkDurationHelper';
 import NoteCollection from '../struct/collection/NoteCollection';
+import * as responsePrefix from './response.json';
 
 export default class ListCommand extends AbstractCommand {
     name = 'list';
@@ -42,16 +43,16 @@ export default class ListCommand extends AbstractCommand {
         worklogs = (new WorklogCollection()),
         tableData = {};
 
-      if (date !== undefined) {
-        start.fromSavedData(date);
-        stop.fromSavedData(date);
-        notes.fromSavedData(date);
-        worklogs.fromSavedData(date);
-      } else {
+      if (date === undefined) {
         start.fromSavedData();
         stop.fromSavedData();
         notes.fromSavedData();
         worklogs.fromSavedData();
+      } else {
+        start.fromSavedData(date);
+        stop.fromSavedData(date);
+        notes.fromSavedData(date);
+        worklogs.fromSavedData(date);
       }
 
       if (null !== start.time) {
@@ -62,7 +63,7 @@ export default class ListCommand extends AbstractCommand {
         tableData['1_stop'] = stop.getPrintData();
       }
 
-      if (null !== worklogs.entries) {
+      if (null !== notes.entries) {
         tableData['3_notes'] = notes.getPrintData();
       }
 

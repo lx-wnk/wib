@@ -2,8 +2,11 @@ import AbstractCommand from './AbstractCommand';
 import DataHelper from '../lib/helper/DataHelper';
 import NoteStruct from '../struct/note';
 import NoteCollection from '../struct/collection/NoteCollection';
+import * as responsePrefix from './response.json';
 
 export default class NoteCommand extends AbstractCommand {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    responsePrefix = require('./response.json').worklog;
     name = 'note';
     aliases = ['n'];
     options = [
@@ -19,11 +22,11 @@ export default class NoteCommand extends AbstractCommand {
 
     public execute(args, options): string {
       if (args.delete !== undefined) {
-        return (new NoteCommand()).deleteTracker(args.delete);
+        return (new NoteCommand()).deleteNote(args.delete);
       }
 
       if (args.edit !== undefined) {
-        return (new NoteCommand()).editTracker(args.edit, options.join(' '));
+        return (new NoteCommand()).editNote(args.edit, options.join(' '));
       }
 
       return (new NoteCommand()).createNote(options.join(' '));
@@ -37,20 +40,10 @@ export default class NoteCommand extends AbstractCommand {
 
       (new DataHelper).writeData(notes.getWriteData(), notes.dataKey);
 
-      return 'Created new note with value: ' + value;
+      return responsePrefix.note.create + value;
     }
 
-    deleteTracker(id): string {
-      const notes = new NoteCollection();
-
-      notes.entries[id] = undefined;
-
-      (new DataHelper).writeData(notes.getWriteData(), notes.dataKey);
-
-      return 'Deleted note with id: ' + id;
-    }
-
-    editTracker(id, value): string {
+    editNote(id, value): string {
       const notes = new NoteCollection();
 
       if (notes.entries[id] !== undefined) {
@@ -59,6 +52,16 @@ export default class NoteCommand extends AbstractCommand {
 
       (new DataHelper).writeData(notes.getWriteData(), notes.dataKey);
 
-      return 'Edited note with id: ' + id;
+      return responsePrefix.note.edit + id;
+    }
+
+    deleteNote(id): string {
+      const notes = new NoteCollection();
+
+      notes.entries[id] = undefined;
+
+      (new DataHelper).writeData(notes.getWriteData(), notes.dataKey);
+
+      return responsePrefix.note.delete + id;
     }
 }

@@ -2,8 +2,10 @@ import AbstractCommand from './AbstractCommand';
 import DataHelper from '../lib/helper/DataHelper';
 import WorklogCollection from '../struct/collection/WorklogCollection';
 import WorklogStruct from '../struct/worklog';
+import * as responsePrefix from './response.json';
 
 export default class WorklogCommand extends AbstractCommand {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     name = 'track';
     aliases = ['t', 'wl', 'worklog'];
     options = [
@@ -32,22 +34,11 @@ export default class WorklogCommand extends AbstractCommand {
     createTimeTracker(key: string, value: string): string {
       const worklogs = new WorklogCollection(),
         worklog = new WorklogStruct(worklogs.getAmount(), key, value);
-
       worklogs.addEntry(worklog);
 
       (new DataHelper).writeData(worklogs.getWriteData(), worklogs.dataKey);
 
-      return 'Created a new worklog with value: ' + key + ' ' + value;
-    }
-
-    deleteTracker(id): string {
-      const worklogs = new WorklogCollection();
-
-      worklogs.entries[id] = undefined;
-
-      (new DataHelper).writeData(worklogs.getWriteData(), worklogs.dataKey);
-
-      return 'Deleted worklog with id: ' + id;
+      return responsePrefix.worklog.create + key + ' ' + value;
     }
 
     editTracker(id, key, value): string {
@@ -60,6 +51,16 @@ export default class WorklogCommand extends AbstractCommand {
 
       (new DataHelper).writeData(worklogs.getWriteData(), worklogs.dataKey);
 
-      return 'Edited worklog with id: ' + id;
+      return responsePrefix.worklog.edit + id;
+    }
+
+    deleteTracker(id): string {
+      const worklogs = new WorklogCollection();
+
+      worklogs.entries[id] = undefined;
+
+      (new DataHelper).writeData(worklogs.getWriteData(), worklogs.dataKey);
+
+      return responsePrefix.worklog.delete + id;
     }
 }
