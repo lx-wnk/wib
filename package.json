@@ -1,6 +1,6 @@
 {
   "name": "wib",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "Time tracking tool for the cli",
   "keywords": [
     "tracker",
@@ -13,6 +13,7 @@
     "type": "git",
     "url": "git+https://github.com/jinnoflife/wib.git"
   },
+  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
   "bugs": {
     "url": "https://github.com/jinnoflife/wib/issues"
   },

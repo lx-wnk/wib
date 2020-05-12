@@ -23,7 +23,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
-      - run: npm run build --if-present
       - run: npm test
   test-ubuntu-1604:
     runs-on: ubuntu-16.04
@@ -37,7 +36,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
-      - run: npm run build --if-present
       - run: npm test
   test-mac:
     runs-on: macos-latest
@@ -51,5 +49,4 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
-      - run: npm run build --if-present
       - run: npm test
