@@ -13,12 +13,15 @@
     "type": "git",
     "url": "git+https://github.com/jinnoflife/wib.git"
   },
-  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
   "bugs": {
     "url": "https://github.com/jinnoflife/wib/issues"
   },
   "homepage": "https://github.com/jinnoflife/wib#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "dist/index.js",
+  "types": "index.d.ts",
   "bin": {
     "wib": "./dist/index.js"
   },
