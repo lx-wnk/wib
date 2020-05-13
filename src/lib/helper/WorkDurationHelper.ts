@@ -5,22 +5,15 @@ import FormatHelper from './FormatHelper';
 
 export default class WorkDurationHelper {
   getWorkDuration(start?: StartStruct, stop?: StopStruct, worklogs?: WorklogCollection): object {
-    if (start === undefined) {
-      start = (new StartStruct()).fromSavedData();
-    }
-    if (stop === undefined) {
-      stop = (new StopStruct()).fromSavedData();
-    }
-    if (worklogs === undefined) {
-      worklogs = (new WorklogCollection()).fromSavedData();
-    }
-
     const breakDuration = {
         hour: 0,
         minute: 0
       },
-      workDuration = new Date(stop.time.getTime() - start.time.getTime());
+      workDuration = this.getBaseWorkduration();
     let previousWorklog;
+    if (worklogs === undefined) {
+      worklogs = (new WorklogCollection()).fromSavedData();
+    }
 
     for (const key in worklogs.entries) {
       const curWorklog = worklogs.entries[key];
@@ -35,8 +28,8 @@ export default class WorkDurationHelper {
           timeDiff = new Date(curWorklog.time.getTime() - previousWorklog.time.getTime());
         }
 
-        breakDuration.hour = timeDiff.getUTCHours();
-        breakDuration.hour = timeDiff.getUTCMinutes();
+        breakDuration.hour += timeDiff.getUTCHours();
+        breakDuration.minute += timeDiff.getUTCMinutes();
       }
 
       previousWorklog = curWorklog;
@@ -56,5 +49,20 @@ export default class WorkDurationHelper {
       key: (new FormatHelper()).applyFormat({'duration': workDuration}, 'workDuration', 'key'),
       value: (new FormatHelper()).applyFormat({'duration': workDuration}, 'workDuration')
     };
+  }
+
+  getBaseWorkduration(start?: StartStruct, stop?: StopStruct, worklogs?: WorklogCollection): Date {
+    if (start === undefined) {
+      start = (new StartStruct()).fromSavedData();
+    }
+    if (stop === undefined) {
+      stop = (new StopStruct()).fromSavedData();
+    }
+
+    if (undefined === stop.time || null === stop.time) {
+      stop.time = new Date(Date.now());
+    }
+
+    return new Date(stop.time.getTime() - start.time.getTime());
   }
 }

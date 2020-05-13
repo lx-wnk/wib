@@ -18,11 +18,19 @@ export default class ListCommand extends AbstractCommand {
       {
         flag: '-m, --month <month>',
         description: 'Date from specific month'
-      }
+      },
+      {
+        flag: '-y, --yesterday',
+        description: 'List yesterday'
+      },
     ];
 
     execute(args): string {
       let date = (new Date()).getTime();
+
+      if (undefined !== args.yesterday) {
+        args.day = (new Date(date)).getDate() - 1;
+      }
 
       if (undefined !== args.day) {
         date = (new Date(date)).setDate(args.day);
@@ -70,7 +78,7 @@ export default class ListCommand extends AbstractCommand {
         tableData['4_worklogs'] = worklogs.getCalculatedPrintData(start);
       }
 
-      if (null !== start.time && null !== stop.time && null !== worklogs.entries) {
+      if (null !== start.time) {
         tableData['2_workDuration'] = (new WorkDurationHelper).getWorkDuration(start, stop, worklogs);
       }
 

@@ -12,7 +12,9 @@ export default class ConfigHelper {
     if (fs.existsSync(configPath)) {
       configContent = JSON.parse(fs.readFileSync(configPath).toString());
 
-      if (configContent['format'] !== undefined && configContent['format'][formatName] !== undefined) {
+      if (configContent['format'] !== undefined &&
+          configContent['format'][formatName] !== undefined &&
+          configContent['format'][formatName][type] !== undefined) {
         specifiedFormat = configContent['format'][formatName][type];
       }
     }
@@ -53,8 +55,8 @@ export default class ConfigHelper {
           'value': '{{time}}'
         },
         'rest': {
-          'key': 'Break({{id}}) [{{time}}]',
-          'value': '{{duration}}'
+          'key': 'Break({{id}})   [{{time}}]',
+          'value': '{{duration}} Break duration'
         },
         'workDuration': {
           'key': 'Worked time',

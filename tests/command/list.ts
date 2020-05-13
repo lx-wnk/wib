@@ -1,5 +1,6 @@
 import 'mocha';
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 import ListCommand from '../../src/command/ListCommand';
 import StartCommand from '../../src/command/StartCommand';
 import StopCommand from '../../src/command/StopCommand';
@@ -7,6 +8,7 @@ import NoteCommand from '../../src/command/NoteCommand';
 import DataHelper from '../../src/lib/helper/DataHelper';
 import WorklogCommand from '../../src/command/WorklogCommand';
 import * as testData from '../data.json';
+import ConfigHelper from "../../dist/lib/helper/ConfigHelper";
 
 function createWorklog(): void {
   const commandOptions = [];
@@ -26,7 +28,8 @@ describe('List command', () => {
       day: undefined,
       month: undefined
     };
-  beforeEach(function() {
+  let formatStub, roundingStub;
+  beforeEach(() => {
     process.env.TZ = 'Europe/Berlin';
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
@@ -38,14 +41,31 @@ describe('List command', () => {
       }
     };
 
+    formatStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedFormat').callsFake((formatName: string, type?: string) => {
+      console.log((new ConfigHelper()).getDefaults()['format'][formatName][type]);
+      return (new ConfigHelper()).getDefaults()['format'][formatName][type];
+    });
+
+    roundingStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedMinuteRounding').callsFake((formatName: string, type?: string) => {
+      console.log((new ConfigHelper()).getDefaults()['minuteRounding']);
+      return (new ConfigHelper()).getDefaults()['minuteRounding'];
+    });
+
     (new DataHelper()).writeData({});
+  });
+
+  afterEach(() => {
+    formatStub.restore();
+    roundingStub.restore();
   });
   it('List start', () => {
     (new StartCommand()).execute({}, []);
     chai.expect(
-        '----------------------\n' +
-        '| Clocked in | 06:20 |\n' +
-        '----------------------\n')
+        '------------------------\n' +
+        '| Clocked in  | 06:20  |\n' +
+        '------------------------\n' +
+        '| Worked time | 4h 22m |\n' +
+        '------------------------\n')
         .to.equal((new ListCommand()).execute(argumentMock));
   });
 
@@ -53,7 +73,7 @@ describe('List command', () => {
     (new StopCommand()).execute({}, []);
     chai.expect(
         '-----------------------\n' +
-        '| Clocked out | 06:20 |\n' +
+        '| Clocked out | 06:22 |\n' +
         '-----------------------\n')
         .to.equal((new ListCommand()).execute(argumentMock));
   });
@@ -62,7 +82,7 @@ describe('List command', () => {
     (new NoteCommand()).execute({}, testData.note.createData);
     chai.expect(
         '-------------------------------------------\n' +
-        '| Note(0) [06:20]  | '+testData.note.createData.join(' ')+'  |\n' +
+        '| Note(0) [06:22]  | '+testData.note.createData.join(' ')+'  |\n' +
         '-------------------------------------------\n')
         .to.equal((new ListCommand()).execute(argumentMock));
   });
@@ -72,9 +92,11 @@ describe('List command', () => {
 
     chai.expect(
         '---------------------------------------------------------------\n' +
-        '| Clocked in          | 06:20                                 |\n' +
+        '| Clocked in          | 06:22                                 |\n' +
         '---------------------------------------------------------------\n' +
-        '| Worklog(0) [06:20]  | 4h 25m '+testData.worklog.createData.key+ ' ' +
+        '| Worked time         | 4h 26m                                |\n' +
+        '---------------------------------------------------------------\n' +
+        '| Worklog(0) [06:22]  | 4h 25m '+testData.worklog.createData.key+ ' ' +
         testData.worklog.createData.value.join(' ') +'  |\n' +
         '---------------------------------------------------------------')
         .to.equal((new ListCommand()).execute(argumentMock));
