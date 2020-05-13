@@ -20,10 +20,15 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "dist/index.js",
+  "main": "src/Wib.ts",
+  "directories": {
+    "bin": "./dist",
+    "lib": "./src",
+    "test": "./tests"
+  },
   "types": "index.d.ts",
   "bin": {
-    "wib": "./dist/index.js"
+    "wib": "./bin/index.js"
   },
   "dependencies": {
     "@types/node": "^13.13.4",

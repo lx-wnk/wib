@@ -6,17 +6,18 @@ const mainPath = homedir + '/.wib/',
 
 export default class ConfigHelper {
   getSpecifiedFormat(formatName: string, type = 'value'): string {
-    let configContent = {};
+    let configContent,
+      specifiedFormat = this.getDefaults()['format'][formatName][type];
 
-    if (!fs.existsSync(configPath)) {
-      return this.getDefaults()['format'][formatName][type];
+    if (fs.existsSync(configPath)) {
+      configContent = JSON.parse(fs.readFileSync(configPath).toString());
+
+      if (configContent['format'] !== undefined && configContent['format'][formatName] !== undefined) {
+        specifiedFormat = configContent['format'][formatName][type];
+      }
     }
 
-    configContent = fs.readFileSync(configPath);
-
-    if (configContent['format'] !== undefined && configContent['format'][formatName] !== undefined) {
-      return configContent['format'][formatName][type];
-    }
+    return specifiedFormat;
   }
 
   getSpecifiedMinuteRounding(): number {
@@ -27,7 +28,7 @@ export default class ConfigHelper {
       return this.getDefaults()['minuteRounding'];
     }
 
-    configContent = fs.readFileSync(configPath);
+    configContent = JSON.parse(fs.readFileSync(configPath).toString());
 
     if (configContent['minuteRounding'] === undefined) {
       return this.getDefaults()['minuteRounding'];
@@ -59,7 +60,7 @@ export default class ConfigHelper {
           'key': 'Worked time',
           'value': '{{duration}}'
         },
-        'note': {
+        'notes': {
           'key': 'Note({{id}}) [{{time}}]',
           'value': '{{value}}'
         },

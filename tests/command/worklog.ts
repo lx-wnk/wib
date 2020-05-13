@@ -48,7 +48,9 @@ describe('Worklog command', () => {
       commandOptions.push(message);
     });
 
-    chai.expect(responsePrefix.worklog.edit+ '1').to.equal((new WorklogCommand()).execute(argumentMock, commandOptions));
+    chai.expect(responsePrefix.worklog.edit+ '1').to.equal(
+        (new WorklogCommand()).execute(argumentMock, commandOptions)
+    );
   });
 
   it('Delete worklog', () => {

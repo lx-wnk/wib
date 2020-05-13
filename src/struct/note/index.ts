@@ -5,7 +5,7 @@ export default class NoteStruct extends AbstractStruct {
     key: string;
     value: string;
     time: Date;
-    dataKey = 'note';
+    dataKey = 'notes';
 
     constructor(id?: number, value?: string, time = new Date()) {
       super();

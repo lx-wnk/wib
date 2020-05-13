@@ -9,11 +9,13 @@ export default abstract class AbstractCollection {
     }
 
     getAmount(): number {
-      if (this.entries instanceof Object) {
-        return Object.keys(this.entries).length;
+      let amount = 0;
+
+      if (this.entries instanceof Object && 0 < Object.keys(this.entries).length) {
+        amount = Object.keys(this.entries).length;
       }
 
-      return 0;
+      return amount;
     }
 
     abstract fromSavedData(date?: number);

@@ -43,6 +43,7 @@ export default class FormatHelper {
   applyFormat(dataObject: object, formatName: string, type = 'value'): string {
     const me = this;
     let specifiedFormat = (new ConfigHelper).getSpecifiedFormat(formatName, type);
+
     if (specifiedFormat === undefined || dataObject === undefined) {
       console.log('INVALID FORMAT: ' + formatName);
       return '';

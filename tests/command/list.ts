@@ -8,7 +8,7 @@ import DataHelper from '../../src/lib/helper/DataHelper';
 import WorklogCommand from '../../src/command/WorklogCommand';
 import * as testData from '../data.json';
 
-function createWorklog() {
+function createWorklog(): void {
   const commandOptions = [];
   commandOptions.push(testData.worklog.createData.key);
   testData.worklog.createData.value.forEach((message) => {

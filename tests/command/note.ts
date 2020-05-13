@@ -31,7 +31,9 @@ describe('Note command', () => {
   it('Edit note', () => {
     argumentMock.edit = 1;
 
-    chai.expect(responsePrefix.note.edit+ '1').to.equal((new NoteCommand()).execute(argumentMock, testData.note.editData));
+    chai.expect(responsePrefix.note.edit+ '1').to.equal(
+        (new NoteCommand()).execute(argumentMock, testData.note.editData)
+    );
   });
 
   it('Delete note', () => {

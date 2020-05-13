@@ -5,7 +5,6 @@ import FormatHelper from '../lib/helper/FormatHelper';
 import WorklogCollection from '../struct/collection/WorklogCollection';
 import WorkDurationHelper from '../lib/helper/WorkDurationHelper';
 import NoteCollection from '../struct/collection/NoteCollection';
-import * as responsePrefix from './response.json';
 
 export default class ListCommand extends AbstractCommand {
     name = 'list';

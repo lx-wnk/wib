@@ -1,33 +1,33 @@
 {
-  'format': {
-    'day': {
-      'key': 'Report for date',
-      'value': '{{date}}'
+  "format": {
+    "day": {
+      "key": "Report for date",
+      "value": "{{date}}"
     },
-    'start': {
-      'key': 'Clocked in',
-      'value': '{{time}}'
+    "start": {
+      "key": "Clocked in",
+      "value": "{{time}}"
     },
-    'stop': {
-      'key': 'Clocked out',
-      'value': '{{time}}'
+    "stop": {
+      "key": "Clocked out",
+      "value": "{{time}}"
     },
-    'rest': {
-      'key': 'Break({{id}}) [{{time}}]',
-      'value': '{{duration}}'
+    "rest": {
+      "key": "Break({{id}}) [{{time}}]",
+      "value": "{{duration}}"
     },
-    'workDuration': {
-      'key': 'Worked time',
-      'value': '{{duration}}'
+    "workDuration": {
+      "key": "Worked time",
+      "value": "{{duration}}"
     },
-    'note': {
-      'key': 'Note({{id}}) [{{time}}]',
-      'value': '{{value}}'
+    "notes": {
+      "key": "Note({{id}}) [{{time}}]",
+      "value": "{{value}}"
     },
-    'worklogs': {
-      'key': 'Worklog({{id}}) [{{time}}]',
-      'value': '{{duration}} {{key}} {{value}}'
+    "worklogs": {
+      "key": "Worklog({{id}}) [{{time}}]",
+      "value": "{{duration}} {{key}} {{value}}"
     }
   },
-  'minuteRounding': 5
+  "minuteRounding": 5
 }

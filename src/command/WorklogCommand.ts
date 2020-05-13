@@ -5,7 +5,6 @@ import WorklogStruct from '../struct/worklog';
 import * as responsePrefix from './response.json';
 
 export default class WorklogCommand extends AbstractCommand {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     name = 'track';
     aliases = ['t', 'wl', 'worklog'];
     options = [
