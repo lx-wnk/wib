@@ -8,7 +8,7 @@ import NoteCommand from '../../src/command/NoteCommand';
 import DataHelper from '../../src/lib/helper/DataHelper';
 import WorklogCommand from '../../src/command/WorklogCommand';
 import * as testData from '../data.json';
-import ConfigHelper from "../../dist/lib/helper/ConfigHelper";
+import ConfigHelper from '../../src/lib/helper/ConfigHelper';
 
 function createWorklog(): void {
   const commandOptions = [];
@@ -41,15 +41,17 @@ describe('List command', () => {
       }
     };
 
-    formatStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedFormat').callsFake((formatName: string, type?: string) => {
-      console.log((new ConfigHelper()).getDefaults()['format'][formatName][type]);
-      return (new ConfigHelper()).getDefaults()['format'][formatName][type];
-    });
+    formatStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedFormat')
+        .callsFake((formatName: string, type?: string) => {
+          console.log((new ConfigHelper()).getDefaults()['format'][formatName][type]);
+          return (new ConfigHelper()).getDefaults()['format'][formatName][type];
+        });
 
-    roundingStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedMinuteRounding').callsFake((formatName: string, type?: string) => {
-      console.log((new ConfigHelper()).getDefaults()['minuteRounding']);
-      return (new ConfigHelper()).getDefaults()['minuteRounding'];
-    });
+    roundingStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedMinuteRounding')
+        .callsFake(() => {
+          console.log((new ConfigHelper()).getDefaults()['minuteRounding']);
+          return (new ConfigHelper()).getDefaults()['minuteRounding'];
+        });
 
     (new DataHelper()).writeData({});
   });

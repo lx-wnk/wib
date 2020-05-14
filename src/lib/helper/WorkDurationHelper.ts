@@ -9,7 +9,7 @@ export default class WorkDurationHelper {
         hour: 0,
         minute: 0
       },
-      workDuration = this.getBaseWorkduration();
+      workDuration = this.getBaseWorkduration(start, stop);
     let previousWorklog;
     if (worklogs === undefined) {
       worklogs = (new WorklogCollection()).fromSavedData();
@@ -51,7 +51,7 @@ export default class WorkDurationHelper {
     };
   }
 
-  getBaseWorkduration(start?: StartStruct, stop?: StopStruct, worklogs?: WorklogCollection): Date {
+  getBaseWorkduration(start?: StartStruct, stop?: StopStruct): Date {
     if (start === undefined) {
       start = (new StartStruct()).fromSavedData();
     }
