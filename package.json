@@ -54,7 +54,7 @@
     "lint": "./node_modules/.bin/eslint src tests --ext .js,.jsx,.ts,.tsx",
     "fix": "./node_modules/.bin/eslint --fix src tests --ext .js,.jsx,.ts,.tsx",
     "wib": "./dist/index.js",
-    "test": "./node_modules/.bin/mocha -r ts-node/register tests/**/*.ts",
+    "test": "./node_modules/.bin/mocha -r ts-node/register",
     "coverage": "./node_modules/.bin/nyc npm test"
   }
 }

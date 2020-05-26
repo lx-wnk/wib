@@ -1,9 +1,11 @@
 import 'mocha';
 import * as chai from 'chai';
+import * as sinon from 'sinon';
 import WorklogCommand from '../../src/command/WorklogCommand';
 import StartCommand from '../../src/command/StartCommand';
 import DataHelper from '../../src/lib/helper/DataHelper';
 import * as responsePrefix from '../../src/command/response.json';
+import ConfigHelper from '../../src/lib/helper/ConfigHelper';
 
 describe('Worklog command', () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -13,23 +15,45 @@ describe('Worklog command', () => {
       delete: undefined,
       edit: undefined
     };
+  let dateNowStub, dateConstructorStub, formatStub, roundingStub;
   beforeEach(function() {
     process.env.TZ = 'Europe/Berlin';
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore
     // eslint-disable-next-line no-global-assign
-    Date = class extends Date {
-      constructor() {
-        super();
-        return constantDate;
-      }
-    };
+    dateNowStub = sinon.stub(Date, 'now')
+        .callsFake(() => {
+          return testData.testTime;
+        });
+
+    dateConstructorStub = sinon.stub(Date.prototype, 'constructor')
+        .callsFake(() => {
+          return constantDate;
+        });
+
+    formatStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedFormat')
+        .callsFake((formatName: string, type?: string) => {
+          return (new ConfigHelper()).getDefaults()['format'][formatName][type];
+        });
+
+    roundingStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedMinuteRounding')
+        .callsFake(() => {
+          return (new ConfigHelper()).getDefaults()['minuteRounding'];
+        });
 
     (new DataHelper()).writeData({});
     (new StartCommand()).execute(null, []);
     argumentMock.delete = undefined;
     argumentMock.edit = undefined;
   });
+
+  afterEach(() => {
+    dateNowStub.restore();
+    dateConstructorStub.restore();
+    formatStub.restore();
+    roundingStub.restore();
+  });
+
   it('Create worklog', () => {
     const commandOptions = [];
     commandOptions.push(testData.worklog.createData.key);
@@ -37,10 +61,10 @@ describe('Worklog command', () => {
       commandOptions.push(message);
     });
 
-    chai.expect(responsePrefix.worklog.create +
-        '4h 20m ' +
-        testData.worklog.createData.key + ': ' +
-        testData.note.createData.join(' ')).to.equal((new WorklogCommand()).execute(argumentMock, commandOptions));
+    chai.expect(responsePrefix.worklog.create + '4h 20m ' +
+        testData.worklog.createData.key + ' ' +
+        testData.note.createData.join(' ')
+    ).to.equal((new WorklogCommand()).execute(argumentMock, commandOptions));
   });
 
   it('Edit non-existing worklog', () => {
