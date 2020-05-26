@@ -4,8 +4,8 @@ import WorklogStruct from '../worklog';
 import StartStruct from '../start';
 
 export default class WorklogCollection extends AbstractCollection {
-    entries: {string?: WorklogStruct};
-    dataKey = (new WorklogStruct).dataKey;
+    private _entries: {string?: WorklogStruct};
+    private _dataKey = (new WorklogStruct).dataKey;
 
     constructor(date?: number) {
       super();
@@ -14,10 +14,10 @@ export default class WorklogCollection extends AbstractCollection {
     }
 
     public fromSavedData(date?: number): this {
-      const objData = (new DataHelper()).readAllData(this.dataKey, date);
+      const objData = (new DataHelper()).readAllData(this._dataKey, date);
 
-      if (this.entries === undefined) {
-        this.entries = {};
+      if (this._entries === undefined) {
+        this._entries = {};
       }
 
       if (objData === undefined) {
@@ -25,26 +25,26 @@ export default class WorklogCollection extends AbstractCollection {
       }
 
       for (const key in objData) {
-        this.entries[key] = (new WorklogStruct(null)).fromObject(objData[key]);
+        this._entries[key] = (new WorklogStruct(null)).fromObject(objData[key]);
       }
 
       return this;
     }
 
     public addEntry(entry: WorklogStruct): void {
-      this.entries[entry.id] = entry;
+      this._entries[entry.id] = entry;
     }
 
     public removeEntry(key: number): void {
-      this.entries[key] = undefined;
+      this._entries[key] = undefined;
     }
 
     public getWriteData(): object {
       const writeData = {};
 
-      for (const key in this.entries) {
-        if (this.entries[key] !== undefined) {
-          writeData[key] = this.entries[key].getWriteData();
+      for (const key in this._entries) {
+        if (this._entries[key] !== undefined) {
+          writeData[key] = this._entries[key].getWriteData();
         }
       }
 
@@ -60,9 +60,9 @@ export default class WorklogCollection extends AbstractCollection {
       let sortedEntries = {},
         startTime = startStruct.time;
 
-      for (const key in this.entries) {
-        if (undefined !== this.entries[key]['deleted'] && !this.entries[key]['deleted']) {
-          sortedEntries[new Date(this.entries[key].time).getTime()] = this.entries[key];
+      for (const key in this._entries) {
+        if (undefined !== this._entries[key]['deleted'] && !this._entries[key]['deleted']) {
+          sortedEntries[new Date(this._entries[key].time).getTime()] = this._entries[key];
         }
       }
 
@@ -76,5 +76,21 @@ export default class WorklogCollection extends AbstractCollection {
       }
 
       return printData;
+    }
+
+    get entries(): { string?: WorklogStruct } {
+      return this._entries;
+    }
+
+    set entries(value: { string?: WorklogStruct }) {
+      this._entries = value;
+    }
+
+    get dataKey(): string {
+      return this._dataKey;
+    }
+
+    set dataKey(value: string) {
+      this._dataKey = value;
     }
 }

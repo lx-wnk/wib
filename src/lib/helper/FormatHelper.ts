@@ -1,4 +1,5 @@
 import ConfigHelper from './ConfigHelper';
+import OutputHelper from './OutputHelper';
 
 export default class FormatHelper {
   public applyFormat(dataObject: object, formatName: string, type = 'value'): string {
@@ -6,7 +7,7 @@ export default class FormatHelper {
     let specifiedFormat = (new ConfigHelper).getSpecifiedFormat(formatName, type);
 
     if (specifiedFormat === undefined || dataObject === undefined) {
-      console.log('INVALID FORMAT: ' + formatName);
+      OutputHelper.error('INVALID FORMAT: ' + formatName);
       return '';
     }
 

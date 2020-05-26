@@ -2,18 +2,18 @@ import AbstractStruct from '../AbstractStruct';
 import FormatHelper from '../../lib/helper/FormatHelper';
 
 export default class StopStruct extends AbstractStruct {
-    time: Date;
-    dataKey = 'stop';
+    private _time: Date;
+    private _dataKey = 'stop';
 
     constructor(time = new Date(Date.now())) {
       super();
 
-      this.time = time;
+      this._time = time;
     }
 
     public getWriteData(): object {
       return {
-        time: this.time
+        time: this._time
       };
     }
 
@@ -22,5 +22,22 @@ export default class StopStruct extends AbstractStruct {
         'key': (new FormatHelper()).applyFormat(dataObject, 'stop-unset', 'key'),
         'value': (new FormatHelper()).applyFormat(dataObject, 'stop-unset')
       };
+    }
+
+
+    get time(): Date {
+      return this._time;
+    }
+
+    set time(value: Date) {
+      this._time = value;
+    }
+
+    get dataKey(): string {
+      return this._dataKey;
+    }
+
+    set dataKey(value: string) {
+      this._dataKey = value;
     }
 }

@@ -56,5 +56,19 @@
     "wib": "./dist/index.js",
     "test": "./node_modules/.bin/mocha -r ts-node/register",
     "coverage": "./node_modules/.bin/nyc npm test"
+  },
+  "nyc": {
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "reporter": [
+      "html",
+      "text"
+    ],
+    "all": true
   }
 }

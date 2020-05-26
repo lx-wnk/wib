@@ -31,11 +31,14 @@ export default class WorkDurationHelper {
   private calculateWorkedMinutes(sortedEntries: object, startDate: Date): number {
     let workedMinutes = 0,
       previousDate = startDate;
+
     for (const key in sortedEntries) {
       const curDate = (new Date(sortedEntries[key]['time'])),
         curEntryDuration = new Date( curDate.getTime() - previousDate.getTime());
 
-      workedMinutes += curEntryDuration.getUTCHours() * 60 + curEntryDuration.getUTCMinutes();
+      if (undefined !== sortedEntries[key].dataKey && 'rest' !== sortedEntries[key].dataKey) {
+        workedMinutes += curEntryDuration.getUTCHours() * 60 + curEntryDuration.getUTCMinutes();
+      }
 
       previousDate = curDate;
     }

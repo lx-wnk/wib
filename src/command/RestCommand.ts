@@ -26,7 +26,6 @@ export default class RestCommand extends AbstractCommand {
         specifiedDate.setMinutes(timeArgs[1]);
       }
 
-
       const rest = new WorklogStruct(worklogs.getAmount(), 'Break', 'Break', specifiedDate, 'rest');
 
       worklogs.addEntry(rest);
