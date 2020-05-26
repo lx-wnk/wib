@@ -2,13 +2,15 @@ export default abstract class AbstractCollection {
     abstract entries: object;
     abstract dataKey: string;
 
-    abstract getWriteData(): object;
+    public abstract getWriteData(): object;
 
-    removeEntry(key: number): void {
+    public abstract fromSavedData(date?: number);
+
+    public removeEntry(key: number): void {
       this.entries[key] = undefined;
     }
 
-    getAmount(): number {
+    public getAmount(): number {
       let amount = 0;
 
       if (this.entries instanceof Object && 0 < Object.keys(this.entries).length) {
@@ -18,13 +20,13 @@ export default abstract class AbstractCollection {
       return amount;
     }
 
-    abstract fromSavedData(date?: number);
-
-    getPrintData(): object {
+    public getPrintData(): object {
       const printData = {};
 
       for (const key in this.entries) {
-        printData[key] = this.entries[key].getPrintData();
+        if (undefined !== this.entries[key]['deleted'] && !this.entries[key]['deleted']) {
+          printData[key] = this.entries[key].getPrintData();
+        }
       }
 
       return printData;

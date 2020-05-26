@@ -4,9 +4,9 @@ import FormatHelper from '../lib/helper/FormatHelper';
 export default abstract class AbstractStruct {
     abstract dataKey: string;
 
-    abstract getWriteData(): object;
+    public abstract getWriteData(): object;
 
-    fromSavedData(date?: number, key?: number|string): this {
+    public fromSavedData(date?: number, key?: number|string): this {
       let objData = (new DataHelper()).readAllData(this.dataKey, date);
 
       if (objData === undefined) {
@@ -24,7 +24,17 @@ export default abstract class AbstractStruct {
       return this;
     }
 
-    setProperty(key, value): void {
+    public getPrintData(dataObject = this.getWriteData()): object {
+      return {
+        'key': (new FormatHelper()).applyFormat(dataObject, this.dataKey, 'key'),
+        'value': (new FormatHelper()).applyFormat(dataObject, this.dataKey)
+      };
+    }
+
+    private setProperty(key, value): void {
+      if (value === undefined) {
+        return;
+      }
       if ('time' === key) {
         value = new Date(value);
       }
@@ -32,18 +42,11 @@ export default abstract class AbstractStruct {
       this[key] = value;
     }
 
-    fromObject(objData: object): this {
+    public fromObject(objData: object): this {
       for (const structKey in objData) {
         this[structKey] = objData[structKey];
       }
 
       return this;
-    }
-
-    getPrintData(dataObject = this.getWriteData()): object {
-      return {
-        'key': (new FormatHelper()).applyFormat(dataObject, this.dataKey, 'key'),
-        'value': (new FormatHelper()).applyFormat(dataObject, this.dataKey)
-      };
     }
 }

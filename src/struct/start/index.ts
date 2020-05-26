@@ -4,13 +4,13 @@ export default class StartStruct extends AbstractStruct {
     time: Date;
     dataKey = 'start';
 
-    constructor(time= new Date()) {
+    constructor(time= new Date(Date.now())) {
       super();
 
       this.time = time;
     }
 
-    getWriteData(): object {
+    public getWriteData(): object {
       return {
         time: this.time
       };

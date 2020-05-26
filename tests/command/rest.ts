@@ -25,6 +25,6 @@ describe('Rest command', () => {
     (new StartCommand()).execute(null, []);
   });
   it('Create Rest', () => {
-    chai.expect(responsePrefix.rest.create+ '6:20').to.equal((new RestCommand()).execute());
+    chai.expect(responsePrefix.rest.create+ '6:20').to.equal((new RestCommand()).execute({}));
   });
 });

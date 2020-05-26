@@ -18,7 +18,9 @@ function createWorklog(): void {
   });
 
   (new StartCommand()).execute({}, []);
-  (new WorklogCommand()).execute({}, commandOptions);
+  (new WorklogCommand()).execute({
+    time: '08:20'
+  }, commandOptions);
 }
 
 describe('List command', () => {
@@ -28,46 +30,53 @@ describe('List command', () => {
       day: undefined,
       month: undefined
     };
-  let formatStub, roundingStub;
+  let dateNowStub, dateConstructorStub, formatStub, roundingStub;
+
   beforeEach(() => {
     process.env.TZ = 'Europe/Berlin';
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    // eslint-disable-next-line no-global-assign
-    Date = class extends Date {
-      constructor() {
-        super();
-        return constantDate;
-      }
-    };
+
+    dateNowStub = sinon.stub(Date, 'now')
+        .callsFake(() => {
+          return testData.testTime;
+        });
+
+    dateConstructorStub = sinon.stub(Date.prototype, 'constructor')
+        .callsFake(() => {
+          return constantDate;
+        });
 
     formatStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedFormat')
         .callsFake((formatName: string, type?: string) => {
-          console.log((new ConfigHelper()).getDefaults()['format'][formatName][type]);
           return (new ConfigHelper()).getDefaults()['format'][formatName][type];
         });
 
     roundingStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedMinuteRounding')
         .callsFake(() => {
-          console.log((new ConfigHelper()).getDefaults()['minuteRounding']);
           return (new ConfigHelper()).getDefaults()['minuteRounding'];
         });
 
-    (new DataHelper()).writeData({});
+    (new DataHelper()).writeData({}, null, new Date(Date.now()).getTime());
+
+    argumentMock.day = undefined;
+    argumentMock.month = undefined;
   });
 
   afterEach(() => {
+    dateNowStub.restore();
+    dateConstructorStub.restore();
     formatStub.restore();
     roundingStub.restore();
   });
+
   it('List start', () => {
     (new StartCommand()).execute({}, []);
+
     chai.expect(
-        '------------------------\n' +
-        '| Clocked in  | 06:20  |\n' +
-        '------------------------\n' +
-        '| Worked time | 4h 22m |\n' +
-        '------------------------\n')
+        '-------------------------------\n' +
+        '| Clocked in          | 06:20 |\n' +
+        '-------------------------------\n' +
+        '| Estimated clock out | 14:20 |\n' +
+        '-------------------------------\n')
         .to.equal((new ListCommand()).execute(argumentMock));
   });
 
@@ -75,7 +84,7 @@ describe('List command', () => {
     (new StopCommand()).execute({}, []);
     chai.expect(
         '-----------------------\n' +
-        '| Clocked out | 06:22 |\n' +
+        '| Clocked out | 06:20 |\n' +
         '-----------------------\n')
         .to.equal((new ListCommand()).execute(argumentMock));
   });
@@ -84,7 +93,7 @@ describe('List command', () => {
     (new NoteCommand()).execute({}, testData.note.createData);
     chai.expect(
         '-------------------------------------------\n' +
-        '| Note(0) [06:22]  | '+testData.note.createData.join(' ')+'  |\n' +
+        '| Note(0) [06:20]  | '+testData.note.createData.join(' ')+'  |\n' +
         '-------------------------------------------\n')
         .to.equal((new ListCommand()).execute(argumentMock));
   });
@@ -93,14 +102,16 @@ describe('List command', () => {
     createWorklog();
 
     chai.expect(
-        '---------------------------------------------------------------\n' +
-        '| Clocked in          | 06:22                                 |\n' +
-        '---------------------------------------------------------------\n' +
-        '| Worked time         | 4h 26m                                |\n' +
-        '---------------------------------------------------------------\n' +
-        '| Worklog(0) [06:22]  | 4h 25m '+testData.worklog.createData.key+ ' ' +
+        '-----------------------------------------------------------\n' +
+        '| Clocked in          | 06:20                             |\n' +
+        '-----------------------------------------------------------\n' +
+        '| Estimated clock out | 14:20                             |\n' +
+        '-----------------------------------------------------------\n' +
+        '| Worked time         | 2h                                |\n' +
+        '-----------------------------------------------------------\n' +
+        '| Worklog(0) [08:20]  | 2h '+testData.worklog.createData.key+ ' ' +
         testData.worklog.createData.value.join(' ') +'  |\n' +
-        '---------------------------------------------------------------')
+        '-----------------------------------------------------------')
         .to.equal((new ListCommand()).execute(argumentMock));
   });
 
@@ -113,18 +124,18 @@ describe('List command', () => {
      * TODO: Check why the hell the date object is 4PM instead of 4:20AM
      */
     chai.expect(
-        '---------------------------------------------------------------\n'+
-        '| Clocked in          | 18:00                                 |\n'+
-        '---------------------------------------------------------------\n'+
-        '| Clocked out         | 18:00                                 |\n'+
-        '---------------------------------------------------------------\n'+
-        '| Worked time         | 16h 4m                                |\n'+
-        '---------------------------------------------------------------\n'+
-        '| Note(0) [18:00]     | '+ testData.note.createData.join(' ') +'                   |\n'+
-        '---------------------------------------------------------------\n'+
-        '| Worklog(0) [18:00]  | 16h 5m '+testData.worklog.createData.key +
+        '-----------------------------------------------------------\n'+
+        '| Clocked in          | 06:20                             |\n'+
+        '-----------------------------------------------------------\n'+
+        '| Clocked out         | 18:00                             |\n'+
+        '-----------------------------------------------------------\n'+
+        '| Worked time         | 2h                                |\n'+
+        '-----------------------------------------------------------\n'+
+        '| Note(0) [06:20]     | '+ testData.note.createData.join(' ') +'               |\n'+
+        '-----------------------------------------------------------\n'+
+        '| Worklog(0) [08:20]  | 2h '+testData.worklog.createData.key +
         ' ' + testData.worklog.createData.value.join(' ') + '  |\n'+
-        '---------------------------------------------------------------')
+        '-----------------------------------------------------------')
         .to.equal((new ListCommand()).execute(argumentMock));
   });
 });

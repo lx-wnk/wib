@@ -1,46 +1,7 @@
 import ConfigHelper from './ConfigHelper';
 
 export default class FormatHelper {
-  /**
-   * @param {{key: string, value: string}} data
-   * @return {{key: number, value: number}}
-   */
-  getLongestElements(data: object): object {
-    const me = this;
-    let longestKey = 0, longestValue = 0;
-
-    Object.values(data).forEach((row) => {
-      let curKeyLength = 0, curValLength = 0;
-
-      if (Array.isArray(row) && 0 < row.length) {
-        const tmp = me.getLongestElements(row);
-        curKeyLength = tmp['key'];
-        curValLength = tmp['value'];
-      } else if (row !== undefined &&
-          row['key'] !== undefined && row['value'] !== undefined) {
-        curKeyLength = row['key'].toString().length;
-        curValLength = row['value'].toString().length;
-      }
-
-      if (curKeyLength > longestKey) {
-        longestKey = curKeyLength;
-      }
-
-      if (curValLength > longestValue) {
-        longestValue = curValLength;
-      }
-    });
-
-    longestKey++;
-    longestValue++;
-
-    return {
-      key: longestKey,
-      value: longestValue
-    };
-  }
-
-  applyFormat(dataObject: object, formatName: string, type = 'value'): string {
+  public applyFormat(dataObject: object, formatName: string, type = 'value'): string {
     const me = this;
     let specifiedFormat = (new ConfigHelper).getSpecifiedFormat(formatName, type);
 
@@ -68,42 +29,7 @@ export default class FormatHelper {
     return specifiedFormat;
   }
 
-  formatTime(time: string, formatType?: string, round = true): string {
-    const dateObject = new Date(time);
-
-    if ('date' === formatType) {
-      return dateObject.getFullYear() + '-' + dateObject.getMonth() + '-' + dateObject.getDate();
-    }
-
-    if ('duration' === formatType) {
-      let formattedDuration = '';
-
-      dateObject.setSeconds(60);
-
-      if (0 < dateObject.getUTCHours()) {
-        formattedDuration += dateObject.getUTCHours() + 'h';
-      }
-      if (0 < dateObject.getUTCHours() && 0 < dateObject.getUTCMinutes()) {
-        formattedDuration += ' ';
-      }
-      if (0 < dateObject.getUTCMinutes()) {
-        if (round) {
-          formattedDuration += Math.ceil(
-              dateObject.getUTCMinutes() / (new ConfigHelper).getSpecifiedMinuteRounding()
-          ) * (new ConfigHelper).getSpecifiedMinuteRounding();
-        } else {
-          formattedDuration += dateObject.getUTCMinutes();
-        }
-        formattedDuration += 'm';
-      }
-
-      return formattedDuration;
-    }
-
-    return ('0' + dateObject.getHours()).slice(-2) + ':' + ('0' + dateObject.getMinutes()).slice(-2);
-  }
-
-  toTable(data, colLength = this.getLongestElements(data), isSub = false, output = ''): string {
+  public toTable(data, colLength = this.getLongestElements(data), isSub = false, output = ''): string {
     const me = this;
     let loopAmount = Object.keys(data).length + 1;
 
@@ -145,5 +71,79 @@ export default class FormatHelper {
     }
 
     return output;
+  }
+
+  private formatTime(time: string, formatType?: string, round = true): string {
+    const dateObject = new Date(time);
+
+    if ('date' === formatType) {
+      return dateObject.getFullYear() + '-' + dateObject.getMonth() + '-' + dateObject.getDate();
+    }
+
+    if ('duration' === formatType) {
+      let formattedDuration = '';
+
+      dateObject.setSeconds(0);
+
+      if (0 < dateObject.getUTCHours()) {
+        formattedDuration += dateObject.getUTCHours() + 'h';
+      }
+      if (0 < dateObject.getUTCHours() && 0 < dateObject.getUTCMinutes()) {
+        formattedDuration += ' ';
+      }
+      if (0 < dateObject.getUTCMinutes()) {
+        if (round) {
+          formattedDuration += Math.ceil(
+              dateObject.getUTCMinutes() / (new ConfigHelper).getSpecifiedMinuteRounding()
+          ) * (new ConfigHelper).getSpecifiedMinuteRounding();
+        } else {
+          formattedDuration += dateObject.getUTCMinutes();
+        }
+        formattedDuration += 'm';
+      }
+
+      return formattedDuration;
+    }
+
+    return ('0' + dateObject.getHours()).slice(-2) + ':' + ('0' + dateObject.getMinutes()).slice(-2);
+  }
+
+  /**
+   * @param {{key: string, value: string}} data
+   * @return {{key: number, value: number}}
+   */
+  private getLongestElements(data: object): object {
+    const me = this;
+    let longestKey = 0, longestValue = 0;
+
+    Object.values(data).forEach((row) => {
+      let curKeyLength = 0, curValLength = 0;
+
+      if (Array.isArray(row) && 0 < row.length) {
+        const tmp = me.getLongestElements(row);
+        curKeyLength = tmp['key'];
+        curValLength = tmp['value'];
+      } else if (row !== undefined &&
+          row['key'] !== undefined && row['value'] !== undefined) {
+        curKeyLength = row['key'].toString().length;
+        curValLength = row['value'].toString().length;
+      }
+
+      if (curKeyLength > longestKey) {
+        longestKey = curKeyLength;
+      }
+
+      if (curValLength > longestValue) {
+        longestValue = curValLength;
+      }
+    });
+
+    longestKey++;
+    longestValue++;
+
+    return {
+      key: longestKey,
+      value: longestValue
+    };
   }
 }

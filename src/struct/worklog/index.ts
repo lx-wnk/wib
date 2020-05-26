@@ -5,29 +5,36 @@ export default class WorklogStruct extends AbstractStruct {
     key: string;
     value: string;
     time: Date;
+    deleted: boolean;
     dataKey: string;
 
-    constructor(id?: number, key?: string, value?: string, time = new Date(), dataKey = 'worklogs') {
+    constructor(id?: number, key?: string, value?: string, time?: Date, dataKey = 'worklogs') {
       super();
+
+      if (null === time || undefined === time) {
+        time = new Date(Date.now());
+      }
 
       this.id = id;
       this.key = key;
       this.value = value;
       this.time = time;
+      this.deleted = false;
       this.dataKey = dataKey;
     }
 
-    getWriteData(): object {
+    public getWriteData(): object {
       return {
         id: this.id,
         key: this.key,
         value: this.value,
         time: this.time,
-        dataKey: this.dataKey
+        deleted: this.deleted,
+        dataKey: this.dataKey,
       };
     }
 
-    getWorklogPrintData(previousDate: Date): object {
+    public getWorklogPrintData(previousDate: Date): object {
       const writeData = this.getWriteData();
       if (previousDate !== undefined && writeData['time'] !== undefined) {
         writeData['duration'] = new Date((new Date(writeData['time'])).getTime() - (new Date(previousDate).getTime()));

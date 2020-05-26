@@ -5,6 +5,7 @@ import FormatHelper from '../lib/helper/FormatHelper';
 import WorklogCollection from '../struct/collection/WorklogCollection';
 import WorkDurationHelper from '../lib/helper/WorkDurationHelper';
 import NoteCollection from '../struct/collection/NoteCollection';
+import ConfigHelper from '../lib/helper/ConfigHelper';
 
 export default class ListCommand extends AbstractCommand {
     name = 'list';
@@ -26,7 +27,7 @@ export default class ListCommand extends AbstractCommand {
     ];
 
     execute(args): string {
-      let date = (new Date()).getTime();
+      let date = (new Date(Date.now())).getTime();
 
       if (undefined !== args.yesterday) {
         args.day = (new Date(date)).getDate() - 1;
@@ -68,6 +69,13 @@ export default class ListCommand extends AbstractCommand {
 
       if (null !== stop.time) {
         tableData['1_stop'] = stop.getPrintData();
+      } else if (null !== start.time) {
+        const estimatedStop = new StopStruct();
+        estimatedStop.time = new Date(start.time);
+        estimatedStop.time = new Date(estimatedStop.time.setHours(
+            estimatedStop.time.getHours() + (new ConfigHelper()).getSpecifiedWorkDuration()
+        ));
+        tableData['1_stop'] = estimatedStop.getUnsetPrintData();
       }
 
       if (null !== notes.entries) {
@@ -78,8 +86,8 @@ export default class ListCommand extends AbstractCommand {
         tableData['4_worklogs'] = worklogs.getCalculatedPrintData(start);
       }
 
-      if (null !== start.time) {
-        tableData['2_workDuration'] = (new WorkDurationHelper).getWorkDuration(start, stop, worklogs);
+      if (null !== start.time && 0 < worklogs.getAmount()) {
+        tableData['2_workDuration'] = (new WorkDurationHelper).getWorkDuration(start, worklogs);
       }
 
       return (new FormatHelper().toTable(

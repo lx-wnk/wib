@@ -13,7 +13,7 @@ export default class WorklogCollection extends AbstractCollection {
       this.fromSavedData(date);
     }
 
-    fromSavedData(date?: number): this {
+    public fromSavedData(date?: number): this {
       const objData = (new DataHelper()).readAllData(this.dataKey, date);
 
       if (this.entries === undefined) {
@@ -31,15 +31,15 @@ export default class WorklogCollection extends AbstractCollection {
       return this;
     }
 
-    addEntry(entry: WorklogStruct): void {
+    public addEntry(entry: WorklogStruct): void {
       this.entries[entry.id] = entry;
     }
 
-    removeEntry(key: number): void {
+    public removeEntry(key: number): void {
       this.entries[key] = undefined;
     }
 
-    getWriteData(): object {
+    public getWriteData(): object {
       const writeData = {};
 
       for (const key in this.entries) {
@@ -51,19 +51,28 @@ export default class WorklogCollection extends AbstractCollection {
       return writeData;
     }
 
-    getPrintData(): object {
+    public getPrintData(): object {
       return this.getCalculatedPrintData((new StartStruct().fromSavedData()));
     }
 
-    getCalculatedPrintData(startStruct: StartStruct): object {
+    public getCalculatedPrintData(startStruct: StartStruct): object {
       const printData = [];
-      let startTime = startStruct.time;
+      let sortedEntries = {},
+        startTime = startStruct.time;
 
       for (const key in this.entries) {
-        const curEntry = this.entries[key].getWorklogPrintData(startTime);
+        if (undefined !== this.entries[key]['deleted'] && !this.entries[key]['deleted']) {
+          sortedEntries[new Date(this.entries[key].time).getTime()] = this.entries[key];
+        }
+      }
+
+      sortedEntries = Object.keys(sortedEntries).sort().reduce((r, k) => (r[k] = sortedEntries[k], r), {});
+
+      for (const key in sortedEntries) {
+        const curEntry = sortedEntries[key].getWorklogPrintData(startTime);
 
         printData.push(curEntry);
-        startTime = new Date(this.entries[key].time);
+        startTime = new Date(sortedEntries[key].time);
       }
 
       return printData;

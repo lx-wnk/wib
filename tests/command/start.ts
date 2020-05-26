@@ -1,6 +1,7 @@
 import 'mocha';
 import * as chai from 'chai';
 import StartCommand from '../../src/command/StartCommand';
+import DataHelper from '../../src/lib/helper/DataHelper';
 
 describe('Start command', () => {
   const constantDate = new Date(require('../data.json').testDate);
@@ -15,6 +16,8 @@ describe('Start command', () => {
         return constantDate;
       }
     };
+
+    (new DataHelper()).writeData({});
   });
   it('Set start time', () => {
     chai.expect('Clocked in '+ '06:20').to.equal((new StartCommand()).execute(null, []));

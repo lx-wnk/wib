@@ -27,6 +27,8 @@ describe('Worklog command', () => {
 
     (new DataHelper()).writeData({});
     (new StartCommand()).execute(null, []);
+    argumentMock.delete = undefined;
+    argumentMock.edit = undefined;
   });
   it('Create worklog', () => {
     const commandOptions = [];
@@ -36,26 +38,62 @@ describe('Worklog command', () => {
     });
 
     chai.expect(responsePrefix.worklog.create +
-        testData.worklog.createData.key + ' ' +
+        '4h 20m ' +
+        testData.worklog.createData.key + ': ' +
         testData.note.createData.join(' ')).to.equal((new WorklogCommand()).execute(argumentMock, commandOptions));
   });
 
-  it('Edit worklog', () => {
-    argumentMock.edit = 1;
+  it('Edit non-existing worklog', () => {
     const commandOptions = [];
+    argumentMock.edit = 1;
     commandOptions.push(testData.worklog.editData.key);
     testData.worklog.createData.value.forEach((message) => {
       commandOptions.push(message);
     });
 
-    chai.expect(responsePrefix.worklog.edit+ '1').to.equal(
+    chai.expect(responsePrefix.worklog.couldNotEdit + '1').to.equal(
         (new WorklogCommand()).execute(argumentMock, commandOptions)
     );
   });
 
-  it('Delete worklog', () => {
+  it('Edit existing worklog', () => {
+    const commandOptions = [];
+    commandOptions.push(testData.worklog.createData.key);
+    testData.worklog.createData.value.forEach((message) => {
+      commandOptions.push(message);
+    });
+
+    (new WorklogCommand()).execute(argumentMock, commandOptions);
+
+    commandOptions.splice(0, commandOptions.length);
+
+    argumentMock.edit = 0;
+    commandOptions.push(testData.worklog.editData.key);
+    testData.worklog.createData.value.forEach((message) => {
+      commandOptions.push(message);
+    });
+
+    chai.expect(responsePrefix.worklog.edit+ '0').to.equal(
+        (new WorklogCommand()).execute(argumentMock, commandOptions)
+    );
+  });
+
+  it('Delete non-existing worklog', () => {
     argumentMock.delete = 1;
 
-    chai.expect(responsePrefix.worklog.delete+ '1').to.equal((new WorklogCommand()).execute(argumentMock, []));
+    chai.expect(responsePrefix.worklog.couldNotDelete + '1').to.equal((new WorklogCommand()).execute(argumentMock, []));
+  });
+
+  it('Delete existing worklog', () => {
+    const commandOptions = [];
+    commandOptions.push(testData.worklog.createData.key);
+    testData.worklog.createData.value.forEach((message) => {
+      commandOptions.push(message);
+    });
+
+    (new WorklogCommand()).execute(argumentMock, commandOptions);
+
+    argumentMock.delete = 0;
+    chai.expect(responsePrefix.worklog.delete+ '0').to.equal((new WorklogCommand()).execute(argumentMock, []));
   });
 });

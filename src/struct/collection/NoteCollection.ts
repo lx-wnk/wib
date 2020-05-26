@@ -12,7 +12,7 @@ export default class NoteCollection extends AbstractCollection {
       this.fromSavedData(date);
     }
 
-    fromSavedData(date?: number): this {
+    public fromSavedData(date?: number): this {
       const objData = (new DataHelper()).readAllData(this.dataKey, date);
 
       if (this.entries === undefined) {
@@ -30,15 +30,15 @@ export default class NoteCollection extends AbstractCollection {
       return this;
     }
 
-    addEntry(entry: NoteStruct): void {
+    public addEntry(entry: NoteStruct): void {
       this.entries[entry.id] = entry;
     }
 
-    removeEntry(key: number): void {
+    public removeEntry(key: number): void {
       this.entries[key] = undefined;
     }
 
-    getWriteData(): object {
+    public getWriteData(): object {
       const writeData = {};
 
       for (const key in this.entries) {
@@ -50,7 +50,7 @@ export default class NoteCollection extends AbstractCollection {
       return writeData;
     }
 
-    getPrintData(): object {
+    public getPrintData(): object {
       const printData = [];
 
       for (const key in this.entries) {

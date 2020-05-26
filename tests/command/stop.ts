@@ -1,6 +1,7 @@
 import 'mocha';
 import * as chai from 'chai';
 import StopCommand from '../../src/command/StopCommand';
+import DataHelper from '../../src/lib/helper/DataHelper';
 
 describe('Stop command', () => {
   const constantDate = new Date(require('../data.json').testDate);
@@ -15,6 +16,8 @@ describe('Stop command', () => {
         return constantDate;
       }
     };
+
+    (new DataHelper()).writeData({});
   });
   it('Set stop time', () => {
     chai.expect('Clocked out '+ '06:20').to.equal((new StopCommand()).execute(null, []));

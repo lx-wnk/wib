@@ -5,11 +5,15 @@
   "note": {
     "create": "Created new note with value: ",
     "edit": "Edited note with id: ",
-    "delete": "Deleted note with id: "
+    "delete": "Deleted note with id: ",
+    "missingOptions": "Please provide a value for the note `wib note <key> <value>`"
   },
   "worklog": {
     "create": "Created a new worklog with value: ",
     "edit": "Edited worklog with id: ",
-    "delete": "Deleted worklog with id: "
+    "couldNotEdit": "Could not edit worklog with id: ",
+    "delete": "Deleted worklog with id: ",
+    "couldNotDelete": "Could not delete worklog with id: ",
+    "missingOptions": "Please provide a value for the worklog `wib track <key> <value>`"
   }
 }

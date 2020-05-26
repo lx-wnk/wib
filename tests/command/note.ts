@@ -2,6 +2,7 @@ import 'mocha';
 import * as chai from 'chai';
 import NoteCommand from '../../src/command/NoteCommand';
 import * as responsePrefix from '../../src/command/response.json';
+import DataHelper from '../../src/lib/helper/DataHelper';
 
 describe('Note command', () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -22,6 +23,10 @@ describe('Note command', () => {
         return constantDate;
       }
     };
+
+    (new DataHelper()).writeData({});
+    argumentMock.edit = undefined;
+    argumentMock.delete = undefined;
   });
   it('Create note', () => {
     chai.expect(responsePrefix.note.create + testData.note.createData.join(' '))

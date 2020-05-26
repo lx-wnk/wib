@@ -25,6 +25,10 @@ export default class NoteCommand extends AbstractCommand {
         return (new NoteCommand()).deleteNote(args.delete);
       }
 
+      if (undefined === options) {
+        return responsePrefix.note.missingOptions;
+      }
+
       if (args.edit !== undefined) {
         return (new NoteCommand()).editNote(args.edit, options.join(' '));
       }

@@ -3,7 +3,7 @@ import {homedir} from 'os';
 const mainPath = homedir + '/.wib/';
 
 export default class DataHelper {
-  readAllData(key?: string, date?: number): Record<string, any> {
+  public readAllData(key?: string, date?: number): Record<string, any> {
     const filePath = this.getFilePath(date);
 
     if (!fs.existsSync(filePath)) {
@@ -23,11 +23,11 @@ export default class DataHelper {
     return data[key];
   }
 
-  writeData(data: Record<string, any>, key?: string, date?: number): void {
-    const filePath = this.getFilePath(date);
-    const keyData = this.readAllData(undefined, date);
+  public writeData(data: Record<string, any>, key?: string, date?: number): void {
+    const filePath = this.getFilePath(date),
+      keyData = this.readAllData(undefined, date);
 
-    if (key === undefined) {
+    if (undefined === key || null === key) {
       fs.writeFileSync(this.getFilePath(), JSON.stringify(data));
 
       return;
@@ -38,7 +38,7 @@ export default class DataHelper {
     fs.writeFileSync(filePath, JSON.stringify(keyData));
   }
 
-  createFile(filePath = this.getFilePath(null)): void {
+  private createFile(filePath = this.getFilePath(null)): void {
     if (!fs.existsSync(mainPath)) {
       fs.mkdirSync(mainPath);
     }
@@ -48,13 +48,13 @@ export default class DataHelper {
     }
   }
 
-  getFilePath(date?: number): string {
-    const selectedDate = date === undefined ? new Date() : new Date(date);
+  private getFilePath(date?: number): string {
+    const selectedDate = date === undefined ? new Date(Date.now()) : new Date(date);
     const foramttedDate = this.formatDate(selectedDate);
     return mainPath + foramttedDate + '.json';
   }
 
-  formatDate(date: Date): string {
+  private formatDate(date: Date): string {
     return date.getFullYear() + '_' + String(date.getMonth() + 1).padStart(2, '0') +
         '_' + String(date.getDate()).padStart(2, '0');
   }

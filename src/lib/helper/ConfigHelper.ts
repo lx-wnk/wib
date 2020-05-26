@@ -5,41 +5,43 @@ const mainPath = homedir + '/.wib/',
   configPath = mainPath + 'config.json';
 
 export default class ConfigHelper {
-  getSpecifiedFormat(formatName: string, type = 'value'): string {
-    let configContent,
-      specifiedFormat = this.getDefaults()['format'][formatName][type];
-
+  public getSpecifiedFormat(formatName: string, type = 'value'): string {
     if (fs.existsSync(configPath)) {
-      configContent = JSON.parse(fs.readFileSync(configPath).toString());
+      const configContent = JSON.parse(fs.readFileSync(configPath).toString());
 
       if (configContent['format'] !== undefined &&
           configContent['format'][formatName] !== undefined &&
           configContent['format'][formatName][type] !== undefined) {
-        specifiedFormat = configContent['format'][formatName][type];
+        return configContent['format'][formatName][type];
       }
     }
 
-    return specifiedFormat;
+    return this.getDefaults()['format'][formatName][type];
   }
 
-  getSpecifiedMinuteRounding(): number {
-    const configPath = homedir + '/.wib/config.json';
-    let configContent = {};
-
-    if (!fs.existsSync(configPath)) {
-      return this.getDefaults()['minuteRounding'];
+  public getSpecifiedMinuteRounding(): number {
+    if (fs.existsSync(configPath)) {
+      const configContent = JSON.parse(fs.readFileSync(configPath).toString());
+      if (configContent['minuteRounding'] !== undefined) {
+        return configContent['minuteRounding'];
+      }
     }
 
-    configContent = JSON.parse(fs.readFileSync(configPath).toString());
-
-    if (configContent['minuteRounding'] === undefined) {
-      return this.getDefaults()['minuteRounding'];
-    }
-
-    return configContent['minuteRounding'];
+    return this.getDefaults()['minuteRounding'];
   }
 
-  getDefaults(): object {
+  public getSpecifiedWorkDuration(): number {
+    if (fs.existsSync(configPath)) {
+      const configContent = JSON.parse(fs.readFileSync(configPath).toString());
+      if (configContent['workDuration'] !== undefined) {
+        return configContent['workDuration'];
+      }
+    }
+
+    return this.getDefaults()['workDuration'];
+  }
+
+  public getDefaults(): object {
     return {
       'format': {
         'day': {
@@ -52,6 +54,10 @@ export default class ConfigHelper {
         },
         'stop': {
           'key': 'Clocked out',
+          'value': '{{time}}'
+        },
+        'stop-unset': {
+          'key': 'Estimated clock out',
           'value': '{{time}}'
         },
         'rest': {
@@ -71,7 +77,8 @@ export default class ConfigHelper {
           'value': '{{duration}} {{key}} {{value}}'
         }
       },
-      'minuteRounding': 5
+      'minuteRounding': 5,
+      'workDuration': 8
     };
   }
 }

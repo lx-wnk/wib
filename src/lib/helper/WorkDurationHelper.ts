@@ -1,68 +1,45 @@
 import StartStruct from '../../struct/start';
-import StopStruct from '../../struct/stop';
 import WorklogCollection from '../../struct/collection/WorklogCollection';
 import FormatHelper from './FormatHelper';
 
 export default class WorkDurationHelper {
-  getWorkDuration(start?: StartStruct, stop?: StopStruct, worklogs?: WorklogCollection): object {
-    const breakDuration = {
-        hour: 0,
-        minute: 0
-      },
-      workDuration = this.getBaseWorkduration(start, stop);
-    let previousWorklog;
-    if (worklogs === undefined) {
-      worklogs = (new WorklogCollection()).fromSavedData();
-    }
+  public getWorkDuration(start?: StartStruct, worklogs?: WorklogCollection): object {
+    const baseDate = new Date(new Date(Date.now()).getTime() - new Date(Date.now()).getTime()),
+      workedMinutes = this.calculateWorkedMinutes(this.sortEntries(worklogs), start.time);
 
-    for (const key in worklogs.entries) {
-      const curWorklog = worklogs.entries[key];
-      let timeDiff;
-
-      curWorklog.time = new Date(curWorklog.time);
-
-      if ('rest' === curWorklog.dataKey) {
-        if (undefined === previousWorklog) {
-          timeDiff = new Date(curWorklog.time.getTime() - start.time.getTime());
-        } else {
-          timeDiff = new Date(curWorklog.time.getTime() - previousWorklog.time.getTime());
-        }
-
-        breakDuration.hour += timeDiff.getUTCHours();
-        breakDuration.minute += timeDiff.getUTCMinutes();
-      }
-
-      previousWorklog = curWorklog;
-    }
-
-    workDuration.setUTCHours(workDuration.getUTCHours() - breakDuration.hour);
-    workDuration.setUTCMinutes(workDuration.getUTCMinutes() - breakDuration.minute);
-
-    if (0 >= workDuration.getUTCHours() && 0 >= workDuration.getUTCMinutes()) {
-      return {
-        key: undefined,
-        value: undefined
-      };
-    }
+    baseDate.setMinutes(workedMinutes);
 
     return {
-      key: (new FormatHelper()).applyFormat({'duration': workDuration}, 'workDuration', 'key'),
-      value: (new FormatHelper()).applyFormat({'duration': workDuration}, 'workDuration')
+      key: (new FormatHelper()).applyFormat({'duration': baseDate}, 'workDuration', 'key'),
+      value: (new FormatHelper()).applyFormat({'duration': baseDate}, 'workDuration')
     };
   }
 
-  getBaseWorkduration(start?: StartStruct, stop?: StopStruct): Date {
-    if (start === undefined) {
-      start = (new StartStruct()).fromSavedData();
-    }
-    if (stop === undefined) {
-      stop = (new StopStruct()).fromSavedData();
+  private sortEntries(worklogs: WorklogCollection): object {
+    const sortedEntries = {};
+    for (const key in worklogs.entries) {
+      if (undefined !== worklogs.entries[key]['deleted'] && !worklogs.entries[key]['deleted']) {
+        const curDate = new Date(worklogs.entries[key].time);
+
+        sortedEntries[curDate.getTime()] = worklogs.entries[key];
+      }
     }
 
-    if (undefined === stop.time || null === stop.time) {
-      stop.time = new Date(Date.now());
+    return Object.keys(sortedEntries).sort().reduce((r, k) => (r[k] = sortedEntries[k], r), {});
+  }
+
+  private calculateWorkedMinutes(sortedEntries: object, startDate: Date): number {
+    let workedMinutes = 0,
+      previousDate = startDate;
+    for (const key in sortedEntries) {
+      const curDate = (new Date(sortedEntries[key]['time'])),
+        curEntryDuration = new Date( curDate.getTime() - previousDate.getTime());
+
+      workedMinutes += curEntryDuration.getUTCHours() * 60 + curEntryDuration.getUTCMinutes();
+
+      previousDate = curDate;
     }
 
-    return new Date(stop.time.getTime() - start.time.getTime());
+    return workedMinutes;
   }
 }
