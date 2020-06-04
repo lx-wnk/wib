@@ -30,16 +30,36 @@ describe('Note command', () => {
   });
 
   it('Edit note', () => {
+    (new NoteCommand()).execute(argumentMock, testData.note.createData);
+
     argumentMock.edit = 0;
 
-    chai.expect(Messages.translation('command.note.execution.edit')+ '0').to.equal(
+    chai.expect(Messages.translation('command.note.execution.edit') + '0').to.equal(
+        (new NoteCommand()).execute(argumentMock, testData.note.editData)
+    );
+  });
+
+  it('Could not edit note', () => {
+    argumentMock.edit = 2;
+
+    chai.expect(Messages.translation('command.note.execution.couldNotEdit')+ '2').to.equal(
         (new NoteCommand()).execute(argumentMock, testData.note.editData)
     );
   });
 
   it('Delete note', () => {
+    (new NoteCommand()).execute(argumentMock, testData.note.createData);
+
     argumentMock.delete = 0;
+
     chai.expect(Messages.translation('command.note.execution.delete')+ '0')
+        .to.equal((new NoteCommand()).execute(argumentMock, []));
+  });
+
+  it('Could not delete note', () => {
+    argumentMock.delete = 2;
+
+    chai.expect(Messages.translation('command.note.execution.couldNotDelete')+ '2')
         .to.equal((new NoteCommand()).execute(argumentMock, []));
   });
 });

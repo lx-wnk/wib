@@ -78,8 +78,12 @@ export default class WorklogCollection extends AbstractCollection {
       return printData;
     }
 
-    public getLatestEntry(): WorklogStruct {
+    public getLatestEntry(): WorklogStruct|null {
       const reversedEntries = Object.values(this.entries).reverse();
+
+      if (0 === this.getAmount()) {
+        return null;
+      }
 
       if (!Object.values(this.entries).pop().deleted) {
         return Object.values(this.entries).pop();
@@ -90,6 +94,8 @@ export default class WorklogCollection extends AbstractCollection {
           return reversedEntries[key];
         }
       }
+
+      return null;
     }
 
     get entries(): { string?: WorklogStruct } {

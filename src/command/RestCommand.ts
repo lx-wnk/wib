@@ -28,7 +28,7 @@ export default class RestCommand extends AbstractCommand {
         specifiedDate.setMinutes(timeArgs[1]);
       }
 
-      if (undefined !== latestEntry && 'rest' === latestEntry.dataKey && !latestEntry.deleted) {
+      if (undefined !== latestEntry && null !== latestEntry && 'rest' === latestEntry.dataKey && !latestEntry.deleted) {
         rest = latestEntry;
         rest.time = specifiedDate;
       } else {

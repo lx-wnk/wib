@@ -34,7 +34,7 @@ describe('Worklog command', () => {
       commandOptions.push(message);
     });
 
-    chai.expect(Messages.translation('command.worklog.execution.create') + '4h 20m ' +
+    chai.expect(Messages.translation('command.worklog.execution.create') + '5m ' +
         testData.worklog.createData.key + ' ' +
         testData.note.createData.join(' ')
     ).to.equal((new WorklogCommand()).execute(argumentMock, commandOptions));

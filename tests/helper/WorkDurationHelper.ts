@@ -7,6 +7,7 @@ import WorklogCollection from '../../src/struct/collection/WorklogCollection';
 import WorklogStruct from '../../src/struct/worklog';
 import DataHelper from '../../src/helper/DataHelper';
 import GlobalMock from '../mock/global';
+import Messages from '../../src/messages';
 
 describe('WorkDurationHelper', () => {
   beforeEach(() => {
@@ -33,7 +34,8 @@ describe('WorkDurationHelper', () => {
       worklogs.addEntry(worklog);
     }
 
-    chai.expect(JSON.stringify({key: defaultConfig.format.workDuration.key, value: '4h 20m'}))
-        .to.equal(JSON.stringify((new WorkDurationHelper()).getWorkDuration(startStruct, worklogs)));
+    chai.expect(JSON.stringify(
+        {key: Messages.applyTranslationToString(defaultConfig.format.workDuration.key), value: '22h'}
+    )).to.equal(JSON.stringify((new WorkDurationHelper()).getWorkDuration(startStruct, worklogs)));
   });
 });
