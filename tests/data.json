@@ -14,5 +14,9 @@
       "key": "Test-key1-EDIT",
       "value": ["edit-val1", "edit-val2", "edit-val3", "edit-val4"]
     }
+  },
+  "rest": {
+    "key": "Break",
+    "value": "Break duration"
   }
 }

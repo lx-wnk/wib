@@ -1,45 +1,21 @@
 import 'mocha';
 import * as chai from 'chai';
-import * as sinon from 'sinon';
 import WorklogCommand from '../../src/command/WorklogCommand';
 import StartCommand from '../../src/command/StartCommand';
-import DataHelper from '../../src/lib/helper/DataHelper';
-import * as responsePrefix from '../../src/command/response.json';
-import ConfigHelper from '../../src/lib/helper/ConfigHelper';
+import DataHelper from '../../src/helper/DataHelper';
+import Messages from '../../src/messages';
+import GlobalMock from '../mock/global';
 
 describe('Worklog command', () => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const testData = require('../data.json'),
-    constantDate = new Date(testData.testDate),
     argumentMock = {
       delete: undefined,
       edit: undefined
     };
-  let dateNowStub, dateConstructorStub, formatStub, roundingStub;
-  beforeEach(function() {
-    process.env.TZ = 'Europe/Berlin';
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    // eslint-disable-next-line no-global-assign
-    dateNowStub = sinon.stub(Date, 'now')
-        .callsFake(() => {
-          return testData.testTime;
-        });
 
-    dateConstructorStub = sinon.stub(Date.prototype, 'constructor')
-        .callsFake(() => {
-          return constantDate;
-        });
-
-    formatStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedFormat')
-        .callsFake((formatName: string, type?: string) => {
-          return (new ConfigHelper()).getDefaults()['format'][formatName][type];
-        });
-
-    roundingStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedMinuteRounding')
-        .callsFake(() => {
-          return (new ConfigHelper()).getDefaults()['minuteRounding'];
-        });
+  beforeEach(() => {
+    GlobalMock.beforeEach();
 
     (new DataHelper()).writeData({});
     (new StartCommand()).execute(null, []);
@@ -48,10 +24,7 @@ describe('Worklog command', () => {
   });
 
   afterEach(() => {
-    dateNowStub.restore();
-    dateConstructorStub.restore();
-    formatStub.restore();
-    roundingStub.restore();
+    GlobalMock.afterEach();
   });
 
   it('Create worklog', () => {
@@ -61,7 +34,7 @@ describe('Worklog command', () => {
       commandOptions.push(message);
     });
 
-    chai.expect(responsePrefix.worklog.create + '4h 20m ' +
+    chai.expect(Messages.translation('command.worklog.execution.create') + '4h 20m ' +
         testData.worklog.createData.key + ' ' +
         testData.note.createData.join(' ')
     ).to.equal((new WorklogCommand()).execute(argumentMock, commandOptions));
@@ -75,7 +48,7 @@ describe('Worklog command', () => {
       commandOptions.push(message);
     });
 
-    chai.expect(responsePrefix.worklog.couldNotEdit + '1').to.equal(
+    chai.expect(Messages.translation('command.worklog.execution.couldNotEdit')).to.equal(
         (new WorklogCommand()).execute(argumentMock, commandOptions)
     );
   });
@@ -97,7 +70,7 @@ describe('Worklog command', () => {
       commandOptions.push(message);
     });
 
-    chai.expect(responsePrefix.worklog.edit+ '0').to.equal(
+    chai.expect(Messages.translation('command.worklog.execution.edit') + '0').to.equal(
         (new WorklogCommand()).execute(argumentMock, commandOptions)
     );
   });
@@ -105,7 +78,8 @@ describe('Worklog command', () => {
   it('Delete non-existing worklog', () => {
     argumentMock.delete = 1;
 
-    chai.expect(responsePrefix.worklog.couldNotDelete + '1').to.equal((new WorklogCommand()).execute(argumentMock, []));
+    chai.expect(Messages.translation('command.worklog.execution.couldNotDelete') + '1')
+        .to.equal((new WorklogCommand()).execute(argumentMock, []));
   });
 
   it('Delete existing worklog', () => {
@@ -118,6 +92,7 @@ describe('Worklog command', () => {
     (new WorklogCommand()).execute(argumentMock, commandOptions);
 
     argumentMock.delete = 0;
-    chai.expect(responsePrefix.worklog.delete+ '0').to.equal((new WorklogCommand()).execute(argumentMock, []));
+    chai.expect(Messages.translation('command.worklog.execution.delete') + '0')
+        .to.equal((new WorklogCommand()).execute(argumentMock, []));
   });
 });

@@ -1,0 +1,125 @@
+{
+  "command": {
+    "list": {
+      "option": {
+        "day": {
+          "description": "List a specific date",
+          "flag": "-d, --day <day>"
+        },
+        "month": {
+          "description": "Date from specific month",
+          "flag": "-m, --month <month>"
+        },
+        "yesterday": {
+          "description": "List yesterday",
+          "flag": "-y, --yesterday"
+        }
+      },
+      "description": "Show the report"
+    },
+    "note": {
+      "option": {
+        "delete": {
+          "description": "Delete a specified note",
+          "flag": "-d, --delete <key>"
+        },
+        "edit": {
+          "description": "Edit a specified note",
+          "flag": "-e, --edit <key>"
+        }
+      },
+      "description": "Handle notes",
+      "execution": {
+        "create": "Created new note with value: ",
+        "couldNotEdit": "Could not edit note with id: ",
+        "edit": "Edited note with id: ",
+        "couldNotDelete": "Could not delete note with id: ",
+        "delete": "Deleted note with id: ",
+        "missingOptions": "Please provide a value for the note `wib note <key> <value>`"
+      }
+    },
+    "rest": {
+      "description": "Add a new rest",
+      "option": {
+        "time": {
+          "description": "Create a worklog with specified time",
+          "flag": "-t, --time <hour:minute>"
+        }
+      },
+      "execution": {
+        "create": "Rest ended at: "
+      }
+    },
+    "start": {
+      "description": "Set the start time for the day"
+    },
+    "stop": {
+      "description": "Set the stop time for the day"
+    },
+    "worklog": {
+      "option": {
+        "delete": {
+          "description": "Delete a specified worklog",
+          "flag": "-d, --delete <key>"
+        },
+        "edit": {
+          "description": "Edit a specified worklog",
+          "flag": "-e, --edit <key>"
+        },
+        "time": {
+          "description": "Specify the finish time time",
+          "flag": "-t, --time <hour:minute>"
+        }
+      },
+      "description": "Handle worklogs",
+      "execution": {
+        "create": "Created a new worklog with value: ",
+        "edit": "Edited worklog with id: ",
+        "couldNotEdit": "Could not edit worklog with id: ",
+        "delete": "Deleted worklog with id: ",
+        "couldNotDelete": "Could not delete worklog with id: ",
+        "missingOptions": "Please provide a value for the worklog `wib track <key> <value>`"
+      }
+    }
+  },
+  "format": {
+    "break": {
+      "key": {
+        "type": "Break"
+      },
+      "value": {
+        "duration": "Break duration"
+      }
+    },
+    "day": {
+      "key": "Report for date"
+    },
+    "invalid": "INVALID FORMAT provided: ",
+    "note": {
+      "key": {
+        "type": "Note"
+      }
+    },
+    "start": {
+      "key": "Clocked in"
+    },
+    "stop": {
+      "key": {
+        "unset": "Estimated clock out",
+        "set": "Clocked out"
+      }
+    },
+    "time": {
+      "hour": "h",
+      "minute": "m"
+    },
+    "worklog": {
+      "key": {
+        "type": "Worklog"
+      }
+    },
+    "workDuration": {
+      "key": "Worked time"
+    }
+  }
+}

@@ -1,33 +1,19 @@
 import ConfigHelper from './ConfigHelper';
 import OutputHelper from './OutputHelper';
+import Messages from '../messages';
 
 export default class FormatHelper {
   public applyFormat(dataObject: object, formatName: string, type = 'value'): string {
-    const me = this;
     let specifiedFormat = (new ConfigHelper).getSpecifiedFormat(formatName, type);
 
     if (specifiedFormat === undefined || dataObject === undefined) {
-      OutputHelper.error('INVALID FORMAT: ' + formatName);
+      OutputHelper.error(Messages.translation('format.invalid') + formatName);
       return '';
     }
 
-    for (const key in dataObject) {
-      let replaceVal = dataObject[key];
+    specifiedFormat = this.applyVariables(specifiedFormat, dataObject, formatName);
 
-      if (replaceVal !== undefined) {
-        if (['time', 'date', 'duration'].includes(key)) {
-          if ('rest' === formatName || 'workDuration' === formatName) {
-            replaceVal = me.formatTime(replaceVal, key, false);
-          } else {
-            replaceVal = me.formatTime(replaceVal, key);
-          }
-        }
-
-        specifiedFormat = specifiedFormat.split('{{' + key + '}}').join(replaceVal);
-      }
-    }
-
-    return specifiedFormat;
+    return Messages.applyTranslationToString(specifiedFormat);
   }
 
   public toTable(data, colLength = this.getLongestElements(data), isSub = false, output = ''): string {
@@ -74,6 +60,28 @@ export default class FormatHelper {
     return output;
   }
 
+  private applyVariables(specifiedFormat: string, dataObject: object, formatName: string): string {
+    const me = this;
+
+    for (const key in dataObject) {
+      let replaceVal = dataObject[key];
+
+      if (replaceVal !== undefined) {
+        if (['time', 'date', 'duration'].includes(key)) {
+          if ('rest' === formatName || 'workDuration' === formatName) {
+            replaceVal = me.formatTime(replaceVal, key, false);
+          } else {
+            replaceVal = me.formatTime(replaceVal, key);
+          }
+        }
+
+        specifiedFormat = specifiedFormat.split('{{' + key + '}}').join(replaceVal);
+      }
+    }
+
+    return specifiedFormat;
+  }
+
   private formatTime(time: string, formatType?: string, round = true): string {
     const dateObject = new Date(time);
 
@@ -87,7 +95,7 @@ export default class FormatHelper {
       dateObject.setSeconds(0);
 
       if (0 < dateObject.getUTCHours()) {
-        formattedDuration += dateObject.getUTCHours() + 'h';
+        formattedDuration += dateObject.getUTCHours() + Messages.translation('format.time.hour');
       }
       if (0 < dateObject.getUTCHours() && 0 < dateObject.getUTCMinutes()) {
         formattedDuration += ' ';
@@ -100,7 +108,13 @@ export default class FormatHelper {
         } else {
           formattedDuration += dateObject.getUTCMinutes();
         }
-        formattedDuration += 'm';
+        formattedDuration += Messages.translation('format.time.minute');
+      }
+      if (0 === dateObject.getUTCHours() && 0 === dateObject.getUTCMinutes()) {
+        formattedDuration += Math.ceil(
+            1 / (new ConfigHelper).getSpecifiedMinuteRounding()
+        ) * (new ConfigHelper).getSpecifiedMinuteRounding();
+        formattedDuration += Messages.translation('format.time.minute');
       }
 
       return formattedDuration;

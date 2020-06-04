@@ -1,14 +1,14 @@
 import 'mocha';
 import * as chai from 'chai';
-import * as sinon from 'sinon';
 import ListCommand from '../../src/command/ListCommand';
 import StartCommand from '../../src/command/StartCommand';
 import StopCommand from '../../src/command/StopCommand';
 import NoteCommand from '../../src/command/NoteCommand';
-import DataHelper from '../../src/lib/helper/DataHelper';
+import DataHelper from '../../src/helper/DataHelper';
 import WorklogCommand from '../../src/command/WorklogCommand';
 import * as testData from '../data.json';
-import ConfigHelper from '../../src/lib/helper/ConfigHelper';
+import RestCommand from '../../src/command/RestCommand';
+import GlobalMock from '../mock/global';
 
 function createWorklog(): void {
   const commandOptions = [];
@@ -24,48 +24,22 @@ function createWorklog(): void {
 }
 
 describe('List command', () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const constantDate = new Date(testData.testDate),
-    argumentMock = {
-      day: undefined,
-      month: undefined
-    };
-  let dateNowStub, dateConstructorStub, formatStub, roundingStub;
+  const argumentMock = {
+    day: undefined,
+    month: undefined
+  };
 
   beforeEach(() => {
-    process.env.TZ = 'Europe/Berlin';
+    GlobalMock.beforeEach();
 
-    dateNowStub = sinon.stub(Date, 'now')
-        .callsFake(() => {
-          return testData.testTime;
-        });
-
-    dateConstructorStub = sinon.stub(Date.prototype, 'constructor')
-        .callsFake(() => {
-          return constantDate;
-        });
-
-    formatStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedFormat')
-        .callsFake((formatName: string, type?: string) => {
-          return (new ConfigHelper()).getDefaults()['format'][formatName][type];
-        });
-
-    roundingStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedMinuteRounding')
-        .callsFake(() => {
-          return (new ConfigHelper()).getDefaults()['minuteRounding'];
-        });
-
-    (new DataHelper()).writeData({}, null, new Date(Date.now()).getTime());
+    (new DataHelper()).writeData({}, null, GlobalMock.constantDate.getTime());
 
     argumentMock.day = undefined;
     argumentMock.month = undefined;
   });
 
   afterEach(() => {
-    dateNowStub.restore();
-    dateConstructorStub.restore();
-    formatStub.restore();
-    roundingStub.restore();
+    GlobalMock.afterEach();
   });
 
   it('List start', () => {
@@ -115,14 +89,39 @@ describe('List command', () => {
         .to.equal((new ListCommand()).execute(argumentMock));
   });
 
+  it('List rest', () => {
+    createWorklog();
+
+    (new RestCommand).execute({
+      time: '10:20'
+    });
+    (new RestCommand).execute({
+      time: '12:20'
+    });
+
+    chai.expect(
+        '-----------------------------------------------------------\n' +
+        '| Clocked in          | 06:20                             |\n' +
+        '-----------------------------------------------------------\n' +
+        '| Estimated clock out | 14:20                             |\n' +
+        '-----------------------------------------------------------\n' +
+        '| Worked time         | 2h                                |\n' +
+        '-----------------------------------------------------------\n' +
+        '| Worklog(0) [08:20]  | 2h '+testData.worklog.createData.key+ ' ' +
+        testData.worklog.createData.value.join(' ') +'  |\n' +
+        '| '+testData.rest.key+'(1)   [12:20]  | 4h '+ testData.rest.value +'                 |\n' +
+        '-----------------------------------------------------------')
+        .to.equal((new ListCommand()).execute(argumentMock));
+  });
+
   it('List all', () => {
     createWorklog();
+    (new RestCommand).execute({
+      time: '10:20'
+    });
     (new NoteCommand()).execute({}, testData.note.createData);
     (new StopCommand()).execute({}, ['18:00']);
 
-    /**
-     * TODO: Check why the hell the date object is 4PM instead of 4:20AM
-     */
     chai.expect(
         '-----------------------------------------------------------\n'+
         '| Clocked in          | 06:20                             |\n'+
@@ -135,6 +134,7 @@ describe('List command', () => {
         '-----------------------------------------------------------\n'+
         '| Worklog(0) [08:20]  | 2h '+testData.worklog.createData.key +
         ' ' + testData.worklog.createData.value.join(' ') + '  |\n'+
+        '| '+testData.rest.key+'(1)   [10:20]  | 2h '+testData.rest.value+'                 |\n'+
         '-----------------------------------------------------------')
         .to.equal((new ListCommand()).execute(argumentMock));
   });

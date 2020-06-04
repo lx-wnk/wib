@@ -1,12 +1,13 @@
 import AbstractCommand from './AbstractCommand';
-import DataHelper from '../lib/helper/DataHelper';
+import DataHelper from '../helper/DataHelper';
 import StartStruct from '../struct/start';
+import Messages from '../messages';
 
 export default class StartCommand extends AbstractCommand {
     name = 'start';
     aliases = ['hi'];
     options = [];
-    description = 'Set the start time for the day';
+    description = Messages.translation('command.start.description');
 
     execute(args, options): string {
       const start = new StartStruct();

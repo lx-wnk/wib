@@ -1,5 +1,5 @@
 import AbstractStruct from '../AbstractStruct';
-import FormatHelper from '../../lib/helper/FormatHelper';
+import FormatHelper from '../../helper/FormatHelper';
 
 export default class StopStruct extends AbstractStruct {
     private _time: Date;

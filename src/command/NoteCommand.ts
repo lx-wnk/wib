@@ -1,24 +1,31 @@
 import AbstractCommand from './AbstractCommand';
-import DataHelper from '../lib/helper/DataHelper';
+import DataHelper from '../helper/DataHelper';
 import NoteStruct from '../struct/note';
 import NoteCollection from '../struct/collection/NoteCollection';
-import * as responsePrefix from './response.json';
+import Messages from '../messages';
 
 export default class NoteCommand extends AbstractCommand {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    responsePrefix = require('./response.json').worklog;
     name = 'note';
     aliases = ['n'];
+    description = Messages.translation('command.note.description');
     options = [
       {
-        flag: '-d, --delete <key>',
-        description: 'Delete a specified note'
+        flag: Messages.translation('command.note.option.delete.flag'),
+        description: Messages.translation('command.note.option.delete.description')
       },
       {
-        flag: '-e, --edit <key>',
-        description: 'Edit an specified note'
+        flag: Messages.translation('command.note.option.delete.flag'),
+        description: Messages.translation('command.note.option.delete.description')
       }];
-    description = 'Handle notes';
+
+    private notes: NoteCollection;
+    private dataHelper: DataHelper;
+
+    constructor() {
+      super();
+      this.notes = new NoteCollection();
+      this.dataHelper = new DataHelper();
+    }
 
     public execute(args, options): string {
       if (args.delete !== undefined) {
@@ -26,7 +33,7 @@ export default class NoteCommand extends AbstractCommand {
       }
 
       if (undefined === options) {
-        return responsePrefix.note.missingOptions;
+        Messages.translation('command.note.execution.missingOptions');
       }
 
       if (args.edit !== undefined) {
@@ -37,35 +44,36 @@ export default class NoteCommand extends AbstractCommand {
     }
 
     createNote(value: string): string {
-      const notes = new NoteCollection(),
-        note = new NoteStruct(notes.getAmount(), value);
+      const note = new NoteStruct(this.notes.getAmount(), value);
 
-      notes.addEntry(note);
+      this.notes.addEntry(note);
 
-      (new DataHelper).writeData(notes.getWriteData(), notes.dataKey);
+      this.dataHelper.writeData(this.notes.getWriteData(), this.notes.dataKey);
 
-      return responsePrefix.note.create + value;
+      return Messages.translation('command.note.execution.create') + value;
     }
 
     editNote(id, value): string {
-      const notes = new NoteCollection();
-
-      if (notes.entries[id] !== undefined) {
-        notes.entries[id].value = value;
+      if (undefined === id || undefined === this.notes.entries[id]) {
+        return Messages.translation('command.note.execution.couldNotEdit') + id;
       }
 
-      (new DataHelper).writeData(notes.getWriteData(), notes.dataKey);
+      this.notes.entries[id].value = value;
 
-      return responsePrefix.note.edit + id;
+      this.dataHelper.writeData(this.notes.getWriteData(), this.notes.dataKey);
+
+      return Messages.translation('command.note.execution.edit') + id;
     }
 
     deleteNote(id): string {
-      const notes = new NoteCollection();
+      if (undefined === id || undefined === this.notes.entries[id]) {
+        return Messages.translation('command.note.execution.couldNotDelete') + id;
+      }
 
-      notes.entries[id] = undefined;
+      this.notes.entries[id].deleted = true;
 
-      (new DataHelper).writeData(notes.getWriteData(), notes.dataKey);
+      this.dataHelper.writeData(this.notes.getWriteData(), this.notes.dataKey);
 
-      return responsePrefix.note.delete + id;
+      return Messages.translation('command.note.execution.delete') + id;
     }
 }

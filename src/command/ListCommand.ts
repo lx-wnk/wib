@@ -1,28 +1,29 @@
 import AbstractCommand from './AbstractCommand';
 import StartStruct from '../struct/start';
 import StopStruct from '../struct/stop';
-import FormatHelper from '../lib/helper/FormatHelper';
+import FormatHelper from '../helper/FormatHelper';
 import WorklogCollection from '../struct/collection/WorklogCollection';
-import WorkDurationHelper from '../lib/helper/WorkDurationHelper';
+import WorkDurationHelper from '../helper/WorkDurationHelper';
 import NoteCollection from '../struct/collection/NoteCollection';
-import ConfigHelper from '../lib/helper/ConfigHelper';
+import ConfigHelper from '../helper/ConfigHelper';
+import Messages from '../messages';
 
 export default class ListCommand extends AbstractCommand {
     name = 'list';
     aliases = ['l', 'status', 'report'];
-    description = 'Show the report';
+    description = Messages.translation('command.list.description');
     options = [
       {
-        flag: '-d, --day <day>',
-        description: 'List a specific date'
+        flag: Messages.translation('command.list.option.day.flag'),
+        description: Messages.translation('command.list.option.day.description')
       },
       {
-        flag: '-m, --month <month>',
-        description: 'Date from specific month'
+        flag: Messages.translation('command.list.option.month.flag'),
+        description: Messages.translation('command.list.option.month.description')
       },
       {
-        flag: '-y, --yesterday',
-        description: 'List yesterday'
+        flag: Messages.translation('command.list.option.day.flag'),
+        description: Messages.translation('command.list.option.day.description')
       },
     ];
 
@@ -51,17 +52,10 @@ export default class ListCommand extends AbstractCommand {
         worklogs = (new WorklogCollection()),
         tableData = {};
 
-      if (date === undefined) {
-        start.fromSavedData();
-        stop.fromSavedData();
-        notes.fromSavedData();
-        worklogs.fromSavedData();
-      } else {
-        start.fromSavedData(date);
-        stop.fromSavedData(date);
-        notes.fromSavedData(date);
-        worklogs.fromSavedData(date);
-      }
+      start.fromSavedData(date);
+      stop.fromSavedData(date);
+      notes.fromSavedData(date);
+      worklogs.fromSavedData(date);
 
       if (null !== start.time) {
         tableData['0_start'] = start.getPrintData();

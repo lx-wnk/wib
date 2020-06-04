@@ -11,18 +11,19 @@ export default class NoteStruct extends AbstractStruct {
     constructor(id?: number, value?: string, time = new Date(Date.now())) {
       super();
 
-      this._id = id;
-      this._time = time;
-      this._value = value;
-      this._deleted = false;
+      this.id = id;
+      this.time = time;
+      this.value = value;
+      this.deleted = false;
     }
 
     public getWriteData(): object {
       return {
-        id: this._id,
-        value: this._value,
-        time: this._time,
-        dataKey: this._dataKey
+        id: this.id,
+        value: this.value,
+        time: this.time,
+        dataKey: this.dataKey,
+        deleted: this.deleted
       };
     }
 

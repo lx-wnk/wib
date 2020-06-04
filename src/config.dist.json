@@ -1,0 +1,39 @@
+{
+  "format": {
+    "day": {
+      "key": "$tc(format.day.key)",
+      "value": "{{date}}"
+    },
+    "start": {
+      "key": "$tc(format.start.key)",
+      "value": "{{time}}"
+    },
+    "stop": {
+      "key": "$tc(format.stop.key.set)",
+      "value": "{{time}}"
+    },
+    "stop-unset": {
+      "key": "$tc(format.stop.key.unset)",
+      "value": "{{time}}"
+    },
+    "rest": {
+      "key": "$tc(format.break.key.type)({{id}})   [{{time}}]",
+      "value": "{{duration}} $tc(format.break.value.duration)"
+    },
+    "workDuration": {
+      "key": "$tc(format.workDuration.key)",
+      "value": "{{duration}}"
+    },
+    "notes": {
+      "key": "$tc(format.note.key.type)({{id}}) [{{time}}]",
+      "value": "{{value}}"
+    },
+    "worklogs": {
+      "key": "$tc(format.worklog.key.type)({{id}}) [{{time}}]",
+      "value": "{{duration}} {{key}} {{value}}"
+    }
+  },
+  "minuteRounding": 5,
+  "workDuration": 8,
+  "language": "en"
+}

@@ -1,24 +1,26 @@
 import AbstractCommand from './AbstractCommand';
-import DataHelper from '../lib/helper/DataHelper';
+import DataHelper from '../helper/DataHelper';
 import WorklogCollection from '../struct/collection/WorklogCollection';
 import WorklogStruct from '../struct/worklog';
-import * as responsePrefix from './response.json';
+import Messages from '../messages';
 
 
 export default class RestCommand extends AbstractCommand {
     name = 'rest';
     aliases = ['b', 'break'];
+    description = Messages.translation('command.rest.description');
     options = [
       {
-        flag: '-t, --time <hour:minute>',
-        description: 'Create a worklog with specified time'
+        flag: Messages.translation('command.rest.option.time.flag'),
+        description: Messages.translation('command.rest.option.time.flag')
       }
     ];
-    description = 'Add a new rest';
 
     public execute(args): string {
-      const worklogs = new WorklogCollection(),
+      const worklogs = new WorklogCollection().fromSavedData(),
+        latestEntry = worklogs.getLatestEntry(),
         specifiedDate = new Date(Date.now());
+      let rest: WorklogStruct;
 
       if (args.time !== undefined) {
         const timeArgs = args.time.split(':');
@@ -26,12 +28,17 @@ export default class RestCommand extends AbstractCommand {
         specifiedDate.setMinutes(timeArgs[1]);
       }
 
-      const rest = new WorklogStruct(worklogs.getAmount(), 'Break', 'Break', specifiedDate, 'rest');
-
-      worklogs.addEntry(rest);
+      if (undefined !== latestEntry && 'rest' === latestEntry.dataKey && !latestEntry.deleted) {
+        rest = latestEntry;
+        rest.time = specifiedDate;
+      } else {
+        rest = new WorklogStruct(worklogs.getAmount(), 'Break', 'Break', specifiedDate, 'rest');
+        worklogs.addEntry(rest);
+      }
 
       (new DataHelper).writeData(worklogs.getWriteData(), worklogs.dataKey);
 
-      return responsePrefix.rest.create + rest.time.getHours() + ':' + rest.time.getMinutes();
+      return Messages.translation('command.rest.execution.create') +
+          rest.time.getHours() + ':' + rest.time.getMinutes();
     }
 }

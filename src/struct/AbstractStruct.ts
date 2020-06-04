@@ -1,5 +1,5 @@
-import DataHelper from '../lib/helper/DataHelper';
-import FormatHelper from '../lib/helper/FormatHelper';
+import DataHelper from '../helper/DataHelper';
+import FormatHelper from '../helper/FormatHelper';
 
 export default abstract class AbstractStruct {
     abstract dataKey: string;

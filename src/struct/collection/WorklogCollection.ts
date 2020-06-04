@@ -1,5 +1,5 @@
 import AbstractCollection from './AbstractCollection';
-import DataHelper from '../../lib/helper/DataHelper';
+import DataHelper from '../../helper/DataHelper';
 import WorklogStruct from '../worklog';
 import StartStruct from '../start';
 
@@ -76,6 +76,20 @@ export default class WorklogCollection extends AbstractCollection {
       }
 
       return printData;
+    }
+
+    public getLatestEntry(): WorklogStruct {
+      const reversedEntries = Object.values(this.entries).reverse();
+
+      if (!Object.values(this.entries).pop().deleted) {
+        return Object.values(this.entries).pop();
+      }
+
+      for (const key in reversedEntries) {
+        if (!reversedEntries[key].deleted) {
+          return reversedEntries[key];
+        }
+      }
     }
 
     get entries(): { string?: WorklogStruct } {

@@ -24,12 +24,12 @@ class Wib {
     }
 
     getCommands(): void {
+      this.program.addCommand((new ListCommand()).init());
+      this.program.addCommand((new NoteCommand()).init());
+      this.program.addCommand((new RestCommand()).init());
       this.program.addCommand((new StartCommand()).init());
       this.program.addCommand((new StopCommand()).init());
-      this.program.addCommand((new ListCommand()).init());
-      this.program.addCommand((new RestCommand()).init());
       this.program.addCommand((new WorklogCommand()).init());
-      this.program.addCommand((new NoteCommand()).init());
     }
 }
 export default new Wib().program;

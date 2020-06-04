@@ -1,5 +1,5 @@
 import * as Command from 'commander';
-import OutputHelper from '../lib/helper/OutputHelper';
+import OutputHelper from '../helper/OutputHelper';
 
 export default abstract class AbstractCommand {
     abstract name: string;

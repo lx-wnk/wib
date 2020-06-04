@@ -26,7 +26,6 @@
     "lib": "./src",
     "test": "./tests"
   },
-  "types": "index.d.ts",
   "bin": {
     "wib": "./bin/index.js"
   },
@@ -48,9 +47,9 @@
     "typescript": "^3.8.3"
   },
   "scripts": {
-    "build": "tsc",
-    "tsc": "tsc",
-    "dev": "tsc --watch & node dist",
+    "build": "./node_modules/.bin/tsc",
+    "tsc": "./node_modules/.bin/tsc",
+    "dev": "./node_modules/.bin/tsc --watch & node dist",
     "lint": "./node_modules/.bin/eslint src tests --ext .js,.jsx,.ts,.tsx",
     "fix": "./node_modules/.bin/eslint --fix src tests --ext .js,.jsx,.ts,.tsx",
     "wib": "./dist/index.js",

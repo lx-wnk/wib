@@ -1,12 +1,13 @@
 import AbstractCommand from './AbstractCommand';
-import DataHelper from '../lib/helper/DataHelper';
+import DataHelper from '../helper/DataHelper';
 import StopStruct from '../struct/stop';
+import Messages from '../messages';
 
 export default class StopCommand extends AbstractCommand {
     name = 'stop';
     aliases = ['bye'];
     options = [];
-    description = 'Set the stop time for the day';
+    description = Messages.translation('command.stop.description');
 
     public execute(args, options): string {
       const stop = new StopStruct();

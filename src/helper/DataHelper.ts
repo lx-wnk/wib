@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import {homedir} from 'os';
-const mainPath = homedir + '/.wib/';
 
 export default class DataHelper {
   public readAllData(key?: string, date?: number): Record<string, any> {
@@ -12,12 +11,16 @@ export default class DataHelper {
 
     const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
-    if (data === undefined) {
+    if (null === data || undefined === data) {
       return {};
     }
 
-    if (key === undefined) {
+    if (null === key || undefined === key) {
       return data;
+    }
+
+    if (null === data[key] || undefined === data[key]) {
+      return {};
     }
 
     return data[key];
@@ -25,22 +28,21 @@ export default class DataHelper {
 
   public writeData(data: Record<string, any>, key?: string, date?: number): void {
     const filePath = this.getFilePath(date),
-      keyData = this.readAllData(undefined, date);
+      keyData = this.readAllData(null, date);
 
-    if (undefined === key || null === key) {
-      fs.writeFileSync(this.getFilePath(), JSON.stringify(data));
+    if (null === key || undefined === key ) {
+      fs.writeFileSync(filePath, JSON.stringify(data));
 
       return;
     }
 
     keyData[key] = data;
-
     fs.writeFileSync(filePath, JSON.stringify(keyData));
   }
 
   private createFile(filePath = this.getFilePath(null)): void {
-    if (!fs.existsSync(mainPath)) {
-      fs.mkdirSync(mainPath);
+    if (!fs.existsSync(DataHelper.getHomeDir())) {
+      fs.mkdirSync(DataHelper.getHomeDir(), {recursive: true});
     }
 
     if (!fs.existsSync(filePath)) {
@@ -51,11 +53,15 @@ export default class DataHelper {
   private getFilePath(date?: number): string {
     const selectedDate = date === undefined ? new Date(Date.now()) : new Date(date);
     const foramttedDate = this.formatDate(selectedDate);
-    return mainPath + foramttedDate + '.json';
+    return DataHelper.getHomeDir() + foramttedDate + '.json';
   }
 
   private formatDate(date: Date): string {
     return date.getFullYear() + '_' + String(date.getMonth() + 1).padStart(2, '0') +
         '_' + String(date.getDate()).padStart(2, '0');
+  }
+
+  public static getHomeDir(): string {
+    return homedir + '/.wib/';
   }
 }

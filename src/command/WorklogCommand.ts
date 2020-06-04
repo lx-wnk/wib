@@ -1,30 +1,39 @@
 import AbstractCommand from './AbstractCommand';
-import DataHelper from '../lib/helper/DataHelper';
+import DataHelper from '../helper/DataHelper';
 import WorklogCollection from '../struct/collection/WorklogCollection';
 import WorklogStruct from '../struct/worklog';
-import * as responsePrefix from './response.json';
 import StartStruct from '../struct/start';
+import Messages from '../messages';
 
 export default class WorklogCommand extends AbstractCommand {
     name = 'track';
     aliases = ['t', 'wl', 'worklog'];
     options = [
       {
-        flag: '-d, --delete <key>',
-        description: 'Delete an specified worklog'
+        flag: Messages.translation('command.worklog.option.delete.flag'),
+        description: Messages.translation('command.worklog.option.delete.description')
       },
       {
-        flag: '-e, --edit <key>',
-        description: 'Edit an specified worklog'
+        flag: Messages.translation('command.worklog.option.edit.flag'),
+        description: Messages.translation('command.worklog.option.edit.description')
       },
       {
-        flag: '-t, --time <hour:minute>',
-        description: 'Create a worklog with specified time'
+        flag: Messages.translation('command.worklog.option.time.flag'),
+        description: Messages.translation('command.worklog.option.time.description')
       }];
-    description = 'Add a new worklog';
+    description = Messages.translation('command.worklog.description');
+
+    private worklogs: WorklogCollection;
+    private dataHelper: DataHelper;
+
+    constructor() {
+      super();
+      this.worklogs = new WorklogCollection();
+      this.dataHelper = new DataHelper();
+    }
 
     public execute(args, options): string {
-      let specifiedDate = null;
+      let specifiedDate, key, value;
 
       if (args.delete !== undefined) {
         return (new WorklogCommand()).deleteTracker(args.delete);
@@ -37,73 +46,71 @@ export default class WorklogCommand extends AbstractCommand {
         specifiedDate.setMinutes(timeArgs[1]);
       }
 
-      if (args.edit !== undefined) {
-        if (args.time !== undefined) {
-          if (undefined === options || 0 === options.length) {
-            return (new WorklogCommand()).editTracker(args.edit, null, null, specifiedDate);
-          }
-          return (new WorklogCommand()).editTracker(args.edit, options[0], options.slice(1).join(' '), specifiedDate);
-        } else {
-          return (new WorklogCommand()).editTracker(args.edit, options[0], options.slice(1).join(' '));
+      if (undefined !== options) {
+        key = options[0];
+
+        if (undefined !== options[1]) {
+          value = options.slice(1).join(' ');
         }
       }
 
-      if (options === undefined || 1 > options[0] === undefined || options[1] === undefined) {
-        return responsePrefix.note.missingOptions;
+      if (args.edit !== undefined) {
+        return (new WorklogCommand()).editTracker(args.edit, key, value, specifiedDate);
       }
 
-      return (new WorklogCommand()).createTimeTracker(options[0], options.slice(1).join(' '), specifiedDate);
+      return (new WorklogCommand()).createTimeTracker(key, value, specifiedDate);
     }
 
     createTimeTracker(key: string, value: string, date?: Date): string {
-      const worklogs = new WorklogCollection(),
-        worklog = new WorklogStruct(worklogs.getAmount(), key, value, date);
+      const worklog = new WorklogStruct(this.worklogs.getAmount(), key, value, date);
 
-      worklogs.addEntry(worklog);
+      if (undefined === key || undefined === value) {
+        return Messages.translation('command.worklog.execution.missingOptions');
+      }
 
-      (new DataHelper).writeData(worklogs.getWriteData(), worklogs.dataKey);
+      this.worklogs.addEntry(worklog);
 
-      worklogs.fromSavedData();
+      this.dataHelper.writeData(this.worklogs.getWriteData(), this.worklogs.dataKey);
 
-      return responsePrefix.worklog.create +
-          Object.values(worklogs.getCalculatedPrintData((new StartStruct(null)).fromSavedData())).slice(-1)[0]['value'];
+      this.worklogs.fromSavedData();
+
+      return Messages.translation('command.worklog.execution.create') +
+          Object.values(this.worklogs.getCalculatedPrintData(
+              (new StartStruct(null)).fromSavedData())
+          ).slice(-1)[0]['value'];
     }
 
     editTracker(id, key?: string, value?: string, date?: Date): string {
-      const worklogs = new WorklogCollection();
-
-      if (undefined === worklogs.entries || undefined === worklogs.entries[id]) {
-        return responsePrefix.worklog.couldNotEdit + id;
+      if (undefined === this.worklogs.entries || undefined === this.worklogs.entries[id]) {
+        return Messages.translation('command.worklog.execution.couldNotEdit');
       }
 
       if (null !== date && undefined !== date) {
-        worklogs.entries[id].time = date;
+        this.worklogs.entries[id].time = date;
       }
 
       if (null !== key && undefined !== key) {
-        worklogs.entries[id].key = key;
+        this.worklogs.entries[id].key = key;
       }
 
       if (null !== value && undefined !== value) {
-        worklogs.entries[id].value = value;
+        this.worklogs.entries[id].value = value;
       }
 
-      (new DataHelper).writeData(worklogs.getWriteData(), worklogs.dataKey);
+      this.dataHelper.writeData(this.worklogs.getWriteData(), this.worklogs.dataKey);
 
-      return responsePrefix.worklog.edit + id;
+      return Messages.translation('command.worklog.execution.edit') + id;
     }
 
     deleteTracker(id): string {
-      const worklogs = new WorklogCollection();
-
-      if (undefined === worklogs.entries || undefined === worklogs.entries[id]) {
-        return responsePrefix.worklog.couldNotDelete + id;
+      if (undefined === this.worklogs.entries || undefined === this.worklogs.entries[id]) {
+        return Messages.translation('command.worklog.execution.couldNotDelete') + id;
       }
 
-      worklogs.entries[id]['deleted'] = true;
+      this.worklogs.entries[id].deleted = true;
 
-      (new DataHelper).writeData(worklogs.getWriteData(), worklogs.dataKey);
+      this.dataHelper.writeData(this.worklogs.getWriteData(), this.worklogs.dataKey);
 
-      return responsePrefix.worklog.delete + id;
+      return Messages.translation('command.worklog.execution.delete') + id;
     }
 }
