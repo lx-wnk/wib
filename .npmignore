@@ -1,0 +1,12 @@
+.idea
+.nyc_output
+.eslintrc.js
+.git*
+.editorconfig
+.mocharc.js
+tsconfig.json
+src
+src/*
+src/Wib.ts
+tests
+!dist/*

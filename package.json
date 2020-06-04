@@ -1,6 +1,6 @@
 {
   "name": "wib",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Time tracking tool for the cli",
   "keywords": [
     "tracker",
@@ -20,9 +20,10 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "src/Wib.ts",
+  "main": "dist/Wib.ts",
   "directories": {
-    "bin": "./dist",
+    "bin": "./bin",
+    "dist": "./dist",
     "lib": "./src",
     "test": "./tests"
   },
