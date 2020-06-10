@@ -26,7 +26,10 @@ function createWorklog(): void {
 describe('List command', () => {
   const argumentMock = {
     day: undefined,
-    month: undefined
+    month: undefined,
+    yesterday: undefined,
+    order: undefined,
+    full: undefined
   };
 
   beforeEach(() => {
@@ -103,13 +106,14 @@ describe('List command', () => {
         '-----------------------------------------------------------\n' +
         '| Clocked in          | 06:20                             |\n' +
         '-----------------------------------------------------------\n' +
-        '| Estimated clock out | 14:20                             |\n' +
+        '| Estimated clock out | 18:20                             |\n' +
         '-----------------------------------------------------------\n' +
         '| Worked time         | 2h                                |\n' +
         '-----------------------------------------------------------\n' +
         '| Worklog(0) [08:20]  | 2h '+testData.worklog.createData.key+ ' ' +
         testData.worklog.createData.value.join(' ') +'  |\n' +
-        '| '+testData.rest.key+'(1)   [12:20]  | 4h '+ testData.rest.value +'                 |\n' +
+        '| '+testData.rest.key+'(1)   [12:20]  | 2h '+ testData.rest.value +'                 |\n' +
+        '| '+testData.rest.key+'(1)   [12:20]  | 2h '+ testData.rest.value +'                 |\n' +
         '-----------------------------------------------------------')
         .to.equal((new ListCommand()).execute(argumentMock));
   });
@@ -135,6 +139,33 @@ describe('List command', () => {
         '| Worklog(0) [08:20]  | 2h '+testData.worklog.createData.key +
         ' ' + testData.worklog.createData.value.join(' ') + '  |\n'+
         '| '+testData.rest.key+'(1)   [10:20]  | 2h '+testData.rest.value+'                 |\n'+
+        '-----------------------------------------------------------')
+        .to.equal((new ListCommand()).execute(argumentMock));
+  });
+
+  it('List all with order', () => {
+    createWorklog();
+    (new RestCommand).execute({
+      time: '10:20'
+    });
+    (new NoteCommand()).execute({}, testData.note.createData);
+    (new StopCommand()).execute({}, ['18:00']);
+
+    argumentMock.order = 'key';
+
+    chai.expect(
+        '-----------------------------------------------------------\n'+
+        '| Clocked in          | 06:20                             |\n'+
+        '-----------------------------------------------------------\n'+
+        '| Clocked out         | 18:00                             |\n'+
+        '-----------------------------------------------------------\n'+
+        '| Worked time         | 2h                                |\n'+
+        '-----------------------------------------------------------\n'+
+        '| Note(0) [06:20]     | '+ testData.note.createData.join(' ') +'               |\n'+
+        '-----------------------------------------------------------\n'+
+        '| '+testData.rest.key+'(1)   [10:20]  | 2h '+testData.rest.value+'                 |\n'+
+        '| Worklog(0) [08:20]  | 2h '+testData.worklog.createData.key +
+        ' ' + testData.worklog.createData.value.join(' ') + '  |\n'+
         '-----------------------------------------------------------')
         .to.equal((new ListCommand()).execute(argumentMock));
   });

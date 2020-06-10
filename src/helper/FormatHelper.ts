@@ -3,6 +3,12 @@ import OutputHelper from './OutputHelper';
 import Messages from '../messages';
 
 export default class FormatHelper {
+  private _showFullOutput: boolean ;
+
+  constructor(showFullOutput = false) {
+    this._showFullOutput = showFullOutput;
+  }
+
   public applyFormat(dataObject: object, formatName: string, type = 'value'): string {
     let specifiedFormat = (new ConfigHelper).getSpecifiedFormat(formatName, type);
 
@@ -18,7 +24,7 @@ export default class FormatHelper {
 
   public toTable(data, colLength = this.getLongestElements(data), isSub = false, output = ''): string {
     const me = this;
-    let loopAmount = Object.keys(data).length + 1;
+    let loopAmount = Object.keys(data).length + 1, keyOutput, valOutput;
 
     if (isSub) {
       loopAmount--;
@@ -44,10 +50,19 @@ export default class FormatHelper {
             if (0 < output.length && '\n' !== output.charAt(output.length-1)) {
               output += '\n';
             }
-            output += '| ' + curKey;
-            output += ' '.repeat(colLength['key'] - curKey.toString().length);
-            output += '| ' + curVal;
-            output += ' '.repeat(colLength['value'] - curVal.toString().length) + '|';
+            keyOutput = '| ' + curKey;
+            keyOutput += ' '.repeat(colLength['key'] - curKey.toString().length);
+
+            if (0 < colLength['value'] - curVal.toString().length) {
+              valOutput = '| ' + curVal;
+              valOutput += ' '.repeat(colLength['value'] - curVal.toString().length) + '|';
+            } else {
+              valOutput = '| ' + curVal.toString()
+                  .slice(0, curVal.toString().length - (curVal.toString().length - colLength['value']) - 5);
+              valOutput += ' ... |';
+            }
+
+            output += keyOutput + valOutput;
           }
         }
       }
@@ -156,9 +171,21 @@ export default class FormatHelper {
     longestKey++;
     longestValue++;
 
+    if (!this._showFullOutput && longestKey + longestValue + 5 > process.stdout.columns) {
+      longestValue -= (longestKey + longestValue + 5) - process.stdout.columns;
+    }
+
     return {
       key: longestKey,
       value: longestValue
     };
+  }
+
+  get showFullOutput(): boolean {
+    return this._showFullOutput;
+  }
+
+  set showFullOutput(value: boolean) {
+    this._showFullOutput = value;
   }
 }

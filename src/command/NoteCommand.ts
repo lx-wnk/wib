@@ -10,8 +10,8 @@ export default class NoteCommand extends AbstractCommand {
     description = Messages.translation('command.note.description');
     options = [
       {
-        flag: Messages.translation('command.note.option.delete.flag'),
-        description: Messages.translation('command.note.option.delete.description')
+        flag: Messages.translation('command.note.option.edit.flag'),
+        description: Messages.translation('command.note.option.edit.description')
       },
       {
         flag: Messages.translation('command.note.option.delete.flag'),
@@ -33,7 +33,7 @@ export default class NoteCommand extends AbstractCommand {
       }
 
       if (undefined === options) {
-        Messages.translation('command.note.execution.missingOptions');
+        return Messages.translation('command.note.execution.missingOptions');
       }
 
       if (args.edit !== undefined) {

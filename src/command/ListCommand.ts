@@ -5,7 +5,6 @@ import FormatHelper from '../helper/FormatHelper';
 import WorklogCollection from '../struct/collection/WorklogCollection';
 import WorkDurationHelper from '../helper/WorkDurationHelper';
 import NoteCollection from '../struct/collection/NoteCollection';
-import ConfigHelper from '../helper/ConfigHelper';
 import Messages from '../messages';
 
 export default class ListCommand extends AbstractCommand {
@@ -22,70 +21,99 @@ export default class ListCommand extends AbstractCommand {
         description: Messages.translation('command.list.option.month.description')
       },
       {
-        flag: Messages.translation('command.list.option.day.flag'),
-        description: Messages.translation('command.list.option.day.description')
+        flag: Messages.translation('command.list.option.yesterday.flag'),
+        description: Messages.translation('command.list.option.yesterday.description')
+      },
+      {
+        flag: Messages.translation('command.list.option.full.flag'),
+        description: Messages.translation('command.list.option.full.description')
+      },
+      {
+        flag: Messages.translation('command.list.option.order.flag'),
+        description: Messages.translation('command.list.option.order.description'),
+        defaultValue: WorklogCollection.possibleOrderKeys.time,
       },
     ];
 
+    private formatHelper: FormatHelper;
+    private dateTime: number;
+    private workDurationHelper: WorkDurationHelper;
+    private start: StartStruct;
+    private stop: StopStruct;
+    private notes: NoteCollection;
+    private worklogs: WorklogCollection;
+
+    constructor() {
+      super();
+      this.formatHelper = new FormatHelper();
+      this.dateTime = new Date(Date.now()).getTime();
+      this.workDurationHelper = new WorkDurationHelper();
+      this.start = (new StartStruct(null));
+      this.stop = (new StopStruct(null));
+      this.notes = (new NoteCollection());
+      this.worklogs = (new WorklogCollection());
+    }
+
     execute(args): string {
-      let date = (new Date(Date.now())).getTime();
+        if(args.order === undefined) {
+            args.order = WorklogCollection.possibleOrderKeys.time;
+        }
+
+      if (!Object.values(WorklogCollection.possibleOrderKeys).includes(args.order)) {
+        return Messages.translation('command.list.execution.invalidOrder') + args.order;
+      }
 
       if (undefined !== args.yesterday) {
-        args.day = (new Date(date)).getDate() - 1;
+        args.day = (new Date(this.dateTime)).getDate() - 1;
       }
 
       if (undefined !== args.day) {
-        date = (new Date(date)).setDate(args.day);
+        this.dateTime = (new Date(this.dateTime)).setDate(args.day);
       }
 
       if (undefined !== args.month) {
-        date = (new Date(date)).setMonth(args.month);
+        this.dateTime = (new Date(this.dateTime)).setMonth(args.month);
       }
 
-      return (new ListCommand()).getTableData(date);
+      if (undefined !== args.full) {
+        this.formatHelper.showFullOutput = args.full;
+      }
+
+      return (new ListCommand()).getTableData(args.order);
     }
 
-    getTableData(date?: number): string {
-      const start = (new StartStruct(null)),
-        stop = (new StopStruct(null)),
-        notes = (new NoteCollection()),
-        worklogs = (new WorklogCollection()),
-        tableData = {};
+    getTableData(order: string): string {
+      const tableData = {};
 
-      start.fromSavedData(date);
-      stop.fromSavedData(date);
-      notes.fromSavedData(date);
-      worklogs.fromSavedData(date);
+      this.start.fromSavedData(this.dateTime);
+      this.stop.fromSavedData(this.dateTime);
+      this.notes.fromSavedData(this.dateTime);
+      this.worklogs.fromSavedData(this.dateTime);
 
-      if (null !== start.time) {
-        tableData['0_start'] = start.getPrintData();
+      if (null !== this.start.time) {
+        tableData['0_start'] = this.start.getPrintData();
       }
 
-      if (null !== stop.time) {
-        tableData['1_stop'] = stop.getPrintData();
-      } else if (null !== start.time) {
-        const estimatedStop = new StopStruct();
-        estimatedStop.time = new Date(start.time);
-        estimatedStop.time = new Date(estimatedStop.time.setHours(
-            estimatedStop.time.getHours() + (new ConfigHelper()).getSpecifiedWorkDuration()
-        ));
-        tableData['1_stop'] = estimatedStop.getUnsetPrintData();
+      if (null !== this.stop.time) {
+        tableData['1_stop'] = this.stop.getPrintData();
+      } else if (null !== this.start.time) {
+        tableData['1_stop'] = (new WorkDurationHelper).getEstimatedClockOut(this.start, this.worklogs);
       }
 
-      if (null !== notes.entries) {
-        tableData['3_notes'] = notes.getPrintData();
+      if (null !== this.start.time && 0 < this.worklogs.getAmount()) {
+        tableData['2_workDuration'] = this.workDurationHelper.getWorkDuration(this.start, this.worklogs);
       }
 
-      if (null !== worklogs.entries) {
-        tableData['4_worklogs'] = worklogs.getCalculatedPrintData(start);
+      if (null !== this.notes.entries) {
+        tableData['3_notes'] = this.notes.getPrintData();
       }
 
-      if (null !== start.time && 0 < worklogs.getAmount()) {
-        tableData['2_workDuration'] = (new WorkDurationHelper).getWorkDuration(start, worklogs);
+      if (null !== this.worklogs.entries) {
+        tableData['4_worklogs'] = this.worklogs.getCalculatedPrintData(this.start, order);
       }
 
-      return (new FormatHelper().toTable(
-          Object.keys(tableData).sort().reduce((r, k) => (r[k] = tableData[k], r), {})
-      ));
+      return this.formatHelper.toTable(
+          Object.keys(tableData).sort().reduce((r, k) => (r[k] = tableData[k], r), {}),
+      );
     }
 }

@@ -6,6 +6,14 @@
           "description": "List a specific date",
           "flag": "-d, --day <day>"
         },
+        "full": {
+          "description": "List the full data (unshortened)",
+          "flag": "-f, --full"
+        },
+        "order": {
+          "description": "Order by (time, key, value, id)",
+          "flag": "-o, --order <key>"
+        },
         "month": {
           "description": "Date from specific month",
           "flag": "-m, --month <month>"
@@ -15,7 +23,10 @@
           "flag": "-y, --yesterday"
         }
       },
-      "description": "Show the report"
+      "description": "Show the report",
+      "execution": {
+        "invalidOrder": "The provided order key is invalid: "
+      }
     },
     "note": {
       "option": {

@@ -2,8 +2,16 @@ import AbstractCollection from './AbstractCollection';
 import DataHelper from '../../helper/DataHelper';
 import WorklogStruct from '../worklog';
 import StartStruct from '../start';
+import ConfigHelper from '../../helper/ConfigHelper';
 
 export default class WorklogCollection extends AbstractCollection {
+    public static possibleOrderKeys = {
+      time: 'time',
+      key: 'key',
+      value: 'value',
+      id: 'id'
+    };
+
     private _entries: {string?: WorklogStruct};
     private _dataKey = (new WorklogStruct).dataKey;
 
@@ -55,27 +63,87 @@ export default class WorklogCollection extends AbstractCollection {
       return this.getCalculatedPrintData((new StartStruct().fromSavedData()));
     }
 
-    public getCalculatedPrintData(startStruct: StartStruct): object {
-      const printData = [];
-      let sortedEntries = {},
-        startTime = startStruct.time;
+    public getCalculatedPrintData(startStruct: StartStruct, order = WorklogCollection.possibleOrderKeys.time): object {
+      const startTime = startStruct.time;
+      let timeSortedEntries = {},
+        keySortedEntries = {};
 
       for (const key in this._entries) {
         if (undefined !== this._entries[key]['deleted'] && !this._entries[key]['deleted']) {
-          sortedEntries[new Date(this._entries[key].time).getTime()] = this._entries[key];
+          timeSortedEntries[new Date(this._entries[key].time).getTime()] = this._entries[key];
         }
       }
 
-      sortedEntries = Object.keys(sortedEntries).sort().reduce((r, k) => (r[k] = sortedEntries[k], r), {});
+      timeSortedEntries = Object.keys(timeSortedEntries).sort().reduce((r, k) => (r[k] = timeSortedEntries[k], r), {});
 
-      for (const key in sortedEntries) {
-        const curEntry = sortedEntries[key].getWorklogPrintData(startTime);
+      keySortedEntries = this.getKeySortedData(timeSortedEntries, startTime, order);
 
-        printData.push(curEntry);
-        startTime = new Date(sortedEntries[key].time);
+      keySortedEntries = Object.keys(keySortedEntries).sort().reduce((r, k) => (r[k] = keySortedEntries[k], r), {});
+
+      return Object.values(keySortedEntries);
+    }
+
+    private getKeySortedData(timeSortedEntries: object, startTime: Date, order: string): object {
+      const keySortedEntries = {},
+        maxWorklogDuration = (new ConfigHelper()).getMaxWorklogDuration();
+
+      for (const key in timeSortedEntries) {
+        const curDuration = new Date((new Date(timeSortedEntries[key].time)).getTime() - startTime.getTime());
+        let curMinutes = curDuration.getUTCMinutes() + curDuration.getUTCHours() * 60,
+          curLoopCount = 0;
+
+        if (curMinutes > maxWorklogDuration) {
+          while (curMinutes > maxWorklogDuration) {
+            const tmpDate = new Date(Date.now() - Date.now());
+            tmpDate.setMinutes(maxWorklogDuration);
+
+            curMinutes -= maxWorklogDuration;
+
+            timeSortedEntries[key].duration = tmpDate;
+
+            const curEntry = timeSortedEntries[key].getPrintData();
+
+            if (null !== curEntry && undefined !== curEntry) {
+              keySortedEntries[this.getKeyByOrder(timeSortedEntries[key], order) + curLoopCount] = curEntry;
+            }
+
+            curLoopCount++;
+          }
+
+          const tmpDate = new Date(Date.now() - Date.now());
+          tmpDate.setMinutes(curMinutes);
+          timeSortedEntries[key].duration = tmpDate;
+
+          const curEntry = timeSortedEntries[key].getPrintData();
+
+          if (null !== curEntry && undefined !== curEntry) {
+            keySortedEntries[this.getKeyByOrder(timeSortedEntries[key], order)+ curLoopCount] = curEntry;
+          }
+        } else {
+          const curEntry = timeSortedEntries[key].getWorklogPrintData(startTime);
+
+          if (null !== curEntry && undefined !== curEntry) {
+            keySortedEntries[this.getKeyByOrder(timeSortedEntries[key], order)] = curEntry;
+          }
+        }
+
+        startTime = new Date(timeSortedEntries[key].time);
       }
 
-      return printData;
+      return keySortedEntries;
+    }
+
+    private getKeyByOrder(entry: WorklogStruct, order: string): string {
+      switch (order) {
+        case 'key':
+          return entry.key + entry.id;
+        case 'value':
+          return entry.value;
+        case 'id':
+          return entry.id.toString();
+        default:
+          return entry.time.toString();
+      }
     }
 
     public getLatestEntry(): WorklogStruct|null {

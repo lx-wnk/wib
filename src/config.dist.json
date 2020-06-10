@@ -34,6 +34,7 @@
     }
   },
   "minuteRounding": 5,
+  "maxWorklogDuration": 120,
   "workDuration": 8,
   "language": "en"
 }

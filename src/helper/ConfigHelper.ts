@@ -39,6 +39,17 @@ export default class ConfigHelper {
     return this.getDefaults()['workDuration'];
   }
 
+  public getMaxWorklogDuration(): number {
+    if (fs.existsSync(this.getConfigPath())) {
+      const configContent = JSON.parse(fs.readFileSync(this.getConfigPath()).toString());
+      if (configContent['maxWorklogDuration'] !== undefined) {
+        return configContent['maxWorklogDuration'];
+      }
+    }
+
+    return this.getDefaults()['maxWorklogDuration'];
+  }
+
   public getLanguage(): string {
     if (fs.existsSync(this.getConfigPath())) {
       const configContent = JSON.parse(fs.readFileSync(this.getConfigPath()).toString());
