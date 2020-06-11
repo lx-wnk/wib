@@ -53,7 +53,7 @@
       "description": "Add a new rest",
       "option": {
         "time": {
-          "description": "Create a worklog with specified time",
+          "description": "Create a rest with specified time",
           "flag": "-t, --time <hour:minute>"
         }
       },
@@ -78,7 +78,7 @@
           "flag": "-e, --edit <key>"
         },
         "time": {
-          "description": "Specify the finish time time",
+          "description": "Specify the finish time",
           "flag": "-t, --time <hour:minute>"
         }
       },

@@ -43,6 +43,7 @@ export default class ListCommand extends AbstractCommand {
     private notes: NoteCollection;
     private worklogs: WorklogCollection;
 
+
     constructor() {
       super();
       this.formatHelper = new FormatHelper();
@@ -55,9 +56,9 @@ export default class ListCommand extends AbstractCommand {
     }
 
     execute(args): string {
-        if(args.order === undefined) {
-            args.order = WorklogCollection.possibleOrderKeys.time;
-        }
+      if (args.order === undefined) {
+        args.order = WorklogCollection.possibleOrderKeys.time;
+      }
 
       if (!Object.values(WorklogCollection.possibleOrderKeys).includes(args.order)) {
         return Messages.translation('command.list.execution.invalidOrder') + args.order;
@@ -97,7 +98,7 @@ export default class ListCommand extends AbstractCommand {
       if (null !== this.stop.time) {
         tableData['1_stop'] = this.stop.getPrintData();
       } else if (null !== this.start.time) {
-        tableData['1_stop'] = (new WorkDurationHelper).getEstimatedClockOut(this.start, this.worklogs);
+        tableData['1_stop'] = this.workDurationHelper.getEstimatedClockOut(this.start, this.worklogs);
       }
 
       if (null !== this.start.time && 0 < this.worklogs.getAmount()) {

@@ -1,5 +1,5 @@
 import AbstractCommand from './AbstractCommand';
-import DataHelper from '../helper/DataHelper';
+
 import WorklogCollection from '../struct/collection/WorklogCollection';
 import WorklogStruct from '../struct/worklog';
 import StartStruct from '../struct/start';
@@ -24,12 +24,10 @@ export default class WorklogCommand extends AbstractCommand {
     description = Messages.translation('command.worklog.description');
 
     private worklogs: WorklogCollection;
-    private dataHelper: DataHelper;
 
     constructor() {
       super();
       this.worklogs = new WorklogCollection();
-      this.dataHelper = new DataHelper();
     }
 
     public execute(args, options): string {

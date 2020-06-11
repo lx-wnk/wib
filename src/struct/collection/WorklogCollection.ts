@@ -13,7 +13,7 @@ export default class WorklogCollection extends AbstractCollection {
     };
 
     private _entries: {string?: WorklogStruct};
-    private _dataKey = (new WorklogStruct).dataKey;
+    private _dataKey = (new WorklogStruct()).dataKey;
 
     constructor(date?: number) {
       super();
@@ -37,14 +37,6 @@ export default class WorklogCollection extends AbstractCollection {
       }
 
       return this;
-    }
-
-    public addEntry(entry: WorklogStruct): void {
-      this._entries[entry.id] = entry;
-    }
-
-    public removeEntry(key: number): void {
-      this._entries[key] = undefined;
     }
 
     public getWriteData(): object {

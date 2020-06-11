@@ -1,5 +1,4 @@
 import AbstractCommand from './AbstractCommand';
-import DataHelper from '../helper/DataHelper';
 import StopStruct from '../struct/stop';
 import Messages from '../messages';
 
@@ -17,7 +16,7 @@ export default class StopCommand extends AbstractCommand {
         stop.time.setMinutes(options[0].split(':')[1]);
       }
 
-      (new DataHelper).writeData(stop.getWriteData(), stop.dataKey);
+      this.dataHelper.writeData(stop.getWriteData(), stop.dataKey);
 
       return stop.getPrintData()['key'] +' '+ stop.getPrintData()['value'];
     }

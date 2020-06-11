@@ -18,7 +18,7 @@ describe('Rest command', () => {
     GlobalMock.afterEach();
   });
   it('Create rest entry', () => {
-    chai.expect(Messages.translation('command.rest.execution.create') + '6:20')
+    chai.expect(Messages.translation('command.rest.execution.create') + '4:20')
         .to.equal((new RestCommand()).execute({}));
   });
 

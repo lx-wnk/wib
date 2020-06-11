@@ -1,3 +1,5 @@
+import AbstractStruct from '../AbstractStruct';
+
 export default abstract class AbstractCollection {
     abstract entries: object;
     abstract dataKey: string;
@@ -8,6 +10,10 @@ export default abstract class AbstractCollection {
 
     public removeEntry(key: number): void {
       this.entries[key] = undefined;
+    }
+
+    public addEntry(entry: AbstractStruct): void {
+      this.entries[entry['id']] = entry;
     }
 
     public getAmount(): number {

@@ -4,7 +4,7 @@ import NoteStruct from '../note';
 
 export default class NoteCollection extends AbstractCollection {
     private _entries: {string?: NoteStruct};
-    private _dataKey = (new NoteStruct).dataKey;
+    private _dataKey = (new NoteStruct()).dataKey;
 
     constructor(date?: number) {
       super();
@@ -28,14 +28,6 @@ export default class NoteCollection extends AbstractCollection {
       }
 
       return this;
-    }
-
-    public addEntry(entry: NoteStruct): void {
-      this._entries[entry.id] = entry;
-    }
-
-    public removeEntry(key: number): void {
-      this._entries[key] = undefined;
     }
 
     public getWriteData(): object {

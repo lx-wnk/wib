@@ -1,5 +1,4 @@
 import AbstractCommand from './AbstractCommand';
-import DataHelper from '../helper/DataHelper';
 import WorklogCollection from '../struct/collection/WorklogCollection';
 import WorklogStruct from '../struct/worklog';
 import Messages from '../messages';
@@ -12,7 +11,7 @@ export default class RestCommand extends AbstractCommand {
     options = [
       {
         flag: Messages.translation('command.rest.option.time.flag'),
-        description: Messages.translation('command.rest.option.time.flag')
+        description: Messages.translation('command.rest.option.time.description')
       }
     ];
 
@@ -36,7 +35,7 @@ export default class RestCommand extends AbstractCommand {
         worklogs.addEntry(rest);
       }
 
-      (new DataHelper).writeData(worklogs.getWriteData(), worklogs.dataKey);
+      this.dataHelper.writeData(worklogs.getWriteData(), worklogs.dataKey);
 
       return Messages.translation('command.rest.execution.create') +
           rest.time.getHours() + ':' + rest.time.getMinutes();

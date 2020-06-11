@@ -4,13 +4,15 @@ import Messages from '../messages';
 
 export default class FormatHelper {
   private _showFullOutput: boolean ;
+  private configHelper: ConfigHelper;
 
   constructor(showFullOutput = false) {
     this._showFullOutput = showFullOutput;
+    this.configHelper = new ConfigHelper();
   }
 
   public applyFormat(dataObject: object, formatName: string, type = 'value'): string {
-    let specifiedFormat = (new ConfigHelper).getSpecifiedFormat(formatName, type);
+    let specifiedFormat = this.configHelper.getSpecifiedFormat(formatName, type);
 
     if (specifiedFormat === undefined || dataObject === undefined) {
       OutputHelper.error(Messages.translation('format.invalid') + formatName);
@@ -118,8 +120,8 @@ export default class FormatHelper {
       if (0 < dateObject.getUTCMinutes()) {
         if (round) {
           formattedDuration += Math.ceil(
-              dateObject.getUTCMinutes() / (new ConfigHelper).getSpecifiedMinuteRounding()
-          ) * (new ConfigHelper).getSpecifiedMinuteRounding();
+              dateObject.getUTCMinutes() / this.configHelper.getSpecifiedMinuteRounding()
+          ) * this.configHelper.getSpecifiedMinuteRounding();
         } else {
           formattedDuration += dateObject.getUTCMinutes();
         }
@@ -127,8 +129,8 @@ export default class FormatHelper {
       }
       if (0 === dateObject.getUTCHours() && 0 === dateObject.getUTCMinutes()) {
         formattedDuration += Math.ceil(
-            1 / (new ConfigHelper).getSpecifiedMinuteRounding()
-        ) * (new ConfigHelper).getSpecifiedMinuteRounding();
+            1 / this.configHelper.getSpecifiedMinuteRounding()
+        ) * this.configHelper.getSpecifiedMinuteRounding();
         formattedDuration += Messages.translation('format.time.minute');
       }
 

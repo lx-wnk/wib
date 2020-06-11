@@ -16,7 +16,7 @@ describe('Stop command', () => {
   });
 
   it('Set stop time', () => {
-    chai.expect('Clocked out '+ '06:20').to.equal((new StopCommand()).execute(null, []));
+    chai.expect('Clocked out '+ '04:20').to.equal((new StopCommand()).execute(null, []));
   });
   it('Set specific stop time', () => {
     chai.expect('Clocked out '+ '06:20').to.equal((new StopCommand()).execute(null, ['6:20']));

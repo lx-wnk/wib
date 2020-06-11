@@ -27,15 +27,16 @@ describe('WorkDurationHelper', () => {
 
     for (let i = 0; 5 > i; i++) {
       const worklog = (new WorklogStruct());
+      worklog.id = i;
       worklog.time = new Date(Date.now());
-      worklog.time.setHours(i);
+      worklog.time.setUTCHours(startStruct.time.getUTCHours() + i);
       worklog.key = 'WL-'+i;
       worklog.value = 'wl value-'+i;
       worklogs.addEntry(worklog);
     }
 
     chai.expect(JSON.stringify(
-        {key: Messages.applyTranslationToString(defaultConfig.format.workDuration.key), value: '22h'}
+        {key: Messages.applyTranslationToString(defaultConfig.format.workDuration.key), value: '4h'}
     )).to.equal(JSON.stringify((new WorkDurationHelper()).getWorkDuration(startStruct, worklogs)));
   });
 });

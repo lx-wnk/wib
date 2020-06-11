@@ -1,5 +1,4 @@
 import AbstractCommand from './AbstractCommand';
-import DataHelper from '../helper/DataHelper';
 import NoteStruct from '../struct/note';
 import NoteCollection from '../struct/collection/NoteCollection';
 import Messages from '../messages';
@@ -19,12 +18,10 @@ export default class NoteCommand extends AbstractCommand {
       }];
 
     private notes: NoteCollection;
-    private dataHelper: DataHelper;
 
     constructor() {
       super();
       this.notes = new NoteCollection();
-      this.dataHelper = new DataHelper();
     }
 
     public execute(args, options): string {

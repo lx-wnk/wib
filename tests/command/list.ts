@@ -50,9 +50,9 @@ describe('List command', () => {
 
     chai.expect(
         '-------------------------------\n' +
-        '| Clocked in          | 06:20 |\n' +
+        '| Clocked in          | 04:20 |\n' +
         '-------------------------------\n' +
-        '| Estimated clock out | 14:20 |\n' +
+        '| Estimated clock out | 12:20 |\n' +
         '-------------------------------\n')
         .to.equal((new ListCommand()).execute(argumentMock));
   });
@@ -61,7 +61,7 @@ describe('List command', () => {
     (new StopCommand()).execute({}, []);
     chai.expect(
         '-----------------------\n' +
-        '| Clocked out | 06:20 |\n' +
+        '| Clocked out | 04:20 |\n' +
         '-----------------------\n')
         .to.equal((new ListCommand()).execute(argumentMock));
   });
@@ -70,7 +70,7 @@ describe('List command', () => {
     (new NoteCommand()).execute({}, testData.note.createData);
     chai.expect(
         '-------------------------------------------\n' +
-        '| Note(0) [06:20]  | '+testData.note.createData.join(' ')+'  |\n' +
+        '| Note(0) [04:20]  | '+testData.note.createData.join(' ')+'  |\n' +
         '-------------------------------------------\n')
         .to.equal((new ListCommand()).execute(argumentMock));
   });
@@ -80,12 +80,14 @@ describe('List command', () => {
 
     chai.expect(
         '-----------------------------------------------------------\n' +
-        '| Clocked in          | 06:20                             |\n' +
+        '| Clocked in          | 04:20                             |\n' +
         '-----------------------------------------------------------\n' +
-        '| Estimated clock out | 14:20                             |\n' +
+        '| Estimated clock out | 12:20                             |\n' +
         '-----------------------------------------------------------\n' +
-        '| Worked time         | 2h                                |\n' +
+        '| Worked time         | 4h                                |\n' +
         '-----------------------------------------------------------\n' +
+        '| Worklog(0) [08:20]  | 2h '+testData.worklog.createData.key+ ' ' +
+        testData.worklog.createData.value.join(' ') +'  |\n' +
         '| Worklog(0) [08:20]  | 2h '+testData.worklog.createData.key+ ' ' +
         testData.worklog.createData.value.join(' ') +'  |\n' +
         '-----------------------------------------------------------')
@@ -95,21 +97,23 @@ describe('List command', () => {
   it('List rest', () => {
     createWorklog();
 
-    (new RestCommand).execute({
+    (new RestCommand()).execute({
       time: '10:20'
     });
-    (new RestCommand).execute({
+    (new RestCommand()).execute({
       time: '12:20'
     });
 
     chai.expect(
         '-----------------------------------------------------------\n' +
-        '| Clocked in          | 06:20                             |\n' +
+        '| Clocked in          | 04:20                             |\n' +
         '-----------------------------------------------------------\n' +
-        '| Estimated clock out | 18:20                             |\n' +
+        '| Estimated clock out | 16:20                             |\n' +
         '-----------------------------------------------------------\n' +
-        '| Worked time         | 2h                                |\n' +
+        '| Worked time         | 4h                                |\n' +
         '-----------------------------------------------------------\n' +
+        '| Worklog(0) [08:20]  | 2h '+testData.worklog.createData.key+ ' ' +
+        testData.worklog.createData.value.join(' ') +'  |\n' +
         '| Worklog(0) [08:20]  | 2h '+testData.worklog.createData.key+ ' ' +
         testData.worklog.createData.value.join(' ') +'  |\n' +
         '| '+testData.rest.key+'(1)   [12:20]  | 2h '+ testData.rest.value +'                 |\n' +
@@ -120,7 +124,7 @@ describe('List command', () => {
 
   it('List all', () => {
     createWorklog();
-    (new RestCommand).execute({
+    (new RestCommand()).execute({
       time: '10:20'
     });
     (new NoteCommand()).execute({}, testData.note.createData);
@@ -128,14 +132,16 @@ describe('List command', () => {
 
     chai.expect(
         '-----------------------------------------------------------\n'+
-        '| Clocked in          | 06:20                             |\n'+
+        '| Clocked in          | 04:20                             |\n'+
         '-----------------------------------------------------------\n'+
         '| Clocked out         | 18:00                             |\n'+
         '-----------------------------------------------------------\n'+
-        '| Worked time         | 2h                                |\n'+
+        '| Worked time         | 4h                                |\n'+
         '-----------------------------------------------------------\n'+
-        '| Note(0) [06:20]     | '+ testData.note.createData.join(' ') +'               |\n'+
+        '| Note(0) [04:20]     | '+ testData.note.createData.join(' ') +'               |\n'+
         '-----------------------------------------------------------\n'+
+        '| Worklog(0) [08:20]  | 2h '+testData.worklog.createData.key +
+        ' ' + testData.worklog.createData.value.join(' ') + '  |\n'+
         '| Worklog(0) [08:20]  | 2h '+testData.worklog.createData.key +
         ' ' + testData.worklog.createData.value.join(' ') + '  |\n'+
         '| '+testData.rest.key+'(1)   [10:20]  | 2h '+testData.rest.value+'                 |\n'+
@@ -155,15 +161,17 @@ describe('List command', () => {
 
     chai.expect(
         '-----------------------------------------------------------\n'+
-        '| Clocked in          | 06:20                             |\n'+
+        '| Clocked in          | 04:20                             |\n'+
         '-----------------------------------------------------------\n'+
         '| Clocked out         | 18:00                             |\n'+
         '-----------------------------------------------------------\n'+
-        '| Worked time         | 2h                                |\n'+
+        '| Worked time         | 4h                                |\n'+
         '-----------------------------------------------------------\n'+
-        '| Note(0) [06:20]     | '+ testData.note.createData.join(' ') +'               |\n'+
+        '| Note(0) [04:20]     | '+ testData.note.createData.join(' ') +'               |\n'+
         '-----------------------------------------------------------\n'+
         '| '+testData.rest.key+'(1)   [10:20]  | 2h '+testData.rest.value+'                 |\n'+
+        '| Worklog(0) [08:20]  | 2h '+testData.worklog.createData.key +
+        ' ' + testData.worklog.createData.value.join(' ') + '  |\n'+
         '| Worklog(0) [08:20]  | 2h '+testData.worklog.createData.key +
         ' ' + testData.worklog.createData.value.join(' ') + '  |\n'+
         '-----------------------------------------------------------')

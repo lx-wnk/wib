@@ -16,7 +16,7 @@ describe('Start command', () => {
   });
 
   it('Set start time', () => {
-    chai.expect('Clocked in '+ '06:20').to.equal((new StartCommand()).execute(null, []));
+    chai.expect('Clocked in '+ '04:20').to.equal((new StartCommand()).execute(null, []));
   });
   it('Set specific start time', () => {
     chai.expect('Clocked in '+ '06:20').to.equal((new StartCommand()).execute(null, ['6:20']));

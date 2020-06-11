@@ -1,5 +1,5 @@
 import AbstractCommand from './AbstractCommand';
-import DataHelper from '../helper/DataHelper';
+
 import StartStruct from '../struct/start';
 import Messages from '../messages';
 
@@ -17,7 +17,7 @@ export default class StartCommand extends AbstractCommand {
         start.time.setMinutes(options[0].split(':')[1]);
       }
 
-      (new DataHelper).writeData(start.getWriteData(), start.dataKey);
+      this.dataHelper.writeData(start.getWriteData(), start.dataKey);
 
       return start.getPrintData()['key'] +' '+ start.getPrintData()['value'];
     }
