@@ -16,7 +16,6 @@ export default class StartStruct extends AbstractStruct {
       };
     }
 
-
     get time(): Date {
       return this._time;
     }

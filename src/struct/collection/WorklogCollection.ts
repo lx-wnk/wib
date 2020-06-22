@@ -84,7 +84,7 @@ export default class WorklogCollection extends AbstractCollection {
         let curMinutes = curDuration.getUTCMinutes() + curDuration.getUTCHours() * 60,
           curLoopCount = 0;
 
-        if (curMinutes > maxWorklogDuration) {
+        if ('rest' !== timeSortedEntries[key].dataKey && curMinutes > maxWorklogDuration) {
           while (curMinutes > maxWorklogDuration) {
             const tmpDate = new Date(Date.now() - Date.now());
             tmpDate.setMinutes(maxWorklogDuration);

@@ -38,21 +38,12 @@ export default class ListCommand extends AbstractCommand {
     private formatHelper: FormatHelper;
     private dateTime: number;
     private workDurationHelper: WorkDurationHelper;
-    private start: StartStruct;
-    private stop: StopStruct;
-    private notes: NoteCollection;
-    private worklogs: WorklogCollection;
-
 
     constructor() {
       super();
       this.formatHelper = new FormatHelper();
       this.dateTime = new Date(Date.now()).getTime();
       this.workDurationHelper = new WorkDurationHelper();
-      this.start = (new StartStruct(null));
-      this.stop = (new StopStruct(null));
-      this.notes = (new NoteCollection());
-      this.worklogs = (new WorklogCollection());
     }
 
     execute(args): string {
@@ -65,7 +56,9 @@ export default class ListCommand extends AbstractCommand {
       }
 
       if (undefined !== args.yesterday) {
-        args.day = (new Date(this.dateTime)).getDate() - 1;
+        this.dateTime = new Date(this.dateTime).setDate(
+            (new Date(this.dateTime)).getDate() - 1
+        );
       }
 
       if (undefined !== args.day) {
@@ -80,37 +73,39 @@ export default class ListCommand extends AbstractCommand {
         this.formatHelper.showFullOutput = args.full;
       }
 
-      return (new ListCommand()).getTableData(args.order);
+      return this.getTableData(args.order);
     }
 
     getTableData(order: string): string {
-      const tableData = {};
+      const tableData = {},
+        start = new StartStruct(null),
+        stop = new StopStruct(null),
+        notes = new NoteCollection(this.dateTime),
+        worklogs = new WorklogCollection(this.dateTime);
 
-      this.start.fromSavedData(this.dateTime);
-      this.stop.fromSavedData(this.dateTime);
-      this.notes.fromSavedData(this.dateTime);
-      this.worklogs.fromSavedData(this.dateTime);
+      start.fromSavedData(this.dateTime);
+      stop.fromSavedData(this.dateTime);
 
-      if (null !== this.start.time) {
-        tableData['0_start'] = this.start.getPrintData();
+      if (null !== start.time) {
+        tableData['0_start'] = start.getPrintData();
       }
 
-      if (null !== this.stop.time) {
-        tableData['1_stop'] = this.stop.getPrintData();
-      } else if (null !== this.start.time) {
-        tableData['1_stop'] = this.workDurationHelper.getEstimatedClockOut(this.start, this.worklogs);
+      if (null !== stop.time) {
+        tableData['1_stop'] = stop.getPrintData();
+      } else if (null !== start.time) {
+        tableData['1_stop'] = this.workDurationHelper.getEstimatedClockOut(start, worklogs);
       }
 
-      if (null !== this.start.time && 0 < this.worklogs.getAmount()) {
-        tableData['2_workDuration'] = this.workDurationHelper.getWorkDuration(this.start, this.worklogs);
+      if (null !== start.time && 0 < worklogs.getAmount()) {
+        tableData['2_workDuration'] = this.workDurationHelper.getWorkDuration(start, worklogs);
       }
 
-      if (null !== this.notes.entries) {
-        tableData['3_notes'] = this.notes.getPrintData();
+      if (null !== notes.entries) {
+        tableData['3_notes'] = notes.getPrintData();
       }
 
-      if (null !== this.worklogs.entries) {
-        tableData['4_worklogs'] = this.worklogs.getCalculatedPrintData(this.start, order);
+      if (null !== worklogs.entries) {
+        tableData['4_worklogs'] = worklogs.getCalculatedPrintData(start, order);
       }
 
       return this.formatHelper.toTable(

@@ -51,9 +51,10 @@ export default class DataHelper {
   }
 
   private getFilePath(date?: number): string {
-    const selectedDate = date === undefined ? new Date(Date.now()) : new Date(date);
-    const foramttedDate = this.formatDate(selectedDate);
-    return DataHelper.getHomeDir() + foramttedDate + '.json';
+    const selectedDate = date === undefined ? new Date(Date.now()) : new Date(date),
+      formattedDate = this.formatDate(selectedDate);
+
+    return DataHelper.getHomeDir() + formattedDate + '.json';
   }
 
   private formatDate(date: Date): string {

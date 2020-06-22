@@ -116,8 +116,7 @@ describe('List command', () => {
         testData.worklog.createData.value.join(' ') +'  |\n' +
         '| Worklog(0) [08:20]  | 2h '+testData.worklog.createData.key+ ' ' +
         testData.worklog.createData.value.join(' ') +'  |\n' +
-        '| '+testData.rest.key+'(1)   [12:20]  | 2h '+ testData.rest.value +'                 |\n' +
-        '| '+testData.rest.key+'(1)   [12:20]  | 2h '+ testData.rest.value +'                 |\n' +
+        '| '+testData.rest.key+'(1)   [12:20]  | 4h '+ testData.rest.value +'                 |\n' +
         '-----------------------------------------------------------')
         .to.equal((new ListCommand()).execute(argumentMock));
   });
@@ -151,7 +150,7 @@ describe('List command', () => {
 
   it('List all with order', () => {
     createWorklog();
-    (new RestCommand).execute({
+    (new RestCommand()).execute({
       time: '10:20'
     });
     (new NoteCommand()).execute({}, testData.note.createData);
