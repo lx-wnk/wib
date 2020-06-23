@@ -74,7 +74,7 @@ export default class WorklogCommand extends AbstractCommand {
 
       return Messages.translation('command.worklog.execution.create') +
           Object.values(this.worklogs.getCalculatedPrintData(
-              (new StartStruct(null)).fromSavedData())
+              (new StartStruct(null)).fromSavedData(), WorklogCollection.possibleOrderKeys.id)
           ).slice(-1)[0]['value'];
     }
 
