@@ -52,13 +52,18 @@
     "rest": {
       "description": "Add a new rest",
       "option": {
+        "edit": {
+          "description": "Change the rest ending to now or by -t to a specified time",
+          "flag": "-e, --edit <key>"
+        },
         "time": {
           "description": "Create a rest with specified time",
           "flag": "-t, --time <hour:minute>"
         }
       },
       "execution": {
-        "create": "Rest ended at: "
+        "create": "Rest ended at: ",
+        "couldNotEdit": "Could not edit rest with id: "
       }
     },
     "start": {

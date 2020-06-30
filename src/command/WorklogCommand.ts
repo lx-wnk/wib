@@ -80,7 +80,7 @@ export default class WorklogCommand extends AbstractCommand {
 
     editTracker(id, key?: string, value?: string, date?: Date): string {
       if (undefined === this.worklogs.entries || undefined === this.worklogs.entries[id]) {
-        return Messages.translation('command.worklog.execution.couldNotEdit');
+        return Messages.translation('command.worklog.execution.couldNotEdit') + id;
       }
 
       if (null !== date && undefined !== date) {

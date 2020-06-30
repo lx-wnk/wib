@@ -46,6 +46,7 @@ Usage: wib rest|b [options]
 
 *Possible Options*:
 * `-t, --time <hour:minute>` Create a rest with specified time
+* `-e, --edit <key>`         Change the rest ending to now or by -t to a specified time
 </details>
 
 <details>
