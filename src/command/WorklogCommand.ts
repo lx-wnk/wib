@@ -60,7 +60,8 @@ export default class WorklogCommand extends AbstractCommand {
     }
 
     createTimeTracker(key: string, value: string, date?: Date): string {
-      const worklog = new WorklogStruct(this.worklogs.getAmount(), key, value, date);
+      const worklog = new WorklogStruct(this.worklogs.getAmount(), key, value, date),
+        startStruct = (new StartStruct(null)).fromSavedData();
 
       if (undefined === key || undefined === value) {
         return Messages.translation('command.worklog.execution.missingOptions');
@@ -72,9 +73,13 @@ export default class WorklogCommand extends AbstractCommand {
 
       this.worklogs.fromSavedData();
 
+      if (!startStruct.time) {
+        startStruct.time = new Date(Date.now());
+      }
+
       return Messages.translation('command.worklog.execution.create') +
           Object.values(this.worklogs.getCalculatedPrintData(
-              (new StartStruct(null)).fromSavedData(), WorklogCollection.possibleOrderKeys.id)
+              startStruct, WorklogCollection.possibleOrderKeys.id)
           ).slice(-1)[0]['value'];
     }
 
