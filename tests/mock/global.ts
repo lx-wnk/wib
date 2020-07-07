@@ -14,7 +14,8 @@ export default class GlobalMock {
     public static constantDate = new Date(testData.testDate);
 
     static beforeEach(shouldMock = GlobalMock.getDefaults()): void {
-      process.env.TZ = 'Europe/Berlin';
+      process.env.TZ = 'UTC';
+      process.stdout.columns= 120;
 
       if (shouldMock.date) {
         GlobalMock.dateNowStub = sinon.stub(Date, 'now').callsFake(() => {
@@ -42,7 +43,7 @@ export default class GlobalMock {
 
       if (shouldMock.config.homeDir) {
         GlobalMock.configHomeDirStub = sinon.stub(DataHelper, 'getHomeDir').callsFake(() => {
-          return '~/.wib_test/';
+          return '.wib_test/';
         });
       }
 
@@ -81,10 +82,10 @@ export default class GlobalMock {
     }
 
     static writeToConfig(data: object): void {
-      if (!fs.readdirSync('~/.wib_test', null)) {
-        fs.mkdirSync('~/.wib_test', {recursive: true});
+      if (!fs.readdirSync('.wib_test', null)) {
+        fs.mkdirSync('.wib_test', {recursive: true});
       }
 
-      fs.writeFileSync('~/.wib_test/config.json', JSON.stringify(data));
+      fs.writeFileSync('.wib_test/config.json', JSON.stringify(data));
     }
 }
