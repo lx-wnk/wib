@@ -5,11 +5,11 @@ env:
 on:
   push:
     branches:
-      - master
+      - release
       - v*
   pull_request:
     branches:
-      - master
+      - release
       - v*
 
 jobs:
