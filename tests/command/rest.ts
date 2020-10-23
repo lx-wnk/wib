@@ -26,7 +26,7 @@ describe('Rest command', () => {
     GlobalMock.afterEach();
   });
   it('Create rest entry', () => {
-    chai.expect(Messages.translation('command.rest.execution.create') + '4:20')
+    chai.expect(Messages.translation('command.rest.execution.create', {'duration': '5m'}) + '04:20')
         .to.equal((new RestCommand()).execute(argumentMock));
   });
 
@@ -34,7 +34,7 @@ describe('Rest command', () => {
     (new RestCommand()).execute({});
     argumentMock.time = '08:20';
 
-    chai.expect(Messages.translation('command.rest.execution.create') + '8:20')
+    chai.expect(Messages.translation('command.rest.execution.create', {'duration': '4h'}) + '08:20')
         .to.equal((new RestCommand()).execute(argumentMock));
   });
 
@@ -45,7 +45,7 @@ describe('Rest command', () => {
     argumentMock.edit = '0';
     argumentMock.time = undefined;
 
-    chai.expect(Messages.translation('command.rest.execution.create') + '4:20')
+    chai.expect(Messages.translation('command.rest.execution.create') + '04:20')
         .to.equal((new RestCommand()).execute(argumentMock));
   });
 
@@ -56,7 +56,7 @@ describe('Rest command', () => {
     argumentMock.edit = '0';
     argumentMock.time = '03:20';
 
-    chai.expect(Messages.translation('command.rest.execution.create') + '3:20')
+    chai.expect(Messages.translation('command.rest.execution.create') + '03:20')
         .to.equal((new RestCommand()).execute(argumentMock));
   });
 

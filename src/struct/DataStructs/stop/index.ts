@@ -1,7 +1,7 @@
-import AbstractStruct from '../AbstractStruct';
-import FormatHelper from '../../helper/FormatHelper';
+import AbstractDataStruct from '../AbstractDataStruct';
+import FormatHelper from '../../../helper/FormatHelper';
 
-export default class StopStruct extends AbstractStruct {
+export default class StopStruct extends AbstractDataStruct {
     private _time: Date;
     private _dataKey = 'stop';
 

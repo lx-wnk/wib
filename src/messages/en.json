@@ -2,9 +2,9 @@
   "command": {
     "list": {
       "option": {
-        "day": {
-          "description": "List a specific date",
-          "flag": "-d, --day <day>"
+        "yesterday": {
+          "description": "List yesterday",
+          "flag": "-y, --yesterday"
         },
         "full": {
           "description": "List the full data (unshortened)",
@@ -14,13 +14,9 @@
           "description": "Order by (time, key, value, id)",
           "flag": "-o, --order <key>"
         },
-        "month": {
-          "description": "Date from specific month",
-          "flag": "-m, --month <month>"
-        },
-        "yesterday": {
-          "description": "List yesterday",
-          "flag": "-y, --yesterday"
+        "day": {
+          "description": "List a specific date",
+          "flag": "-d, --day <day>"
         }
       },
       "description": "Show the report",
@@ -62,7 +58,7 @@
         }
       },
       "execution": {
-        "create": "Rest ended at: ",
+        "create": "Rest lastet {duration} and ended at: ",
         "couldNotEdit": "Could not edit rest with id: "
       }
     },
@@ -94,7 +90,8 @@
         "couldNotEdit": "Could not edit worklog with id: ",
         "delete": "Deleted worklog with id: ",
         "couldNotDelete": "Could not delete worklog with id: ",
-        "missingOptions": "Please provide a value for the worklog `wib track <key> <value>`"
+        "missingOptions": "Please provide a value for the worklog `wib track <key> <value>`",
+        "invalidTime": "The provided time is invalid! Please adjust your input"
       }
     }
   },

@@ -16,11 +16,11 @@ export default class FormatHelper {
 
     if (specifiedFormat === undefined || dataObject === undefined) {
       OutputHelper.error(Messages.translation('format.invalid') + formatName);
+
       return '';
     }
 
     specifiedFormat = this.applyVariables(specifiedFormat, dataObject, formatName);
-
     return Messages.applyTranslationToString(specifiedFormat);
   }
 
@@ -34,21 +34,20 @@ export default class FormatHelper {
 
     for (let a = 0; a < loopAmount; a++) {
       const curObject = Object.values(data)[a];
-
       if (!isSub && '-' !== output.charAt(output.length-2)) {
         for (let b = 0; b < colLength['key'] + colLength['value'] + 5; b++) {
           output += '-';
         }
       }
 
-      if (curObject !== undefined) {
+      if (curObject) {
         if (Array.isArray(curObject) && 0 < curObject.length) {
           output = me.toTable(curObject, colLength, true, output);
-        } else {
+        } else if (curObject['key'] && curObject['value']) {
           const curKey = curObject['key'];
           const curVal = curObject['value'];
 
-          if (curKey !== undefined && curVal !== undefined) {
+          if (curKey && curVal) {
             if (0 < output.length && '\n' !== output.charAt(output.length-1)) {
               output += '\n';
             }
@@ -66,6 +65,8 @@ export default class FormatHelper {
 
             output += keyOutput + valOutput;
           }
+        } else if ('object' === typeof curObject && 0 < Object.entries(curObject).length) {
+          output = me.toTable(curObject, colLength, true, output);
         }
       }
 
@@ -77,29 +78,7 @@ export default class FormatHelper {
     return output;
   }
 
-  private applyVariables(specifiedFormat: string, dataObject: object, formatName: string): string {
-    const me = this;
-
-    for (const key in dataObject) {
-      let replaceVal = dataObject[key];
-
-      if (replaceVal !== undefined) {
-        if (['time', 'date', 'duration'].includes(key)) {
-          if ('rest' === formatName || 'workDuration' === formatName) {
-            replaceVal = me.formatTime(replaceVal, key, false);
-          } else {
-            replaceVal = me.formatTime(replaceVal, key);
-          }
-        }
-
-        specifiedFormat = specifiedFormat.split('{{' + key + '}}').join(replaceVal);
-      }
-    }
-
-    return specifiedFormat;
-  }
-
-  private formatTime(time: string, formatType?: string, round = true): string {
+  public formatTime(time: string, formatType?: string, round = true): string {
     const dateObject = new Date(time);
 
     if ('date' === formatType) {
@@ -140,6 +119,28 @@ export default class FormatHelper {
     return ('0' + dateObject.getHours()).slice(-2) + ':' + ('0' + dateObject.getMinutes()).slice(-2);
   }
 
+  private applyVariables(specifiedFormat: string, dataObject: object, formatName: string): string {
+    const me = this;
+
+    for (const key in dataObject) {
+      let replaceVal = dataObject[key];
+
+      if (replaceVal !== undefined) {
+        if (['time', 'date', 'duration'].includes(key)) {
+          if ('rest' === formatName || 'workDuration' === formatName) {
+            replaceVal = me.formatTime(replaceVal, key, false);
+          } else {
+            replaceVal = me.formatTime(replaceVal, key);
+          }
+        }
+
+        specifiedFormat = specifiedFormat.split('{{' + key + '}}').join(replaceVal);
+      }
+    }
+
+    return specifiedFormat;
+  }
+
   /**
    * @param {{key: string, value: string}} data
    * @return {{key: number, value: number}}
@@ -155,10 +156,13 @@ export default class FormatHelper {
         const tmp = me.getLongestElements(row);
         curKeyLength = tmp['key'];
         curValLength = tmp['value'];
-      } else if (row !== undefined &&
-          row['key'] !== undefined && row['value'] !== undefined) {
-        curKeyLength = row['key'].toString().length;
-        curValLength = row['value'].toString().length;
+      } else if (!(!row || !row.key || !row.value)) {
+        curKeyLength = row.key.toString().length;
+        curValLength = row.value.toString().length;
+      } else if ('object' === typeof row && 0 < Object.entries(row).length) {
+        const tmp = me.getLongestElements(row);
+        curKeyLength = tmp['key'];
+        curValLength = tmp['value'];
       }
 
       if (curKeyLength > longestKey) {

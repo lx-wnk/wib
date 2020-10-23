@@ -1,6 +1,6 @@
-import AbstractStruct from '../AbstractStruct';
+import AbstractDataStruct from '../AbstractDataStruct';
 
-export default class NoteStruct extends AbstractStruct {
+export default class NoteStruct extends AbstractDataStruct {
     private _id: number;
     private _key: string;
     private _value: string;

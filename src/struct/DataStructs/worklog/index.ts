@@ -1,6 +1,6 @@
-import AbstractStruct from '../AbstractStruct';
+import AbstractDataStruct from '../AbstractDataStruct';
 
-export default class WorklogStruct extends AbstractStruct {
+export default class WorklogStruct extends AbstractDataStruct {
     private _id: number;
     private _key: string;
     private _value: string;

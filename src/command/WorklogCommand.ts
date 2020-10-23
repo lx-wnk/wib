@@ -1,8 +1,8 @@
 import AbstractCommand from './AbstractCommand';
 
-import WorklogCollection from '../struct/collection/WorklogCollection';
-import WorklogStruct from '../struct/worklog';
-import StartStruct from '../struct/start';
+import WorklogCollection from '../struct/DataStructs/collection/WorklogCollection';
+import WorklogStruct from '../struct/DataStructs/worklog';
+import StartStruct from '../struct/DataStructs/start';
 import Messages from '../messages';
 
 export default class WorklogCommand extends AbstractCommand {
@@ -42,6 +42,10 @@ export default class WorklogCommand extends AbstractCommand {
         specifiedDate = new Date(Date.now());
         specifiedDate.setHours(timeArgs[0]);
         specifiedDate.setMinutes(timeArgs[1]);
+
+        if ('Invalid Date' === specifiedDate.toString()) {
+          return Messages.translation('command.worklog.execution.invalidTime');
+        }
       }
 
       if (undefined !== options) {
@@ -79,7 +83,7 @@ export default class WorklogCommand extends AbstractCommand {
 
       return Messages.translation('command.worklog.execution.create') +
           Object.values(this.worklogs.getCalculatedPrintData(
-              startStruct, WorklogCollection.possibleOrderKeys.id)
+              startStruct.time.getTime(), WorklogCollection.possibleOrderKeys.id)
           ).slice(-1)[0]['value'];
     }
 

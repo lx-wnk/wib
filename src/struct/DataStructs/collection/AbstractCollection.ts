@@ -1,4 +1,4 @@
-import AbstractStruct from '../AbstractStruct';
+import AbstractDataStruct from '../AbstractDataStruct';
 
 export default abstract class AbstractCollection {
     abstract entries: object;
@@ -12,7 +12,7 @@ export default abstract class AbstractCollection {
       this.entries[key] = undefined;
     }
 
-    public addEntry(entry: AbstractStruct): void {
+    public addEntry(entry: AbstractDataStruct): void {
       this.entries[entry['id']] = entry;
     }
 

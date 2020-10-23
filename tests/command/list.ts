@@ -71,7 +71,7 @@ describe('List command', () => {
     chai.expect(
         '-------------------------------------------\n' +
         '| Note(0) [04:20]  | '+testData.note.createData.join(' ')+'  |\n' +
-        '-------------------------------------------\n')
+        '-------------------------------------------')
         .to.equal((new ListCommand()).execute(argumentMock));
   });
 

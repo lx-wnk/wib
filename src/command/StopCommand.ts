@@ -1,5 +1,5 @@
 import AbstractCommand from './AbstractCommand';
-import StopStruct from '../struct/stop';
+import StopStruct from '../struct/DataStructs/stop';
 import Messages from '../messages';
 
 export default class StopCommand extends AbstractCommand {

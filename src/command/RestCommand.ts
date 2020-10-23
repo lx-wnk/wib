@@ -1,7 +1,8 @@
 import AbstractCommand from './AbstractCommand';
-import WorklogCollection from '../struct/collection/WorklogCollection';
-import WorklogStruct from '../struct/worklog';
+import WorklogCollection from '../struct/DataStructs/collection/WorklogCollection';
+import WorklogStruct from '../struct/DataStructs/worklog';
 import Messages from '../messages';
+import StartStruct from '../struct/DataStructs/start';
 
 
 export default class RestCommand extends AbstractCommand {
@@ -33,6 +34,10 @@ export default class RestCommand extends AbstractCommand {
         const timeArgs = args.time.split(':');
         specifiedDate.setHours(timeArgs[0]);
         specifiedDate.setMinutes(timeArgs[1]);
+
+        if ('Invalid Date' === specifiedDate.toString()) {
+          return Messages.translation('command.worklog.execution.invalidTime');
+        }
       }
 
       if (args.edit !== undefined) {
@@ -56,8 +61,12 @@ export default class RestCommand extends AbstractCommand {
 
       this.dataHelper.writeData(this.worklogs.getWriteData(), this.worklogs.dataKey);
 
-      return Messages.translation('command.rest.execution.create') +
-            rest.time.getHours() + ':' + rest.time.getMinutes();
+      const duration = Object.values(this.worklogs.getCalculatedPrintData(
+          (new StartStruct(null)).fromSavedData().time.getTime(), WorklogCollection.possibleOrderKeys.id)
+      ).slice(-1)[0]['duration'];
+
+      return Messages.translation('command.rest.execution.create', {'duration': duration}) +
+          ('0' + rest.time.getHours()).slice(-2) + ':' + ('0' + rest.time.getMinutes()).slice(-2);
     }
 
     editRest(restKey: string, specifiedDate: Date): string {
@@ -71,6 +80,6 @@ export default class RestCommand extends AbstractCommand {
       this.dataHelper.writeData(this.worklogs.getWriteData(), this.worklogs.dataKey);
 
       return Messages.translation('command.rest.execution.create') +
-            rest.time.getHours() + ':' + rest.time.getMinutes();
+        ('0' + rest.time.getHours()).slice(-2) + ':' + ('0' + rest.time.getMinutes()).slice(-2);
     }
 }
