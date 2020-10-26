@@ -129,7 +129,7 @@ export default class WorklogCollection extends AbstractCollection {
   private getKeyByOrder(entry: WorklogStruct, order: string): string {
     switch (order) {
       case 'key':
-        return entry.key + entry.id;
+        return entry.key + entry.time.toString();
       case 'value':
         return entry.value;
       case 'id':
