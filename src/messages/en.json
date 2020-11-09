@@ -133,6 +133,9 @@
     },
     "workDuration": {
       "key": "Worked time"
+    },
+    "breakDuration": {
+      "key": "Break duration"
     }
   }
 }

@@ -9,6 +9,7 @@ export default class ListDataStruct extends AbstractStruct {
   private _stop: StopStruct;
   private _estimatedStop: StopStruct;
   private _workDuration: object;
+  private _breakDuration: object;
   private _notes: NoteCollection;
   private _worklogs: WorklogCollection;
 
@@ -39,18 +40,22 @@ export default class ListDataStruct extends AbstractStruct {
       printData['2_duration'] = this.workDuration;
     }
 
+    if (this.breakDuration) {
+      printData['3_duration'] = this.breakDuration;
+    }
+
     if (this.notes) {
-      printData['3_notes'] = this.notes.getPrintData();
+      printData['4_notes'] = this.notes.getPrintData();
     }
 
     if (this.worklogs) {
       if (!this.start || !this.start.time) {
         if (this.worklogs.first() && this.worklogs.first().time) {
           const tmpStart = new Date(this.worklogs.first().time);
-          printData['4_worklogs'] = this.worklogs.getCalculatedPrintData(tmpStart.getTime(), order);
+          printData['5_worklogs'] = this.worklogs.getCalculatedPrintData(tmpStart.getTime(), order);
         }
       } else {
-        printData['4_worklogs'] = this.worklogs.getCalculatedPrintData(this.start.time.getTime(), order);
+        printData['5_worklogs'] = this.worklogs.getCalculatedPrintData(this.start.time.getTime(), order);
       }
     }
 
@@ -87,6 +92,14 @@ export default class ListDataStruct extends AbstractStruct {
 
   set workDuration(value: object) {
     this._workDuration = value;
+  }
+
+  get breakDuration(): object {
+    return this._breakDuration;
+  }
+
+  set breakDuration(value: object) {
+    this._breakDuration = value;
   }
 
   get notes(): NoteCollection {

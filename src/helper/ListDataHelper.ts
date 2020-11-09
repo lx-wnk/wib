@@ -37,6 +37,11 @@ export default class ListDataHelper {
         listData.workDuration['plain'] = this.workDurationHelper.getWorkDurationPlain(start, worklogs);
       }
 
+      if (null !== start.time && 0 < worklogs.getAmount()) {
+        listData.breakDuration = this.workDurationHelper.getBreakDuration(start, worklogs);
+        listData.breakDuration['plain'] = this.workDurationHelper.getBreakDurationPlain(start, worklogs);
+      }
+
       if (null !== notes.entries) {
         listData.notes = notes;
       }

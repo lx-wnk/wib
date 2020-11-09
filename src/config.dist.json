@@ -24,6 +24,10 @@
       "key": "$tc(format.workDuration.key)",
       "value": "{{duration}}"
     },
+    "breakDuration": {
+      "key": "$tc(format.breakDuration.key)",
+      "value": "{{duration}}"
+    },
     "notes": {
       "key": "$tc(format.note.key.type)({{id}}) [{{time}}]",
       "value": "{{value}}"
