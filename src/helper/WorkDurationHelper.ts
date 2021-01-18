@@ -1,8 +1,8 @@
-import StartStruct from '../struct/start';
-import WorklogCollection from '../struct/collection/WorklogCollection';
+import StartStruct from '../struct/DataStructs/start';
+import WorklogCollection from '../struct/DataStructs/collection/WorklogCollection';
 import FormatHelper from './FormatHelper';
 import ConfigHelper from './ConfigHelper';
-import StopStruct from '../struct/stop';
+import StopStruct from '../struct/DataStructs/stop';
 
 export default class WorkDurationHelper {
   private formatHelper: FormatHelper;
@@ -14,7 +14,7 @@ export default class WorkDurationHelper {
     this.configHelper = new ConfigHelper();
   }
 
-  public getEstimatedClockOut(start?: StartStruct, worklogs?: WorklogCollection): object {
+  public getEstimatedClockOut(start?: StartStruct, worklogs?: WorklogCollection): StopStruct {
     const clockOut = new StopStruct(),
       timeSortedWorklogs = this.sortEntries(worklogs),
       restDuration = this.calculateRestDuration(timeSortedWorklogs, start.time);
@@ -22,10 +22,7 @@ export default class WorkDurationHelper {
     clockOut.time.setHours(start.time.getHours() + this.configHelper.getSpecifiedWorkDuration());
     clockOut.time.setMinutes(clockOut.time.getMinutes() + restDuration);
 
-    return {
-      'key': this.formatHelper.applyFormat(clockOut.getWriteData(), 'stop-unset', 'key'),
-      'value': this.formatHelper.applyFormat(clockOut.getWriteData(), 'stop-unset')
-    };
+    return clockOut;
   }
 
   public getWorkDuration(start?: StartStruct, worklogs?: WorklogCollection): object {
@@ -37,6 +34,42 @@ export default class WorkDurationHelper {
     return {
       key: this.formatHelper.applyFormat({'duration': baseDate}, 'workDuration', 'key'),
       value: this.formatHelper.applyFormat({'duration': baseDate}, 'workDuration')
+    };
+  }
+
+  public getWorkDurationPlain(start?: StartStruct, worklogs?: WorklogCollection): object {
+    const baseDate = new Date(new Date(Date.now()).getTime() - new Date(Date.now()).getTime()),
+      workedMinutes = this.calculateWorkedMinutes(this.sortEntries(worklogs), start.time);
+
+    baseDate.setMinutes(workedMinutes);
+
+    return {
+      hours: baseDate.getUTCHours(),
+      minutes: baseDate.getUTCMinutes()
+    };
+  }
+
+  public getBreakDuration(start?: StartStruct, worklogs?: WorklogCollection): object {
+    const baseDate = new Date(new Date(Date.now()).getTime() - new Date(Date.now()).getTime()),
+      workedMinutes = this.calculateBreakMinutes(this.sortEntries(worklogs), start.time);
+
+    baseDate.setMinutes(workedMinutes);
+
+    return {
+      key: this.formatHelper.applyFormat({'duration': baseDate}, 'breakDuration', 'key'),
+      value: this.formatHelper.applyFormat({'duration': baseDate}, 'breakDuration')
+    };
+  }
+
+  public getBreakDurationPlain(start?: StartStruct, worklogs?: WorklogCollection): object {
+    const baseDate = new Date(new Date(Date.now()).getTime() - new Date(Date.now()).getTime()),
+      workedMinutes = this.calculateBreakMinutes(this.sortEntries(worklogs), start.time);
+
+    baseDate.setMinutes(workedMinutes);
+
+    return {
+      hours: baseDate.getUTCHours(),
+      minutes: baseDate.getUTCMinutes()
     };
   }
 
@@ -61,10 +94,32 @@ export default class WorkDurationHelper {
       const curDate = (new Date(sortedEntries[key]['time'])),
         curEntryDuration = new Date(curDate.getTime() - previousDate.getTime());
 
-      if (undefined !== sortedEntries[key].dataKey && 'rest' !== sortedEntries[key].dataKey) {
+      if (undefined !== sortedEntries[key].dataKey &&
+        'rest' !== sortedEntries[key].dataKey && !sortedEntries[key].deleted) {
         workedMinutes += Math.ceil((curEntryDuration.getUTCHours() * 60 + curEntryDuration.getUTCMinutes()) /
             this.configHelper.getSpecifiedMinuteRounding()) *
             this.configHelper.getSpecifiedMinuteRounding();
+      }
+
+      previousDate = curDate;
+    }
+
+    return workedMinutes;
+  }
+
+  private calculateBreakMinutes(sortedEntries: object, startDate: Date): number {
+    let workedMinutes = 0,
+      previousDate = startDate;
+
+    for (const key in sortedEntries) {
+      const curDate = (new Date(sortedEntries[key]['time'])),
+        curEntryDuration = new Date(curDate.getTime() - previousDate.getTime());
+
+      if (undefined !== sortedEntries[key].dataKey &&
+        'rest' === sortedEntries[key].dataKey && !sortedEntries[key].deleted) {
+        workedMinutes += Math.ceil((curEntryDuration.getUTCHours() * 60 + curEntryDuration.getUTCMinutes()) /
+          this.configHelper.getSpecifiedMinuteRounding()) *
+          this.configHelper.getSpecifiedMinuteRounding();
       }
 
       previousDate = curDate;

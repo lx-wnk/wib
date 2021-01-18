@@ -26,7 +26,7 @@ export default class Messages {
       return translatedString;
     }
 
-    public static translation(transalationKey: string): string {
+    public static translation(transalationKey: string, parameters?: object): string {
       const configHelper = new ConfigHelper(),
         languageFile = configHelper.getLanguage() + '.json',
         defaultLanguageFile = this.defaultLanguage + '.json';
@@ -41,7 +41,23 @@ export default class Messages {
         translationData = this.fallbackData;
       }
 
-      return this.resolveKey(transalationKey, translationData);
+      return this.resolveParameters(this.resolveKey(transalationKey, translationData), parameters);
+    }
+
+    private static resolveParameters(translation: string, parameters: object): string {
+      if (!parameters) {
+        return translation;
+      }
+
+      Object.keys(parameters).forEach((paramKey) => {
+        const mockedParamKey = '{' + paramKey + '}';
+
+        if (-1 !== translation.indexOf(mockedParamKey)) {
+          translation = translation.replace(mockedParamKey, parameters[paramKey]);
+        }
+      });
+
+      return translation;
     }
 
     private static resolveKey(translationKey: string, transData: object, isFallback = false): string {

@@ -1,6 +1,6 @@
 import AbstractCommand from './AbstractCommand';
 
-import StartStruct from '../struct/start';
+import StartStruct from '../struct/DataStructs/start';
 import Messages from '../messages';
 
 export default class StartCommand extends AbstractCommand {

@@ -48,7 +48,7 @@ describe('Worklog command', () => {
       commandOptions.push(message);
     });
 
-    chai.expect(Messages.translation('command.worklog.execution.couldNotEdit')).to.equal(
+    chai.expect(Messages.translation('command.worklog.execution.couldNotEdit') + '1').to.equal(
         (new WorklogCommand()).execute(argumentMock, commandOptions)
     );
   });

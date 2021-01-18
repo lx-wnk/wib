@@ -1,8 +1,8 @@
 import AbstractCommand from './AbstractCommand';
 
-import WorklogCollection from '../struct/collection/WorklogCollection';
-import WorklogStruct from '../struct/worklog';
-import StartStruct from '../struct/start';
+import WorklogCollection from '../struct/DataStructs/collection/WorklogCollection';
+import WorklogStruct from '../struct/DataStructs/worklog';
+import StartStruct from '../struct/DataStructs/start';
 import Messages from '../messages';
 
 export default class WorklogCommand extends AbstractCommand {
@@ -42,6 +42,10 @@ export default class WorklogCommand extends AbstractCommand {
         specifiedDate = new Date(Date.now());
         specifiedDate.setHours(timeArgs[0]);
         specifiedDate.setMinutes(timeArgs[1]);
+
+        if ('Invalid Date' === specifiedDate.toString()) {
+          return Messages.translation('command.worklog.execution.invalidTime');
+        }
       }
 
       if (undefined !== options) {
@@ -60,7 +64,8 @@ export default class WorklogCommand extends AbstractCommand {
     }
 
     createTimeTracker(key: string, value: string, date?: Date): string {
-      const worklog = new WorklogStruct(this.worklogs.getAmount(), key, value, date);
+      const worklog = new WorklogStruct(this.worklogs.getAmount(), key, value, date),
+        startStruct = (new StartStruct(null)).fromSavedData();
 
       if (undefined === key || undefined === value) {
         return Messages.translation('command.worklog.execution.missingOptions');
@@ -72,15 +77,19 @@ export default class WorklogCommand extends AbstractCommand {
 
       this.worklogs.fromSavedData();
 
+      if (!startStruct.time) {
+        startStruct.time = new Date(Date.now());
+      }
+
       return Messages.translation('command.worklog.execution.create') +
           Object.values(this.worklogs.getCalculatedPrintData(
-              (new StartStruct(null)).fromSavedData(), WorklogCollection.possibleOrderKeys.id)
+              startStruct.time.getTime(), WorklogCollection.possibleOrderKeys.id)
           ).slice(-1)[0]['value'];
     }
 
     editTracker(id, key?: string, value?: string, date?: Date): string {
       if (undefined === this.worklogs.entries || undefined === this.worklogs.entries[id]) {
-        return Messages.translation('command.worklog.execution.couldNotEdit');
+        return Messages.translation('command.worklog.execution.couldNotEdit') + id;
       }
 
       if (null !== date && undefined !== date) {

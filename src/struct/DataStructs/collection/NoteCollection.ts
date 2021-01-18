@@ -1,5 +1,5 @@
 import AbstractCollection from './AbstractCollection';
-import DataHelper from '../../helper/DataHelper';
+import DataHelper from '../../../helper/DataHelper';
 import NoteStruct from '../note';
 
 export default class NoteCollection extends AbstractCollection {
@@ -46,12 +46,11 @@ export default class NoteCollection extends AbstractCollection {
       const printData = [];
 
       for (const key in this._entries) {
-        if (this._entries[key].deleted) {
-          return;
-        }
-        const curEntry = this._entries[key].getPrintData();
+        if (!this._entries[key].deleted) {
+          const curEntry = this._entries[key].getPrintData();
 
-        printData.push(curEntry);
+          printData.push(curEntry);
+        }
       }
 
       return printData;

@@ -1,6 +1,6 @@
 import AbstractCommand from './AbstractCommand';
-import NoteStruct from '../struct/note';
-import NoteCollection from '../struct/collection/NoteCollection';
+import NoteStruct from '../struct/DataStructs/note';
+import NoteCollection from '../struct/DataStructs/collection/NoteCollection';
 import Messages from '../messages';
 
 export default class NoteCommand extends AbstractCommand {

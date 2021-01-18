@@ -1,6 +1,6 @@
-import AbstractStruct from '../AbstractStruct';
+import AbstractDataStruct from '../AbstractDataStruct';
 
-export default class StartStruct extends AbstractStruct {
+export default class StartStruct extends AbstractDataStruct {
     private _time: Date;
     private _dataKey = 'start';
 
