@@ -1,8 +1,6 @@
 import 'mocha';
 import * as sinon from 'sinon';
-import DataHelper from '../../src/helper/DataHelper';
 import * as testData from '../data.json';
-import ConfigHelper from '../../src/helper/ConfigHelper';
 import fs from 'fs';
 
 export default class GlobalMock {
@@ -27,28 +25,28 @@ export default class GlobalMock {
         });
       }
 
-      if (shouldMock.config.format) {
-        GlobalMock.configFormatStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedFormat')
-            .callsFake((formatName: string, type?: string) => {
-              return (new ConfigHelper()).getDefaults()['format'][formatName][type];
-            });
-      }
-
-      if (shouldMock.config.rounding) {
-        GlobalMock.configRoundingStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedMinuteRounding')
-            .callsFake(() => {
-              return (new ConfigHelper()).getDefaults()['minuteRounding'];
-            });
-      }
-
-      if (shouldMock.config.homeDir) {
-        GlobalMock.configHomeDirStub = sinon.stub(DataHelper, 'getHomeDir').callsFake(() => {
-          return '.wib_test/';
-        });
-      }
-
-      (new DataHelper()).writeData({}, null, GlobalMock.constantDate.getTime());
-      GlobalMock.writeToConfig({});
+      // if (shouldMock.config.format) {
+      //   GlobalMock.configFormatStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedFormat')
+      //       .callsFake((formatName: string, type?: string) => {
+      //         return (new ConfigHelper()).getDefaults()['format'][formatName][type];
+      //       });
+      // }
+      //
+      // if (shouldMock.config.rounding) {
+      //   GlobalMock.configRoundingStub = sinon.stub(ConfigHelper.prototype, 'getSpecifiedMinuteRounding')
+      //       .callsFake(() => {
+      //         return (new ConfigHelper()).getDefaults()['minuteRounding'];
+      //       });
+      // }
+      //
+      // if (shouldMock.config.homeDir) {
+      //   GlobalMock.configHomeDirStub = sinon.stub(DataHelper, 'getHomeDir').callsFake(() => {
+      //     return '.wib_test/';
+      //   });
+      // }
+      //
+      // (new DataHelper()).writeData({}, null, GlobalMock.constantDate.getTime());
+      // GlobalMock.writeToConfig({});
     }
 
     static afterEach(shouldMock = GlobalMock.getDefaults()): void {
@@ -57,17 +55,17 @@ export default class GlobalMock {
         GlobalMock.dateConstructorStub.restore();
       }
 
-      if (shouldMock.config.format) {
-        GlobalMock.configFormatStub.restore();
-      }
-
-      if (shouldMock.config.rounding) {
-        GlobalMock.configRoundingStub.restore();
-      }
-
-      if (shouldMock.config.homeDir) {
-        GlobalMock.configHomeDirStub.restore();
-      }
+      // if (shouldMock.config.format) {
+      //   GlobalMock.configFormatStub.restore();
+      // }
+      //
+      // if (shouldMock.config.rounding) {
+      //   GlobalMock.configRoundingStub.restore();
+      // }
+      //
+      // if (shouldMock.config.homeDir) {
+      //   GlobalMock.configHomeDirStub.restore();
+      // }
     }
 
     static getDefaults(): {date: boolean; config: {format: boolean; rounding: boolean; homeDir: boolean}} {
