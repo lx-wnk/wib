@@ -2,5 +2,4 @@
 'use strict';
 
 const wib = require('../dist/Wib').default;
-
-wib.parse(process.argv);
+wib.exec(process.argv);

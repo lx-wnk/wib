@@ -5,6 +5,7 @@
     "target": "es6",
     "outDir": "dist",
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "removeComments": true,

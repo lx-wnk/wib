@@ -31,11 +31,17 @@
     "wib": "./bin/index.js"
   },
   "dependencies": {
-    "@types/node": "^13.13.21",
-    "commander": "^5.1.0"
+    "commander": "^7.0.0",
+    "inversify": "^5.0.5",
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^6.5.0",
+    "sequelize-typescript": "^2.0.0",
+    "sqlite3": "5.0.0",
+    "typeorm": "^0.2"
   },
   "devDependencies": {
     "@types/mocha": "^7.0.2",
+    "@types/node": "^13.13.40",
     "@typescript-eslint/eslint-plugin": "^2.30.0",
     "@typescript-eslint/parser": "^2.30.0",
     "chai": "^4.2.0",
@@ -53,7 +59,7 @@
     "tsc": "./node_modules/.bin/tsc",
     "dev": "./node_modules/.bin/tsc --watch & node dist",
     "lint": "./node_modules/.bin/eslint src tests --ext .js,.jsx,.ts,.tsx",
-    "fix": "./node_modules/.bin/eslint --fix src tests --ext .js,.jsx,.ts,.tsx",
+    "fix": "./node_modules/.bin/eslint src tests --fix --ext .js,.jsx,.ts,.tsx",
     "wib": "./dist/index.js",
     "test": "TZ=UTC ./node_modules/.bin/mocha -r ts-node/register",
     "coverage": "./node_modules/.bin/nyc npm test",
