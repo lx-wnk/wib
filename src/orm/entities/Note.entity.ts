@@ -5,12 +5,12 @@ export class NoteEntity {
   @PrimaryGeneratedColumn('uuid')
   id: number;
 
-  @Column()
-  value: Date;
+  @Column('varchar')
+  value: string;
 
-  @Column()
+  @Column('date')
   time: Date;
 
-  @Column({default: false})
+  @Column('boolean', {default: false})
   deleted: boolean;
 }

@@ -4,9 +4,10 @@ import {homedir} from 'os';
 const config: ConnectionOptions = {
   type: 'sqlite',
   database: homedir + '/.wib/' + 'database.sqlite',
-  entities: [__dirname + '/../**/**.entity{.ts,.js}'],
+  logging: 'all',
+  entities: [__dirname + '/**/**.entity{.ts,.js}'],
   migrationsTableName: 'migrations',
-  migrations: [__dirname + '/../**/**.migration{.ts,.js}'],
+  migrations: [__dirname + '/orm/migrations/*-*{.ts,.js}'],
   cli: {
     migrationsDir: 'src/orm/migrations'
   }

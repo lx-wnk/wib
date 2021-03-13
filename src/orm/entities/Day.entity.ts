@@ -6,10 +6,10 @@ export class DayEntity {
   @PrimaryGeneratedColumn('uuid')
   id: number;
 
-  @Column()
+  @Column('date')
   start: Date;
 
-  @Column()
+  @Column('date', {nullable: true, default: null})
   finish?: Date;
 
   @OneToMany((type) => WorklogEntity, (worklog) => worklog.day)

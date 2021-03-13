@@ -31,15 +31,15 @@ export class MigrateDataCommand extends AbstractCommand {
 
     this.extractTypeData();
 
-    this.connectionManager.create().then((con) => {
-      con.showMigrations().then((migrations) => {
-        console.log(migrations);
-      }).catch((err) => {
-        console.error(err);
-      });
-
-      return;
-      this.migrateToSqlite();
+    this.connectionManager.create().then((connection) => {
+      (async (con) => {
+        await con.runMigrations({
+          transaction: 'none'
+        });
+      })(connection)
+          .finally(() => {
+            this.migrateToSqlite();
+          });
     }).finally(() => {
       console.log('FINISH: migrations');
     });
@@ -96,22 +96,26 @@ export class MigrateDataCommand extends AbstractCommand {
 
     for (const date in this.days) {
       const day = new DayEntity();
-      const worklogs: WorklogEntity[] = [];
 
       if (this.days[date]['start'] && this.days[date]['start']['time']) {
         day.start = new Date(this.days[date]['start']['time']);
       }
 
+      if (this.days[date]['stop'] && this.days[date]['stop']['time']) {
+        day.finish = new Date(this.days[date]['stop']['time']);
+      }
+
       if (this.days[date]['worklogs']) {
+        day.worklogs = [];
         Object.values(this.days[date]['worklogs']).forEach((entry) => {
           const worklog = new WorklogEntity();
           worklog.key = entry['key'];
           worklog.value = entry['value'];
-          worklog.time = entry['time'];
+          worklog.time = new Date(entry['time']);
           worklog.deleted = entry['deleted'];
           worklog.rest = 'rest' === entry['dataKey'];
 
-          worklogs.push(worklog);
+          day.worklogs.push(worklog);
         });
       }
 
@@ -119,21 +123,20 @@ export class MigrateDataCommand extends AbstractCommand {
         Object.values(this.days[date]['notes']).forEach((entry) => {
           const note = new NoteEntity();
           note.value = entry['value'];
-          note.time = entry['time'];
+          note.time = new Date(entry['time']);
           note.deleted = entry['deleted'];
 
           notes.push(note);
         });
       }
 
-
-      if (this.days[date]['stop'] && this.days[date]['stop']['time']) {
-        day.finish = new Date(this.days[date]['stop']['time']);
+      if (!day.start && day.worklogs && day.worklogs[0]) {
+        day.start = day.worklogs[0].time;
       }
 
-      day.worklogs = worklogs;
-
-      days.push(day);
+      if (day.start) {
+        days.push(day);
+      }
     }
 
     dayRepository.save(days).then((fin) => {

@@ -26,6 +26,7 @@ module.exports = {
     "@typescript-eslint/no-this-alias": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "guard-for-in": "off",
-    "max-len": [2, 120, 4]
+    "max-len": [2, 120, 4],
+    "new-cap": "off"
   }
 };

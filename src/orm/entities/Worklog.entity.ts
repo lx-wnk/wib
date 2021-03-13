@@ -6,19 +6,19 @@ export class WorklogEntity {
   @PrimaryGeneratedColumn('uuid')
   id: number;
 
-  @Column()
+  @Column('varchar')
   key: string;
 
-  @Column()
+  @Column('varchar')
   value: string;
 
-  @Column()
+  @Column('date')
   time: Date;
 
-  @Column({default: false})
+  @Column('boolean', {default: false})
   deleted: boolean;
 
-  @Column({default: false})
+  @Column('boolean', {default: false})
   rest: boolean;
 
   @ManyToOne((type) => DayEntity, (day) => day.worklogs)
