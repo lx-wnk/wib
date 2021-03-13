@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import container from './config/inversify.config';
-import {IDENTIFIERS_COMMAND} from './constants/identifiers.command';
+import {IDENTIFIERS} from './identifiers';
 import * as Command from 'commander';
 import AbstractCommand from './command/AbstractCommand';
 
@@ -18,9 +18,11 @@ export default new class Wib {
   }
 
   injectCommands(): void {
-    const migrateCommand = container.get<AbstractCommand>(IDENTIFIERS_COMMAND.MigrateDataCommand);
+    const migrateCommand = container.get<AbstractCommand>(IDENTIFIERS.Command.MigrateDataCommand);
+    const worklogCommand = container.get<AbstractCommand>(IDENTIFIERS.Command.WorklogCommand);
 
     this.program.addCommand(migrateCommand.init());
+    this.program.addCommand(worklogCommand.init());
   }
 
   exec(argv): void {

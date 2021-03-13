@@ -8,12 +8,12 @@ import {DayEntity} from '../orm/entities/Day.entity';
 import {WorklogEntity} from '../orm/entities/Worklog.entity';
 import {NoteEntity} from '../orm/entities/Note.entity';
 import {ConnectionManager} from '../orm';
-import {IDENTIFIERS_ORM} from '../constants/identifiers.orm';
+import {IDENTIFIERS} from '../identifiers';
+import {MessageService} from '../components';
 
 @injectable()
 export class MigrateDataCommand extends AbstractCommand {
   public name = 'migrate-data';
-  public names = ['migrate-data', 'md']
   public aliases = ['md'];
   public options = [];
   public description = 'Migrate data from filesystem to sqlite';
@@ -21,8 +21,11 @@ export class MigrateDataCommand extends AbstractCommand {
   private days = {};
   private connectionManager: ConnectionManager;
 
-  constructor(@inject(IDENTIFIERS_ORM.Connection) connectionManager: ConnectionManager) {
-    super();
+  constructor(
+    @inject(IDENTIFIERS.Message) messages: MessageService,
+    @inject(IDENTIFIERS.ORM.Connection) connectionManager: ConnectionManager
+  ) {
+    super(messages);
     this.connectionManager = connectionManager;
   }
 
