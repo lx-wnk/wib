@@ -1,5 +1,4 @@
 import {Entity, PrimaryGeneratedColumn, Column, OneToMany} from 'typeorm';
-import {NoteEntity} from './Note.entity';
 import {WorklogEntity} from './Worklog.entity';
 
 @Entity('DayEntity')
@@ -13,9 +12,6 @@ export class DayEntity {
   @Column()
   finish?: Date;
 
-  @OneToMany((type) => NoteEntity, (worklog) => worklog.day)
-  notes: NoteEntity;
-
   @OneToMany((type) => WorklogEntity, (worklog) => worklog.day)
-  worklogs: WorklogEntity;
+  worklogs: WorklogEntity[];
 }

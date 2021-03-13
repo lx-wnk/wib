@@ -1,5 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne} from 'typeorm';
-import {DayEntity} from './Day.entity';
+import {Entity, PrimaryGeneratedColumn, Column} from 'typeorm';
 
 @Entity('NoteEntity')
 export class NoteEntity {
@@ -14,7 +13,4 @@ export class NoteEntity {
 
   @Column({default: false})
   deleted: boolean;
-
-  @ManyToOne((type) => DayEntity, (day) => day.notes)
-  day: DayEntity;
 }

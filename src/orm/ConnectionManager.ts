@@ -1,6 +1,6 @@
 import {injectable} from 'inversify';
-import {Connection, createConnection, getConnectionManager} from 'typeorm';
-import {homedir} from 'os';
+import {Connection, createConnection} from 'typeorm';
+import config from '../ormconfig';
 
 @injectable()
 export class ConnectionManager {
@@ -8,19 +8,6 @@ export class ConnectionManager {
   public entityManager;
 
   public async create() {
-    return await createConnection({
-      type: 'sqlite',
-      database: homedir + '/.wib/' + 'database.sqlite',
-      entities: [__dirname + '/../**/**.entity{.ts,.js}'],
-      migrationsTableName: 'migrations',
-      migrations: [__dirname + '/../**/**.migration{.ts,.js}'],
-      cli: {
-        migrationsDir: 'migration'
-      }
-    });
-  }
-
-  private getHomeDir(): string {
-    return homedir + '/.wib/';
+    return await createConnection(config);
   }
 }

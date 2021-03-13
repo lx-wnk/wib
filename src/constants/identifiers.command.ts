@@ -1,7 +1,7 @@
-import {MigrateCommand} from '../command/MigrateCommand';
+import {MigrateDataCommand} from '../command';
 
 const IDENTIFIERS_COMMAND = {
-  MigrateCommand: Symbol.for('MigrateCommand')
+  MigrateDataCommand: Symbol.for('MigrateDataCommand')
 };
 
 export {IDENTIFIERS_COMMAND};

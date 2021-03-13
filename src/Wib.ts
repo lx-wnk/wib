@@ -18,7 +18,7 @@ export default new class Wib {
   }
 
   injectCommands(): void {
-    const migrateCommand = container.get<AbstractCommand>(IDENTIFIERS_COMMAND.MigrateCommand);
+    const migrateCommand = container.get<AbstractCommand>(IDENTIFIERS_COMMAND.MigrateDataCommand);
 
     this.program.addCommand(migrateCommand.init());
   }

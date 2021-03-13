@@ -1,31 +1,47 @@
 import {inject, injectable} from 'inversify';
-import MigrationInterface from './MigrationInterface';
+import AbstractCommand from './AbstractCommand';
+import {getConnection} from "typeorm";
+import process from "process";
+import {homedir} from "os";
 import * as fs from 'fs';
-import {homedir} from 'os';
-import {DayEntity} from '../orm/models/Day.entity';
-import {WorklogEntity} from '../orm/models/Worklog.entity';
-import {NoteEntity} from '../orm/models/Note.entity';
-import {ConnectionManager} from '../orm/ConnectionManager';
+import {DayEntity} from '../orm/entities/Day.entity';
+import {WorklogEntity} from '../orm/entities/Worklog.entity';
+import {NoteEntity} from '../orm/entities/Note.entity';
+import {ConnectionManager} from '../orm';
 import {IDENTIFIERS_ORM} from '../constants/identifiers.orm';
-import {getConnection, getManager} from 'typeorm';
-import * as process from 'process';
 
 @injectable()
-export class Migration1611850217 implements MigrationInterface {
+export class MigrateDataCommand extends AbstractCommand {
+  public name = 'migrate-data';
+  public names = ['migrate-data', 'md']
+  public aliases = ['md'];
+  public options = [];
+  public description = 'Migrate data from filesystem to sqlite';
+
   private days = {};
   private connectionManager: ConnectionManager;
 
   constructor(@inject(IDENTIFIERS_ORM.Connection) connectionManager: ConnectionManager) {
+    super();
     this.connectionManager = connectionManager;
   }
 
-  public migrate(): void {
-    console.log('migration - 1611850217');
+  exec(): void {
+    console.log('START: migration');
 
     this.extractTypeData();
 
     this.connectionManager.create().then((con) => {
+      con.showMigrations().then((migrations) => {
+        console.log(migrations);
+      }).catch((err) => {
+        console.error(err);
+      });
+
+      return;
       this.migrateToSqlite();
+    }).finally(() => {
+      console.log('FINISH: migrations');
     });
   }
 
@@ -74,11 +90,13 @@ export class Migration1611850217 implements MigrationInterface {
   private migrateToSqlite(): void {
     const connection = getConnection();
     const dayRepository = connection.getRepository(DayEntity);
+    const noteRepository = connection.getRepository(NoteEntity);
+    const days = [];
+    const notes = [];
 
     for (const date in this.days) {
       const day = new DayEntity();
       const worklogs: WorklogEntity[] = [];
-      const notes: NoteEntity[] = [];
 
       if (this.days[date]['start'] && this.days[date]['start']['time']) {
         day.start = new Date(this.days[date]['start']['time']);
@@ -113,19 +131,24 @@ export class Migration1611850217 implements MigrationInterface {
         day.finish = new Date(this.days[date]['stop']['time']);
       }
 
-      // @ts-ignore
       day.worklogs = worklogs;
-      // @ts-ignore
-      day.notes = notes;
 
-      // this.connection.connection.
-      dayRepository.save(day).then((fin) => {
-        console.log(fin);
-      }).catch((err) => {
-        console.error(err);
-        process.exit(1);
-      });
+      days.push(day);
     }
+
+    dayRepository.save(days).then((fin) => {
+      console.log(fin);
+    }).catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
+
+    noteRepository.save(notes).then((fin) => {
+      console.log(fin);
+    }).catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
   }
 
   private parseFileToJson(file): object {
