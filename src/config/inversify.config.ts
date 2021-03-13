@@ -15,6 +15,6 @@ import {
 const container = new Container();
 
 container.bind<CommandInterface>(IDENTIFIERS_COMMAND.MigrateDataCommand).to(MigrateDataCommand);
-container.bind<ConnectionManager>(IDENTIFIERS_ORM.Connection).to(ConnectionManager);
+ncontainer.bind<ConnectionManager>(IDENTIFIERS_ORM.Connection).to(ConnectionManager);
 
 export default container;

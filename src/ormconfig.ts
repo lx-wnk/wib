@@ -1,5 +1,5 @@
-import { ConnectionOptions } from 'typeorm';
-import {homedir} from "os";
+import {ConnectionOptions} from 'typeorm';
+import {homedir} from 'os';
 
 const config: ConnectionOptions = {
   type: 'sqlite',

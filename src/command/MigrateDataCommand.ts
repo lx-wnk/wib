@@ -1,8 +1,8 @@
 import {inject, injectable} from 'inversify';
 import AbstractCommand from './AbstractCommand';
-import {getConnection} from "typeorm";
-import process from "process";
-import {homedir} from "os";
+import {getConnection} from 'typeorm';
+import process from 'process';
+import {homedir} from 'os';
 import * as fs from 'fs';
 import {DayEntity} from '../orm/entities/Day.entity';
 import {WorklogEntity} from '../orm/entities/Worklog.entity';
