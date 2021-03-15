@@ -34,18 +34,15 @@ export class MigrateDataCommand extends AbstractCommand {
 
     this.extractTypeData();
 
-    this.connectionManager.create().then((connection) => {
-      (async (con) => {
-        await con.runMigrations({
-          transaction: 'none'
+    this.connectionManager.getConnection()
+        .then((connection) => {
+          connection.runMigrations({transaction: 'none'})
+              .then(() => {
+                this.migrateToSqlite();
+              });
+        }).finally(() => {
+          console.log('FINISH: migrations');
         });
-      })(connection)
-          .finally(() => {
-            this.migrateToSqlite();
-          });
-    }).finally(() => {
-      console.log('FINISH: migrations');
-    });
   }
 
   private extractTypeData(): void {
@@ -110,13 +107,19 @@ export class MigrateDataCommand extends AbstractCommand {
 
       if (this.days[date]['worklogs']) {
         day.worklogs = [];
+
         Object.values(this.days[date]['worklogs']).forEach((entry) => {
           const worklog = new WorklogEntity();
+          worklog.iterator = entry['id'];
           worklog.key = entry['key'];
           worklog.value = entry['value'];
           worklog.time = new Date(entry['time']);
           worklog.deleted = entry['deleted'];
-          worklog.rest = 'rest' === entry['dataKey'];
+          worklog.rest = entry['dataKey'] === 'rest';
+
+          if (!worklog.key || ! worklog.value) {
+            return;
+          }
 
           day.worklogs.push(worklog);
         });
@@ -125,6 +128,7 @@ export class MigrateDataCommand extends AbstractCommand {
       if (this.days[date]['notes']) {
         Object.values(this.days[date]['notes']).forEach((entry) => {
           const note = new NoteEntity();
+          note.iterator = notes.length;
           note.value = entry['value'];
           note.time = new Date(entry['time']);
           note.deleted = entry['deleted'];
@@ -142,18 +146,17 @@ export class MigrateDataCommand extends AbstractCommand {
       }
     }
 
-    dayRepository.save(days).then((fin) => {
-      console.log(fin);
+    dayRepository.save(days).then(() => {
+      noteRepository.save(notes)
+          .catch((err) => {
+            console.error(err);
+            process.exit(1);
+          });
     }).catch((err) => {
       console.error(err);
       process.exit(1);
-    });
-
-    noteRepository.save(notes).then((fin) => {
-      console.log(fin);
-    }).catch((err) => {
-      console.error(err);
-      process.exit(1);
+    }).finally(() => {
+      console.log('done');
     });
   }
 

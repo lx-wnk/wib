@@ -1,7 +1,7 @@
 import {inject, injectable} from 'inversify';
 import AbstractCommand from './AbstractCommand';
 import {ConnectionManager} from '../orm';
-import {MessageService} from '../components';
+import {MessageService, WorklogService} from '../components';
 import {IDENTIFIERS} from '../identifiers';
 
 @injectable()
@@ -25,16 +25,46 @@ export class WorklogCommand extends AbstractCommand {
   public description = 'Handle worklogs';
 
   private connectionManager: ConnectionManager;
+  private worklogService: WorklogService;
 
   constructor(
     @inject(IDENTIFIERS.Message) messages: MessageService,
-    @inject(IDENTIFIERS.ORM.Connection) connectionManager: ConnectionManager
+    @inject(IDENTIFIERS.ORM.Connection) connectionManager: ConnectionManager,
+    @inject(IDENTIFIERS.worklog) worklogService: WorklogService
   ) {
     super(messages);
     this.connectionManager = connectionManager;
+    this.worklogService = worklogService;
   }
 
-  exec(args): void {
-    console.log(args);
+  exec(options, args): void {
+    const commandValues: string[] = args.args;
+    let trackTime;
+
+    if (options.delete) {
+      // todo
+
+      return;
+    }
+
+    if (options.time) {
+      trackTime = new Date();
+      const timeArgs = options.time.split(':');
+      trackTime.setHours(timeArgs[0]);
+      trackTime.setMinutes(timeArgs[1]);
+
+      if (trackTime.toString() === 'Invalid Date') {
+        console.log(this.message.translation('command.worklog.execution.invalidTime'));
+      }
+    }
+
+    if (options.edit) {
+      console.log(options.edit);
+      this.worklogService.update(options.edit, commandValues, trackTime);
+
+      return;
+    }
+
+    this.worklogService.create(commandValues, trackTime);
   }
 }

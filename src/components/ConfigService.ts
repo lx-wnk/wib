@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as baseConfig from '../config.dist.json';
 import {homedir} from 'os';
-import {injectable} from "inversify";
+import {injectable} from 'inversify';
 
 @injectable()
 export class ConfigService {

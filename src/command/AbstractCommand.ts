@@ -9,10 +9,10 @@ export default abstract class AbstractCommand {
   abstract aliases: Array<string>;
   abstract options: Array<{flag: string; description: string|null; defaultValue?: string|boolean}>;
 
-  protected messages: MessageService;
+  protected message: MessageService;
 
-  constructor(messages: MessageService) {
-    this.messages = messages;
+  constructor(message: MessageService) {
+    this.message = message;
   }
 
   init(): Command.Command {
@@ -23,11 +23,11 @@ export default abstract class AbstractCommand {
         translatedDescription = option.description;
 
       if (translatedFlag) {
-        translatedFlag = this.messages.translation(option.flag);
+        translatedFlag = this.message.translation(option.flag);
       }
 
       if (translatedFlag) {
-        translatedDescription = this.messages.translation(option.description);
+        translatedDescription = this.message.translation(option.description);
       }
 
       newCommand.option(translatedFlag, translatedDescription, option.defaultValue
@@ -45,5 +45,5 @@ export default abstract class AbstractCommand {
     return newCommand;
   }
 
-  abstract exec(args, options: Array<any>): void;
+  abstract exec(options: object, args: Array<any>): void;
 }

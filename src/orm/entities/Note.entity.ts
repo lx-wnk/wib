@@ -1,14 +1,15 @@
-import {Entity, PrimaryGeneratedColumn, Column} from 'typeorm';
+import {Entity, Column} from 'typeorm';
+import {AbstractEntity} from './Abstract.entity';
 
 @Entity('NoteEntity')
-export class NoteEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: number;
+export class NoteEntity extends AbstractEntity {
+  @Column('int')
+  iterator: number;
 
   @Column('varchar')
   value: string;
 
-  @Column('date')
+  @Column('datetime')
   time: Date;
 
   @Column('boolean', {default: false})

@@ -1,10 +1,11 @@
-import {Entity, PrimaryGeneratedColumn, Column, ManyToOne} from 'typeorm';
+import {Entity, Column, ManyToOne} from 'typeorm';
 import {DayEntity} from './Day.entity';
+import {AbstractEntity} from './Abstract.entity';
 
 @Entity('WorklogEntity')
-export class WorklogEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: number;
+export class WorklogEntity extends AbstractEntity {
+  @Column('int')
+  iterator: number;
 
   @Column('varchar')
   key: string;
@@ -12,7 +13,7 @@ export class WorklogEntity {
   @Column('varchar')
   value: string;
 
-  @Column('date')
+  @Column('datetime')
   time: Date;
 
   @Column('boolean', {default: false})

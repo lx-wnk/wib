@@ -18,14 +18,14 @@ export class MessageService {
     let isTranslatable = true,
       translatedString = translatable;
 
-    if (-1 !== translatable.indexOf('$tc(')) {
+    if (translatable.indexOf('$tc(') !== -1) {
       do {
         const transStart = translatable.indexOf('$tc('),
           transEnd = translatable.indexOf(')', transStart),
           transKey = translatable.substring(transStart + 4, transEnd);
 
         translatedString = translatable.split('$tc('+transKey+')').join(this.translation(transKey));
-        if (-1 === translatedString.indexOf('$tc(')) {
+        if (translatedString.indexOf('$tc(') === -1) {
           isTranslatable = false;
         }
       } while (isTranslatable);
@@ -44,7 +44,7 @@ export class MessageService {
       translationData = JSON.parse(fs.readFileSync(path.resolve(__dirname, defaultLanguageFile)).toString());
     }
 
-    if (null === translationData || undefined === translationData) {
+    if (translationData === null || undefined === translationData) {
       translationData = this.fallbackData;
     }
 
@@ -59,7 +59,7 @@ export class MessageService {
     Object.keys(parameters).forEach((paramKey) => {
       const mockedParamKey = '{' + paramKey + '}';
 
-      if (-1 !== translation.indexOf(mockedParamKey)) {
+      if (translation.indexOf(mockedParamKey) !== -1) {
         translation = translation.replace(mockedParamKey, parameters[paramKey]);
       }
     });

@@ -18,7 +18,7 @@ module.exports = {
     "comma-dangle": "off",
     "yoda": [
       "error",
-      "always"
+      "never"
     ],
     "one-var": "off",
     "require-jsdoc": "off",
