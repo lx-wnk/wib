@@ -1,6 +1,6 @@
 {
   "name": "wib",
-  "version": "0.1.5",
+  "version": "0.5.0",
   "description": "Time tracking tool for the cli",
   "keywords": [
     "tracker",
@@ -36,7 +36,7 @@
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.5.0",
     "sequelize-typescript": "^2.0.0",
-    "sqlite3": "5.0.0",
+    "sqlite3": "^5.0.0",
     "typeorm": "^0.2.31"
   },
   "devDependencies": {

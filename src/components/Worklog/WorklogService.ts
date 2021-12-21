@@ -11,17 +11,16 @@ export class WorklogService extends AbstractWorklogService {
     }
 
     let currentDay: DayEntity;
+    const worklogIterator = 0;
 
     this.getCurrentDay()
         .then((result) => {
-          console.log(result);
-
-          if (result.length === 0) {
+          if (!result) {
             this.startDay(time).then((day) => {
               currentDay = day;
             });
           } else {
-            currentDay = result.shift();
+            currentDay = result;
           }
         })
         .finally(() => {
@@ -30,6 +29,7 @@ export class WorklogService extends AbstractWorklogService {
           worklog.key = commandValues[0];
           worklog.value = commandValues[1];
           worklog.day = currentDay;
+          worklog.iterator = worklogIterator;
 
           this.worklogRepository.create(worklog);
         });
@@ -62,9 +62,26 @@ export class WorklogService extends AbstractWorklogService {
         });
   }
 
+  public delete(iterator: number, time: Date = new Date()) {
+    this.worklogRepository.getByDateIterator(time, iterator)
+        .then((result) => {
+          if (result.length !== 1) {
+            console.log('something went wrong');
+            return;
+          // TODO
+          }
+
+          const singleResult = result.shift();
+          singleResult.deleted = true;
+
+          this.worklogRepository.update(singleResult);
+        });
+  }
+
   private startDay(time: Date) {
     const day = new DayEntity();
     day.start = time;
+
     return this.dayRepository.create(day);
   }
 }

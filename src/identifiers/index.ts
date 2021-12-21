@@ -6,6 +6,8 @@ const IDENTIFIERS = {
   Message: Symbol.for('MessageService'),
   Config: Symbol.for('ConfigService'),
   worklog: Symbol.for('WorklogService'),
+  List: Symbol.for('ListService'),
+  Formatter: Symbol.for('Formatter'),
   Command: IDENTIFIERS_COMMAND,
   ORM: IDENTIFIERS_ORM
 };

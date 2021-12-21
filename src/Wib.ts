@@ -3,6 +3,7 @@ import container from './config/inversify.config';
 import {IDENTIFIERS} from './identifiers';
 import * as Command from 'commander';
 import AbstractCommand from './command/AbstractCommand';
+import {ListCommand} from './command';
 
 export default new class Wib {
   public program: Command.Command
@@ -21,9 +22,15 @@ export default new class Wib {
   injectCommands(): void {
     const migrateCommand = container.get<AbstractCommand>(IDENTIFIERS.Command.MigrateDataCommand);
     const worklogCommand = container.get<AbstractCommand>(IDENTIFIERS.Command.WorklogCommand);
+    const listCommand = container.get<AbstractCommand>(IDENTIFIERS.Command.ListCommand);
+    const noteCommand = container.get<AbstractCommand>(IDENTIFIERS.Command.NoteCommand);
+    const startCommand = container.get<AbstractCommand>(IDENTIFIERS.Command.StartCommand);
 
     this.program.addCommand(migrateCommand.init());
     this.program.addCommand(worklogCommand.init());
+    this.program.addCommand(listCommand.init());
+    this.program.addCommand(noteCommand.init());
+    this.program.addCommand(startCommand.init());
   }
 
   exec(argv): Command.Command {

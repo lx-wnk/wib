@@ -17,7 +17,7 @@
       "value": "{{time}}"
     },
     "rest": {
-      "key": "$tc(format.break.key.type)({{id}})   [{{time}}]",
+      "key": "$tc(format.break.key.type)({{iterator}})   [{{time}}]",
       "value": "{{duration}} $tc(format.break.value.duration)"
     },
     "workDuration": {
@@ -29,11 +29,11 @@
       "value": "{{duration}}"
     },
     "notes": {
-      "key": "$tc(format.note.key.type)({{id}}) [{{time}}]",
+      "key": "$tc(format.note.key.type)({{iterator}}) [{{time}}]",
       "value": "{{value}}"
     },
     "worklogs": {
-      "key": "$tc(format.worklog.key.type)({{id}}) [{{time}}]",
+      "key": "$tc(format.worklog.key.type)({{iterator}}) [{{time}}]",
       "value": "{{duration}} {{key}} {{value}}"
     }
   },

@@ -10,11 +10,11 @@ export abstract class AbstractRepository {
     this.connectionManager = connectionManager;
   }
 
-  public abstract create(AbstractEntity);
-
-  public abstract read(id?: string);
-
-  public abstract update(AbstractEntity);
-
-  public abstract delete(id: string);
+  // public abstract create(AbstractEntity);
+  //
+  // public abstract read(id?: string);
+  //
+  // public abstract update(AbstractEntity);
+  //
+  // public abstract delete(id: string);
 }
