@@ -39,10 +39,19 @@ export class DayRepository extends AbstractRepository {
     const connection = await this.connectionManager.getConnection();
     const tmp = new Date(date.setHours(0, 0, 0, 0));
 
-    return await connection.getRepository(DayEntity).findOne({
+    let dayEntity = await connection.getRepository(DayEntity).findOne({
       where: [
         {start: Between(tmp.toISOString(), new Date(date.setHours(24, 59, 59, 0)).toISOString())}
       ]
     });
+
+    if (!dayEntity) {
+      dayEntity = new DayEntity();
+      dayEntity.start = new Date();
+
+      return this.create(dayEntity);
+    }
+
+    return null;
   }
 }

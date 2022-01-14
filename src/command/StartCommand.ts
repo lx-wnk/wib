@@ -41,8 +41,6 @@ export class StartCommand extends AbstractCommand {
           if (result instanceof DayEntity) {
             currentDay = result;
           }
-          console.log(result);
-
 
           if (!result.finish) {
             result.finish = new Date();

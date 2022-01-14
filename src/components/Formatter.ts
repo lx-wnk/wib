@@ -88,6 +88,12 @@ export class Formatter {
   public formatTime(time: string, formatType?: string, round = true): string {
     const dateObject = new Date(time);
 
+
+    if (formatType === 'datetime') {
+      return dateObject.getFullYear() + '-' + dateObject.getMonth() + '-' + dateObject.getDate() +
+        ' ' + ('0' + dateObject.getHours()).slice(-2) + ':' + ('0' + dateObject.getMinutes()).slice(-2);
+    }
+
     if (formatType === 'date') {
       return dateObject.getFullYear() + '-' + dateObject.getMonth() + '-' + dateObject.getDate();
     }
@@ -127,17 +133,15 @@ export class Formatter {
   }
 
   private applyVariables(specifiedFormat: string, dataObject: object, formatName: string): string {
-    const me = this;
-
     for (const key in dataObject) {
       let replaceVal = dataObject[key];
 
       if (replaceVal !== undefined) {
-        if (['time', 'date', 'duration'].includes(key)) {
+        if (['time', 'date', 'duration', 'datetime'].includes(key)) {
           if (formatName === 'rest' || formatName === 'workDuration') {
-            replaceVal = me.formatTime(replaceVal, key, false);
+            replaceVal = this.formatTime(replaceVal, key, false);
           } else {
-            replaceVal = me.formatTime(replaceVal, key);
+            replaceVal = this.formatTime(replaceVal, key);
           }
         }
 

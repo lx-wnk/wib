@@ -27,16 +27,23 @@ export class WorklogService extends AbstractWorklogService {
           const worklog = new WorklogEntity();
           worklog.time = time;
           worklog.key = commandValues[0];
-          worklog.value = commandValues[1];
+
+          commandValues.splice(0, 1);
+
+          worklog.value = commandValues.join(' ');
           worklog.day = currentDay;
           worklog.iterator = worklogIterator;
 
-          this.worklogRepository.create(worklog);
+          this.worklogRepository.getUndeletedListForDate(currentDay.start).then((result) => {
+            worklog.iterator = result.length + 1;
+          }).finally(() => {
+            this.worklogRepository.create(worklog);
+          });
         });
   }
 
   public update(iterator: number, commandValues: string[], time: Date) {
-    this.worklogRepository.getByDateIterator(time, iterator)
+    this.worklogRepository.getByDateIterator(new Date(), iterator)
         .then((result) => {
           if (result.length !== 1) {
             console.log('something went wrong');
@@ -54,7 +61,8 @@ export class WorklogService extends AbstractWorklogService {
             singleResult.key =commandValues[0];
 
             if (commandValues[1]) {
-              singleResult.key =commandValues[1];
+              commandValues.splice(0, 1);
+              singleResult.value =commandValues.join(' ');
             }
           }
 
@@ -63,7 +71,7 @@ export class WorklogService extends AbstractWorklogService {
   }
 
   public delete(iterator: number, time: Date = new Date()) {
-    this.worklogRepository.getByDateIterator(time, iterator)
+    this.worklogRepository.getByDateIterator(new Date(), iterator)
         .then((result) => {
           if (result.length !== 1) {
             console.log('something went wrong');

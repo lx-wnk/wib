@@ -42,7 +42,7 @@ export class WorklogCommand extends AbstractCommand {
     let trackTime;
 
     if (options.delete) {
-      this.worklogService.delete(options.edit);
+      this.worklogService.delete(options.delete);
 
       return;
     }

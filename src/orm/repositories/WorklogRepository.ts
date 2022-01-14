@@ -2,10 +2,7 @@ import {AbstractRepository} from './AbstractRepository';
 import {WorklogEntity} from '../entities/Worklog.entity';
 import {AbstractEntity} from '../entities/Abstract.entity';
 import {injectable} from 'inversify';
-import {DayEntity} from '../entities/Day.entity';
 import {Between, Equal} from 'typeorm';
-import {start} from 'repl';
-import {NoteEntity} from '../entities/Note.entity';
 
 @injectable()
 export class WorklogRepository extends AbstractRepository {
@@ -38,13 +35,19 @@ export class WorklogRepository extends AbstractRepository {
 
   public async getByDateIterator(date: Date = new Date(), iterator: number) {
     const connection = await this.connectionManager.getConnection();
-    const tmp = new Date(date.setHours(0, 0, 0, 0));
+    const tmp = new Date(date.setUTCHours(0, 0, 0, 0));
 
     return await connection.getRepository(WorklogEntity).find({
       where: [
-        {'time': Between(tmp.toISOString(), new Date(date.setHours(24, 59, 59, 0)).toISOString())},
-        {iterator: iterator}
-      ]
+        {
+          time: Between(
+            tmp.getFullYear() + '-' + tmp.getMonth() + '-' +tmp.getDate(),
+            new Date(date.setHours(24, 59, 59, 0)).toISOString()
+          ),
+          iterator: iterator,
+          deleted: 0
+        },
+      ],
     });
   }
 
