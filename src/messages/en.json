@@ -114,13 +114,15 @@
       }
     },
     "start": {
-      "key": "Clocked in"
+      "key": "Clocked in",
+      "commandResponse": "You clocked in at:"
     },
     "stop": {
       "key": {
         "unset": "Estimated clock out",
         "set": "Clocked out"
-      }
+      },
+      "commandResponse": "You clocked out at:"
     },
     "time": {
       "hour": "h",

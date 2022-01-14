@@ -52,6 +52,6 @@ export class DayRepository extends AbstractRepository {
       return this.create(dayEntity);
     }
 
-    return null;
+    return dayEntity;
   }
 }

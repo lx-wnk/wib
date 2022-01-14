@@ -25,12 +25,14 @@ export default new class Wib {
     const listCommand = container.get<AbstractCommand>(IDENTIFIERS.Command.ListCommand);
     const noteCommand = container.get<AbstractCommand>(IDENTIFIERS.Command.NoteCommand);
     const startCommand = container.get<AbstractCommand>(IDENTIFIERS.Command.StartCommand);
+    const stopCommand = container.get<AbstractCommand>(IDENTIFIERS.Command.StopCommand);
 
     this.program.addCommand(migrateCommand.init());
     this.program.addCommand(worklogCommand.init());
     this.program.addCommand(listCommand.init());
     this.program.addCommand(noteCommand.init());
     this.program.addCommand(startCommand.init());
+    this.program.addCommand(stopCommand.init());
   }
 
   exec(argv): Command.Command {

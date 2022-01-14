@@ -6,11 +6,13 @@
     },
     "start": {
       "key": "$tc(format.start.key)",
-      "value": "{{time}}"
+      "value": "{{time}}",
+      "commandResponse": "$tc(format.start.commandResponse) {{time}}"
     },
     "stop": {
       "key": "$tc(format.stop.key.set)",
-      "value": "{{time}}"
+      "value": "{{time}}",
+      "commandResponse": "$tc(format.stop.commandResponse) {{time}}"
     },
     "stop-unset": {
       "key": "$tc(format.stop.key.unset)",

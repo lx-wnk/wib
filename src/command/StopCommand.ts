@@ -2,7 +2,7 @@ import AbstractCommand from './AbstractCommand';
 
 import {inject, injectable} from 'inversify';
 import {ConnectionManager} from '../orm';
-import {MessageService} from '../components';
+import {Formatter, MessageService} from '../components';
 import {IDENTIFIERS} from '../identifiers';
 import {DayRepository} from '../orm/repositories';
 import {DayEntity} from '../orm/entities/Day.entity';
@@ -16,15 +16,18 @@ export class StopCommand extends AbstractCommand {
 
   private connectionManager: ConnectionManager;
   private dayRepository: DayRepository;
+  private formatter: Formatter;
 
   constructor(
     @inject(IDENTIFIERS.Message) messages: MessageService,
     @inject(IDENTIFIERS.ORM.Connection) connectionManager: ConnectionManager,
-    @inject(IDENTIFIERS.ORM.repositories.day) dayRepository: DayRepository
+    @inject(IDENTIFIERS.ORM.repositories.day) dayRepository: DayRepository,
+    @inject(IDENTIFIERS.Formatter) formatter: Formatter
   ) {
     super(messages);
     this.connectionManager = connectionManager;
     this.dayRepository = dayRepository;
+    this.formatter = formatter;
   }
 
 
@@ -42,22 +45,23 @@ export class StopCommand extends AbstractCommand {
             currentDay = result;
           }
 
-          if (!result.finish) {
-            result.finish = new Date();
+          if (!currentDay.finish) {
+            currentDay.finish = new Date();
           }
-
-          console.log(result);
 
           currentDay.finish.setHours(time.split(':')[0]);
           currentDay.finish.setMinutes(time.split(':')[1]);
 
-          if (!result) {
-            this.dayRepository.create(result);
+          if (!currentDay.id) {
+            this.dayRepository.create(currentDay);
 
             return;
           }
 
           this.dayRepository.update(currentDay);
+        })
+        .finally(() => {
+          console.log(this.formatter.applyFormat({'time': currentDay.finish}, 'stop', 'commandResponse'));
         });
   }
 }

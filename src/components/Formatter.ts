@@ -27,6 +27,7 @@ export class Formatter {
     }
 
     specifiedFormat = this.applyVariables(specifiedFormat, dataObject, formatName);
+
     return this.messageService.applyTranslationToString(specifiedFormat);
   }
 

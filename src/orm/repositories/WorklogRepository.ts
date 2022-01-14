@@ -41,8 +41,8 @@ export class WorklogRepository extends AbstractRepository {
       where: [
         {
           time: Between(
-            tmp.getFullYear() + '-' + tmp.getMonth() + '-' +tmp.getDate(),
-            new Date(date.setHours(24, 59, 59, 0)).toISOString()
+              tmp.getFullYear() + '-' + tmp.getMonth() + '-' +tmp.getDate(),
+              new Date(date.setHours(24, 59, 59, 0)).toISOString()
           ),
           iterator: iterator,
           deleted: 0
