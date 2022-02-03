@@ -2,16 +2,16 @@
   "format": {
     "day": {
       "key": "$tc(format.day.key)",
-      "value": "{{date}}"
+      "value": "{{start:date}}"
     },
     "start": {
       "key": "$tc(format.start.key)",
-      "value": "{{time}}",
-      "commandResponse": "$tc(format.start.commandResponse) {{time}}"
+      "value": "{{start:time}}",
+      "commandResponse": "$tc(format.start.commandResponse) {{start:time}}"
     },
     "stop": {
       "key": "$tc(format.stop.key.set)",
-      "value": "{{time}}",
+      "value": "{{finish:time}}",
       "commandResponse": "$tc(format.stop.commandResponse) {{time}}"
     },
     "stop-unset": {
@@ -31,12 +31,13 @@
       "value": "{{duration}}"
     },
     "notes": {
-      "key": "$tc(format.note.key.type)({{iterator}}) [{{time}}]",
+      "key": "$tc(format.note.key.type)",
       "value": "{{value}}"
     },
     "worklogs": {
       "key": "$tc(format.worklog.key.type)({{iterator}}) [{{time}}]",
-      "value": "{{duration}} {{key}} {{value}}"
+      "value": "{{duration}} {{key}} {{value}}",
+      "commandResponse": "$tc(format.worklog.commandResponse)"
     }
   },
   "minuteRounding": 5,

@@ -18,7 +18,7 @@ export class Formatter {
   }
 
   public applyFormat(dataObject: object, formatName: string, type = 'value'): string {
-    let specifiedFormat = this.configService.getSpecifiedFormat(formatName, type);
+    const specifiedFormat = this.messageService.translation(formatName + '.' + type);
 
     if (specifiedFormat === undefined || dataObject === undefined) {
       console.error(this.messageService.translation('format.invalid') + formatName);
@@ -26,9 +26,7 @@ export class Formatter {
       return '';
     }
 
-    specifiedFormat = this.applyVariables(specifiedFormat, dataObject, formatName);
-
-    return this.messageService.applyTranslationToString(specifiedFormat);
+    return this.applyVariables(specifiedFormat, dataObject, formatName);
   }
 
   public toTable(data, showFullOutput = false, colLength = this.getLongestElements(data), isSub = false, output = ''): string {
@@ -86,17 +84,20 @@ export class Formatter {
     return output;
   }
 
+  public formatValue(dataObject: object, format: string, formatName = ''): string {
+    return this.applyVariables(format, dataObject, formatName);
+  }
+
   public formatTime(time: string, formatType?: string, round = true): string {
     const dateObject = new Date(time);
 
-
     if (formatType === 'datetime') {
-      return dateObject.getFullYear() + '-' + dateObject.getMonth() + '-' + dateObject.getDate() +
+      return dateObject.getFullYear() + '-' + ('0' + dateObject.getMonth() + 1).slice(-2) + '-' + ('0' + dateObject.getDate()).slice(-2) +
         ' ' + ('0' + dateObject.getHours()).slice(-2) + ':' + ('0' + dateObject.getMinutes()).slice(-2);
     }
 
     if (formatType === 'date') {
-      return dateObject.getFullYear() + '-' + dateObject.getMonth() + '-' + dateObject.getDate();
+      return dateObject.getFullYear() + '-' + ('0' + dateObject.getMonth() + 1).slice(-2) + '-' + ('0' + dateObject.getDate()).slice(-2);
     }
 
     if (formatType === 'duration') {
@@ -134,20 +135,40 @@ export class Formatter {
   }
 
   private applyVariables(specifiedFormat: string, dataObject: object, formatName: string): string {
-    for (const key in dataObject) {
-      let replaceVal = dataObject[key];
+    if (specifiedFormat.indexOf('{{') === -1) {
+      return specifiedFormat;
+    }
+
+    while (specifiedFormat.indexOf('{{') !== -1) {
+      const plainFormat = specifiedFormat.substring(
+          specifiedFormat.lastIndexOf('{{') + 2,
+          specifiedFormat.lastIndexOf('}}')
+      );
+      const splittedPlainFormat = plainFormat.split(':');
+      const formatTarget = splittedPlainFormat.shift();
+      let formatType = formatTarget;
+      if (splittedPlainFormat.length > 0) {
+        formatType = splittedPlainFormat.pop();
+      }
+
+      let replaceVal = dataObject[formatTarget];
+
+      if (!dataObject[formatTarget]) {
+        return;
+      }
+
 
       if (replaceVal !== undefined) {
-        if (['time', 'date', 'duration', 'datetime'].includes(key)) {
+        if (['time', 'date', 'duration', 'datetime'].includes(formatType)) {
           if (formatName === 'rest' || formatName === 'workDuration') {
-            replaceVal = this.formatTime(replaceVal, key, false);
+            replaceVal = this.formatTime(replaceVal, formatType, false);
           } else {
-            replaceVal = this.formatTime(replaceVal, key);
+            replaceVal = this.formatTime(replaceVal, formatType);
           }
         }
-
-        specifiedFormat = specifiedFormat.split('{{' + key + '}}').join(replaceVal);
       }
+
+      specifiedFormat = specifiedFormat.split('{{' + plainFormat + '}}').join(replaceVal);
     }
 
     return specifiedFormat;

@@ -1,7 +1,7 @@
 import {inject, injectable} from 'inversify';
 import AbstractCommand from './AbstractCommand';
 import {ConnectionManager} from '../orm';
-import {MessageService, WorklogService} from '../components';
+import {Formatter, MessageService, WorklogService} from '../components';
 import {IDENTIFIERS} from '../identifiers';
 
 @injectable()
@@ -26,15 +26,18 @@ export class WorklogCommand extends AbstractCommand {
 
   private connectionManager: ConnectionManager;
   private worklogService: WorklogService;
+  private formatter: Formatter;
 
   constructor(
     @inject(IDENTIFIERS.Message) messages: MessageService,
     @inject(IDENTIFIERS.ORM.Connection) connectionManager: ConnectionManager,
-    @inject(IDENTIFIERS.worklog) worklogService: WorklogService
+    @inject(IDENTIFIERS.worklog) worklogService: WorklogService,
+    @inject(IDENTIFIERS.Formatter) formatter: Formatter
   ) {
     super(messages);
     this.connectionManager = connectionManager;
     this.worklogService = worklogService;
+    this.formatter = formatter;
   }
 
   exec(options, args): void {
@@ -43,6 +46,8 @@ export class WorklogCommand extends AbstractCommand {
 
     if (options.delete) {
       this.worklogService.delete(options.delete);
+
+      console.log(this.formatter.applyFormat({'iterator': options.delete}, 'worklogs', 'commandResponse.deleted'));
 
       return;
     }
@@ -65,6 +70,14 @@ export class WorklogCommand extends AbstractCommand {
       return;
     }
 
-    this.worklogService.create(commandValues, trackTime);
+    if (commandValues.length < 2) {
+      console.log(this.message.translation('command.worklog.execution.invalidArguments'));
+
+      return;
+    }
+
+    this.worklogService.create(commandValues, trackTime).then((res) => {
+      console.log(this.formatter.applyFormat(res, 'command.worklog.execution', 'create'));
+    });
   }
 }

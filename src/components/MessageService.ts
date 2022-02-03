@@ -18,6 +18,10 @@ export class MessageService {
     let isTranslatable = true,
       translatedString = translatable;
 
+    if (!translatable) {
+      return translatedString;
+    }
+
     if (translatable.indexOf('$tc(') !== -1) {
       do {
         const transStart = translatable.indexOf('$tc('),

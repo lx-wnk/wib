@@ -32,9 +32,10 @@ export class StartCommand extends AbstractCommand {
 
 
   exec(args, options): void {
-    let time = options[0];
-    if (!options || !options[0] || !options[0].includes(':')) {
-      time = (new Date()).getUTCHours() + ':' + (new Date()).getUTCMinutes();
+    let time = options.args[0];
+
+    if (!options || !options.args || !options.args[0] || !options.args[0].includes(':')) {
+      time = (new Date()).getHours() + ':' + (new Date()).getMinutes();
     }
 
     let currentDay = new DayEntity();
@@ -60,7 +61,7 @@ export class StartCommand extends AbstractCommand {
 
           this.dayRepository.update(currentDay);
         }).finally(() => {
-          console.log(this.formatter.applyFormat({'time': currentDay.start}, 'start', 'commandResponse'));
+          console.log(this.formatter.applyFormat(currentDay, 'format.commandResponse', 'start'));
         });
   }
 }

@@ -25,22 +25,25 @@ export class ListService {
   }
 
   public async getList() {
-    const listData = {'start': null, 'finish': null, 'notes': [], 'worklogs': []};
+    const listData = {'day': null, 'start': null, 'finish': null, 'notes': [], 'worklogs': []};
     const notes = await this.noteRepository.getUndeletedList();
     const worklogs = await this.worklogRepository.getUndeletedListForDate();
     const day = await this.dayRepository.getByDate();
 
-    listData.notes = this.formatNotes(notes);
-    listData.worklogs = this.formatWorklogs(worklogs);
+    listData.day = {
+      'key': this.formatter.applyFormat(day, 'format.list.keys', 'day'),
+      'value': this.formatter.applyFormat(day, 'format.list.values', 'day')
+    };
     listData.start = {
-      'key': this.formatter.applyFormat(day.start, 'start', 'key'),
-      'value': this.formatter.applyFormat(day.start, 'start'),
+      'key': this.formatter.applyFormat(day, 'format.list.keys', 'start'),
+      'value': this.formatter.applyFormat(day, 'format.list.values', 'start'),
     };
-
     listData.finish = {
-      'key': this.formatter.applyFormat(day.finish, 'stop', 'key'),
-      'value': this.formatter.applyFormat(day.finish, 'stop'),
+      'key': this.formatter.applyFormat(day, 'format.list.keys', 'stop'),
+      'value': this.formatter.applyFormat(day, 'format.list.values', 'stop'),
     };
+    listData.notes = this.formatNotes(notes);
+    listData.worklogs = this.formatWorklogs(worklogs, day.start);
 
     return this.formatter.toTable(listData, false);
   }
@@ -50,8 +53,8 @@ export class ListService {
 
     notes.forEach((note) => {
       hydratedNotes.push({
-        'key': this.formatter.applyFormat(note, 'notes', 'key'),
-        'value': this.formatter.applyFormat(note, 'notes')
+        'key': this.formatter.applyFormat(note, 'format.list.keys', 'note'),
+        'value': this.formatter.applyFormat(note, 'format.list.values', 'note')
       });
     });
 
@@ -60,8 +63,7 @@ export class ListService {
 
   private formatWorklogs(worklogs: WorklogEntity[], start: Date = new Date()) {
     const hydratedWorklogs = [];
-    const latestTrack = start;
-
+    let latestTrack = start;
 
     worklogs.forEach((worklog) => {
       const tmp = {
@@ -79,22 +81,13 @@ export class ListService {
 
       tmp.duration = duration;
 
-      if (worklog.rest) {
-        hydratedWorklogs.push({
-          'key': this.formatter.applyFormat(tmp, 'rest', 'key'),
-          'value': this.formatter.applyFormat(tmp, 'rest')
-        });
-
-        return;
-      }
-
       hydratedWorklogs.push({
-        'key': this.formatter.applyFormat(tmp, 'worklogs', 'key'),
-        'value': this.formatter.applyFormat(tmp, 'worklogs')
+        'key': this.formatter.applyFormat(tmp, 'format.list.keys', worklog.rest ? 'rest' : 'worklog'),
+        'value': this.formatter.applyFormat(tmp, 'format.list.values', worklog.rest ? 'rest' : 'worklog')
       });
-    });
 
-    console.log(hydratedWorklogs);
+      latestTrack = worklog.time;
+    });
 
     return hydratedWorklogs;
   }

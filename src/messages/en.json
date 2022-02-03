@@ -85,8 +85,9 @@
       },
       "description": "Handle worklogs",
       "execution": {
-        "create": "Created a new worklog with value: ",
-        "edit": "Edited worklog with id: ",
+        "create": "Worklog {{iterator}} with key[{{key}}] and value[{{value}}] was created at {{time}}",
+        "updated": "Worklog {{iterator}} with new values key[{{key}}] and value[{{value}}] was updated",
+        "deleted": "Worklog {{iterator}} was deleted",
         "couldNotEdit": "Could not edit worklog with id: ",
         "delete": "Deleted worklog with id: ",
         "couldNotDelete": "Could not delete worklog with id: ",
@@ -96,6 +97,28 @@
     }
   },
   "format": {
+    "list": {
+      "keys": {
+        "day": "Report for date",
+        "start": "Clocked in",
+        "stop": "Clocked out",
+        "note": "Note({{iterator}}) [{{time:datetime}}]",
+        "worklog": "Worklog({{iterator}}) [{{time:time}}]",
+        "rest": "Break"
+      },
+      "values": {
+        "day": "{{start:date}}",
+        "start": "{{start:time}}",
+        "stop": "{{finish:time}}",
+        "note": "{{value}}",
+        "worklog": "{{duration:duration}} {{key}} {{value}}",
+        "rest": "{{duration:duration}} Break duration"
+      }
+    },
+    "commandResponse": {
+      "start": "You clocked in at: {{start:time}}",
+      "stop": "You clocked out at: {{finish:time}}"
+    },
     "break": {
       "key": {
         "type": "Break"
@@ -110,19 +133,17 @@
     "invalid": "INVALID FORMAT provided: ",
     "note": {
       "key": {
-        "type": "Note"
+        "type": ""
       }
     },
     "start": {
-      "key": "Clocked in",
-      "commandResponse": "You clocked in at:"
+      "key": "Clocked in"
     },
     "stop": {
       "key": {
         "unset": "Estimated clock out",
         "set": "Clocked out"
-      },
-      "commandResponse": "You clocked out at:"
+      }
     },
     "time": {
       "hour": "h",
@@ -131,6 +152,8 @@
     "worklog": {
       "key": {
         "type": "Worklog"
+      },
+      "commandResponse": {
       }
     },
     "workDuration": {

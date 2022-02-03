@@ -5,41 +5,19 @@ import {DayEntity} from '../../orm/entities/Day.entity';
 
 @injectable()
 export class WorklogService extends AbstractWorklogService {
-  public create(commandValues: Array<string>, time: Date = new Date()) {
-    if (commandValues.length < 2) {
-      return 'invalid'; // TODO
-    }
+  public async create(commandValues: Array<string>, time: Date = new Date()) {
+    const currentDay = await this.getCurrentDay();
+    const worklog = new WorklogEntity();
 
-    let currentDay: DayEntity;
-    const worklogIterator = 0;
+    worklog.time = time;
+    worklog.key = commandValues[0];
+    worklog.day = currentDay;
 
-    this.getCurrentDay()
-        .then((result) => {
-          if (!result) {
-            this.startDay(time).then((day) => {
-              currentDay = day;
-            });
-          } else {
-            currentDay = result;
-          }
-        })
-        .finally(() => {
-          const worklog = new WorklogEntity();
-          worklog.time = time;
-          worklog.key = commandValues[0];
+    commandValues.splice(0, 1);
+    worklog.value = commandValues.join(' ');
+    worklog.iterator= (await this.worklogRepository.getUndeletedListForDate(currentDay.start)).length + 1;
 
-          commandValues.splice(0, 1);
-
-          worklog.value = commandValues.join(' ');
-          worklog.day = currentDay;
-          worklog.iterator = worklogIterator;
-
-          this.worklogRepository.getUndeletedListForDate(currentDay.start).then((result) => {
-            worklog.iterator = result.length + 1;
-          }).finally(() => {
-            this.worklogRepository.create(worklog);
-          });
-        });
+    return this.worklogRepository.create(worklog);
   }
 
   public update(iterator: number, commandValues: string[], time: Date) {
