@@ -1,5 +1,6 @@
 import {IDENTIFIERS_COMMAND} from './identifiers.command';
 import {IDENTIFIERS_ORM} from './identifiers.orm';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {MessageService, ConfigService} from '../components';
 
 const IDENTIFIERS = {

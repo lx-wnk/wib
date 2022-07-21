@@ -37,11 +37,11 @@
       },
       "description": "Handle notes",
       "execution": {
-        "create": "Created new note with value: ",
-        "couldNotEdit": "Could not edit note with id: ",
-        "edit": "Edited note with id: ",
-        "couldNotDelete": "Could not delete note with id: ",
-        "delete": "Deleted note with id: ",
+        "create": "Created new note with value: {{value}}",
+        "edit": "Edited note with id: {{id}}",
+        "couldNotEdit": "Could not edit note with id: {{id}}",
+        "delete": "Deleted note with id: {{id}}",
+        "couldNotDelete": "Could not delete note with id: {{id}}",
         "missingOptions": "Please provide a value for the note `wib note <key> <value>`"
       }
     },

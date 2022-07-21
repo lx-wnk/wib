@@ -1,4 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {ConnectionManager} from '../orm';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import {DayRepository, WorklogRepository, NoteRepository} from '../orm/repositories';
 
 const IDENTIFIERS_ORM = {

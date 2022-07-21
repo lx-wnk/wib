@@ -6,7 +6,7 @@ import {Between} from 'typeorm';
 
 @injectable()
 export class DayRepository extends AbstractRepository {
-  public async create(entity: AbstractEntity) {
+  public async create(entity: AbstractEntity): Promise<DayEntity> {
     const connection = await this.connectionManager.getConnection();
 
     return connection.getRepository(DayEntity).save(entity);
@@ -23,19 +23,19 @@ export class DayRepository extends AbstractRepository {
     });
   }
 
-  public async update(entity: AbstractEntity) {
+  public async update(entity: AbstractEntity): Promise<DayEntity> {
     const connection = await this.connectionManager.getConnection();
 
     return connection.getRepository(DayEntity).save(entity);
   }
 
-  public async delete(id: string) {
+  public async delete(id: string): Promise<void> {
     const connection = await this.connectionManager.getConnection();
 
-    return connection.getRepository(DayEntity).delete(id);
+    connection.getRepository(DayEntity).delete(id);
   }
 
-  public async getByDate(date: Date = new Date()) {
+  public async getByDate(date: Date = new Date()): Promise<DayEntity> {
     const connection = await this.connectionManager.getConnection();
     const tmp = new Date(date.setHours(0, 0, 0, 0));
 

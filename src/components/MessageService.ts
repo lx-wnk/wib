@@ -61,7 +61,7 @@ export class MessageService {
     }
 
     Object.keys(parameters).forEach((paramKey) => {
-      const mockedParamKey = '{' + paramKey + '}';
+      const mockedParamKey = '{{' + paramKey + '}}';
 
       if (translation.indexOf(mockedParamKey) !== -1) {
         translation = translation.replace(mockedParamKey, parameters[paramKey]);

@@ -3,7 +3,6 @@ import container from './config/inversify.config';
 import {IDENTIFIERS} from './identifiers';
 import * as Command from 'commander';
 import AbstractCommand from './command/AbstractCommand';
-import {ListCommand} from './command';
 
 export default new class Wib {
   public program: Command.Command

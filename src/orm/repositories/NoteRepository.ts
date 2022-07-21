@@ -1,15 +1,11 @@
 import {AbstractRepository} from './AbstractRepository';
-import {WorklogEntity} from '../entities/Worklog.entity';
-import {AbstractEntity} from '../entities/Abstract.entity';
 import {injectable} from 'inversify';
-import {DayEntity} from '../entities/Day.entity';
 import {Between, Equal} from 'typeorm';
-import {start} from 'repl';
 import {NoteEntity} from '../entities/Note.entity';
 
 @injectable()
 export class NoteRepository extends AbstractRepository {
-  public async create(value: string) {
+  public async create(value: string): Promise<NoteEntity> {
     const connection = await this.connectionManager.getConnection();
 
     const note = new NoteEntity();
@@ -20,17 +16,17 @@ export class NoteRepository extends AbstractRepository {
     return connection.getRepository(NoteEntity).save(note);
   }
 
-  public async read(iteratorNumber?: number) {
+  public async read(iteratorNumber?: number): Promise<NoteEntity|NoteEntity[]> {
     const connection = await this.connectionManager.getConnection();
 
     if (iteratorNumber.toString().length > 0) {
       return connection.getRepository(NoteEntity).findOne({'iterator': Equal(iteratorNumber)});
-    } else {
-      return connection.getRepository(NoteEntity).find();
     }
+
+    return connection.getRepository(NoteEntity).find();
   }
 
-  public async update(iteratorNumber: number, text: string) {
+  public async update(iteratorNumber: number, text: string): Promise<NoteEntity> {
     const connection = await this.connectionManager.getConnection();
 
     return connection.getRepository(NoteEntity).update(
@@ -39,22 +35,22 @@ export class NoteRepository extends AbstractRepository {
     );
   }
 
-  public async delete(iteratorNumber: number) {
+  public async delete(iteratorNumber: number): Promise<void> {
     const connection = await this.connectionManager.getConnection();
 
-    return connection.getRepository(NoteEntity).update(
+    connection.getRepository(NoteEntity).update(
         {'iterator': Equal(iteratorNumber)},
         {'deleted': true}
     );
   }
 
-  public async getIteratorNumber() {
+  public async getIteratorNumber(): Promise<number> {
     const connection = await this.connectionManager.getConnection();
 
     return await connection.getRepository(NoteEntity).count();
   }
 
-  public async getByDateIterator(date: Date = new Date(), iterator: number) {
+  public async getByDateIterator(date: Date = new Date(), iterator: number): Promise<NoteEntity[]> {
     const connection = await this.connectionManager.getConnection();
     const tmp = new Date(date.setHours(0, 0, 0, 0));
 
@@ -66,7 +62,7 @@ export class NoteRepository extends AbstractRepository {
     });
   }
 
-  public async getUndeletedList() {
+  public async getUndeletedList(): Promise<NoteEntity[]> {
     const connection = await this.connectionManager.getConnection();
 
     return await connection.getRepository(NoteEntity).find({

@@ -6,7 +6,7 @@ import {Between, Equal} from 'typeorm';
 
 @injectable()
 export class WorklogRepository extends AbstractRepository {
-  public async create(entity: AbstractEntity) {
+  public async create(entity: AbstractEntity): Promise <WorklogEntity> {
     const connection = await this.connectionManager.getConnection();
 
     return connection.getRepository(WorklogEntity).save(entity);
@@ -23,41 +23,39 @@ export class WorklogRepository extends AbstractRepository {
     });
   }
 
-  public async update(entity: AbstractEntity) {
+  public async update(entity: AbstractEntity): Promise <WorklogEntity> {
     const connection = await this.connectionManager.getConnection();
 
     return connection.getRepository(WorklogEntity).save(entity);
   }
 
-  public async delete(id: string) {
-    //  TODO
-  }
-
-  public async getByDateIterator(date: Date = new Date(), iterator: number) {
+  public async getByDateIterator(date: Date = new Date(), iterator: number): Promise<WorklogEntity[]> {
     const connection = await this.connectionManager.getConnection();
-    const tmp = new Date(date.setUTCHours(0, 0, 0, 0));
+    const dayStart = new Date(date.setHours(0, 0, 0, 0));
+    const dayEnd = new Date(date.setHours(24, 59, 59, 0));
 
     return await connection.getRepository(WorklogEntity).find({
       where: [
         {
-          time: Between(
-              tmp.getFullYear() + '-' + tmp.getMonth() + '-' +tmp.getDate(),
-              new Date(date.setHours(24, 59, 59, 0)).toISOString()
-          ),
-          iterator: iterator,
-          deleted: 0
-        },
+          'iterator': Equal(iterator),
+          'deleted': Equal(false),
+          'time': Between(dayStart.toISOString(), dayEnd.toISOString())
+        }
       ],
+      order: {'iterator': 'ASC'}
     });
   }
 
-  public async getUndeletedListForDate(date: Date = new Date()) {
+  public async getUndeletedListForDate(date: Date = new Date()): Promise<WorklogEntity[]> {
     const connection = await this.connectionManager.getConnection();
     const tmp = new Date(date.setHours(0, 0, 0, 0));
 
     return await connection.getRepository(WorklogEntity).find({
       where: [
-        {'deleted': Equal(false), 'time': Between(tmp.toISOString(), new Date(date.setHours(24, 59, 59, 0)).toISOString())}
+        {
+          'deleted': Equal(false),
+          'time': Between(tmp.toISOString(), new Date(date.setHours(24, 59, 59, 0)).toISOString())
+        }
       ],
       order: {'time': 'ASC'}
     });

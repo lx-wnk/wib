@@ -16,7 +16,7 @@ export abstract class AbstractWorklogService {
     this.dayRepository = dayRepository;
   }
 
-  protected getCurrentDay() {
+  protected getCurrentDay(): Promise<DayEntity> {
     return this.dayRepository.getByDate();
   }
 }

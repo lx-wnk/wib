@@ -24,7 +24,8 @@ export class ListService {
     this.formatter = formatter;
   }
 
-  public async getList() {
+  public async getList(order?: string, fullOutput?: string): Promise<string> {
+    // TODO: Add handling for order and full output
     const listData = {'day': null, 'start': null, 'finish': null, 'notes': [], 'worklogs': []};
     const notes = await this.noteRepository.getUndeletedList();
     const worklogs = await this.worklogRepository.getUndeletedListForDate();
@@ -48,7 +49,7 @@ export class ListService {
     return this.formatter.toTable(listData, false);
   }
 
-  private formatNotes(notes: NoteEntity[]) {
+  private formatNotes(notes: NoteEntity[]): object {
     const hydratedNotes = [];
 
     notes.forEach((note) => {
@@ -61,7 +62,7 @@ export class ListService {
     return hydratedNotes;
   }
 
-  private formatWorklogs(worklogs: WorklogEntity[], start: Date = new Date()) {
+  private formatWorklogs(worklogs: WorklogEntity[], start: Date = new Date()): object {
     const hydratedWorklogs = [];
     let latestTrack = start;
 

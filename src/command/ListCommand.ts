@@ -38,10 +38,8 @@ export class ListCommand extends AbstractCommand {
     this.listService = listService;
   }
 
-  exec(options, args): void {
-    const commandValues: string[] = args.args;
+  exec(options): void {
     const outputDate = new Date();
-    let trackTime;
 
     if (options.yesterday) {
       outputDate.setUTCDate(outputDate.getUTCDate() - 1);
@@ -55,19 +53,7 @@ export class ListCommand extends AbstractCommand {
       return;
     }
 
-    if (options.full) {
-      // todo
-
-      return;
-    }
-
-    if (options.order) {
-      // todo
-
-      return;
-    }
-
-    this.listService.getList().then((result) => {
+    this.listService.getList(options.order, options.full).then((result) => {
       console.log(result);
     });
   }

@@ -1,7 +1,6 @@
 import {inject, injectable} from 'inversify';
 import AbstractCommand from './AbstractCommand';
-import {ConnectionManager} from '../orm';
-import {MessageService, WorklogService} from '../components';
+import {MessageService} from '../components';
 import {IDENTIFIERS} from '../identifiers';
 import {NoteRepository} from '../orm/repositories';
 
@@ -33,37 +32,35 @@ export class NoteCommand extends AbstractCommand {
 
   exec(options, args): void {
     const commandValues: string[] = args.args;
-    let trackTime;
 
     if (options.delete) {
       this.noteRepository.delete(options.delete)
-          .then((result)=> {
-            console.log(result);
-          }).catch((err) => {
-            console.log(err);
+          .then(() => {
+            console.log(this.message.translation('command.note.execution.delete', {'id': options.delete}));
+          }).catch(() => {
+            console.log(this.message.translation('command.note.execution.couldNotDelete', {'id': options.delete}));
           });
 
       return;
     }
 
     if (options.edit) {
-      console.log(options.edit);
-
       this.noteRepository.update(options.edit, commandValues.join(' '))
-          .then((result)=> {
-            console.log(result);
-          }).catch((err) => {
-            console.log(err);
+          .then(() => {
+            console.log(this.message.translation('command.note.execution.edit', {'id': options.delete}));
+          }).catch(() => {
+            console.log(this.message.translation('command.note.execution.couldNotEdit', {'id': options.delete}));
           });
 
       return;
     }
 
     this.noteRepository.create(commandValues.join(' '))
-        .then((result)=> {
-          console.log(result);
+        .then((result) => {
+          console.log(this.message.translation('command.note.execution.create', result));
         }).catch((err) => {
-          console.log(err);
+          console.error('catch');
+          console.error(err);
         });
   }
 }

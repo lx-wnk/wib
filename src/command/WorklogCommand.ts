@@ -46,8 +46,7 @@ export class WorklogCommand extends AbstractCommand {
 
     if (options.delete) {
       this.worklogService.delete(options.delete);
-
-      console.log(this.formatter.applyFormat({'iterator': options.delete}, 'worklogs', 'commandResponse.deleted'));
+      console.log(this.formatter.applyFormat({'iterator': options.delete}, 'command.worklog.execution', 'delete'));
 
       return;
     }

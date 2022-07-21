@@ -29,7 +29,13 @@ export class Formatter {
     return this.applyVariables(specifiedFormat, dataObject, formatName);
   }
 
-  public toTable(data, showFullOutput = false, colLength = this.getLongestElements(data), isSub = false, output = ''): string {
+  public toTable(
+      data,
+      showFullOutput = false,
+      colLength = this.getLongestElements(data),
+      isSub = false,
+      output = ''
+  ): string {
     this.showFullOutput = showFullOutput;
     const me = this;
     let loopAmount = Object.keys(data).length + 1, keyOutput, valOutput;
@@ -92,12 +98,22 @@ export class Formatter {
     const dateObject = new Date(time);
 
     if (formatType === 'datetime') {
-      return dateObject.getFullYear() + '-' + ('0' + dateObject.getMonth() + 1).slice(-2) + '-' + ('0' + dateObject.getDate()).slice(-2) +
-        ' ' + ('0' + dateObject.getHours()).slice(-2) + ':' + ('0' + dateObject.getMinutes()).slice(-2);
+      return dateObject.getFullYear() +
+        '-' +
+        ('0' + dateObject.getMonth() + 1).slice(-2) +
+        '-' + ('0' + dateObject.getDate()).slice(-2) +
+        ' ' +
+        ('0' + dateObject.getHours()).slice(-2) +
+        ':' +
+        ('0' + dateObject.getMinutes()).slice(-2);
     }
 
     if (formatType === 'date') {
-      return dateObject.getFullYear() + '-' + ('0' + dateObject.getMonth() + 1).slice(-2) + '-' + ('0' + dateObject.getDate()).slice(-2);
+      return dateObject.getFullYear() +
+        '-' +
+        ('0' + dateObject.getMonth() + 1).slice(-2) +
+        '-' +
+        ('0' + dateObject.getDate()).slice(-2);
     }
 
     if (formatType === 'duration') {
