@@ -4,7 +4,7 @@ import {AbstractWorklogService} from './AbstractWorklogService';
 
 @injectable()
 export class WorklogService extends AbstractWorklogService {
-  public async create(commandValues: Array<string>, time: Date = new Date()): Promise<WorklogEntity> {
+  public async create(commandValues: Array<string>, unexpected: string, time: Date = new Date()): Promise<WorklogEntity> {
     const currentDay = await this.getCurrentDay();
     const worklog = new WorklogEntity();
 
@@ -14,12 +14,13 @@ export class WorklogService extends AbstractWorklogService {
 
     commandValues.splice(0, 1);
     worklog.value = commandValues.join(' ');
+    worklog.unexpected = unexpected;
     worklog.iterator= (await this.worklogRepository.getUndeletedListForDate(currentDay.start)).length + 1;
 
     return this.worklogRepository.create(worklog);
   }
 
-  public update(iterator: number, commandValues: string[], time: Date): void {
+  public update(iterator: number, commandValues: string[], unexpected: string, time: Date): void {
     this.worklogRepository.getByDateIterator(new Date(), iterator)
         .then((result) => {
           if (result.length !== 1) {
@@ -32,6 +33,10 @@ export class WorklogService extends AbstractWorklogService {
 
           if (time) {
             singleResult.time = time;
+          }
+
+          if (unexpected.length > 0) {
+            singleResult.unexpected = unexpected;
           }
 
           if (commandValues[0]) {

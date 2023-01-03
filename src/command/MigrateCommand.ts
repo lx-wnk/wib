@@ -12,11 +12,16 @@ import {IDENTIFIERS} from '../identifiers';
 import {MessageService} from '../components';
 
 @injectable()
-export class MigrateDataCommand extends AbstractCommand {
-  public name = 'migrate-data';
-  public aliases = ['md'];
-  public options = [];
-  public description = 'Migrate data from filesystem to sqlite';
+export class MigrateCommand extends AbstractCommand {
+  public name = 'migrate';
+  public aliases = ['m'];
+  public options = [
+    {
+      flag: 'command.migrate.option.data.flag',
+      description: 'command.migrate.option.data.description'
+    },
+  ];
+  public description = 'command.migrate.description';
 
   private days = {};
   private connectionManager: ConnectionManager;
@@ -29,11 +34,51 @@ export class MigrateDataCommand extends AbstractCommand {
     this.connectionManager = connectionManager;
   }
 
-  exec(): void {
+  exec(options): void {
+    const sleep = async (milliseconds) => {
+      await new Promise((resolve) => {
+        return setTimeout(resolve, milliseconds);
+      });
+    };
+
     console.log('START: migration');
 
-    this.extractTypeData();
+    console.log('STEP(START): missing migrations');
+    this.executeMissingMigrations();
+    console.log('STEP(DONE): missing migrations');
 
+    if (options.data) {
+      (async () => {
+        console.log('STEP(START): data migration in 5 seconds');
+        await sleep(5000);
+
+        this.migrateData();
+        console.log('STEP(DONE): data migration');
+      })();
+    }
+  }
+
+  private executeMissingMigrations(): void {
+    try {
+      this.connectionManager.getConnection()
+          .then((connection) => {
+            connection.runMigrations({transaction: 'all'})
+                .catch((err) => {
+                  console.error('Please roll back to latest version due to an error while migration execution');
+                  console.error(err);
+                });
+          }).catch((err) => {
+            console.error('Please roll back to latest version due to an error while migration execution');
+            console.error(err);
+          });
+    } catch (err) {
+      console.error('Please roll back to latest version due to an error while migration execution');
+      console.error(err);
+    }
+  }
+
+  private migrateData(): void {
+    this.extractTypeData();
     this.connectionManager.getConnection()
         .then((connection) => {
           connection.runMigrations({transaction: 'none'})
@@ -80,11 +125,6 @@ export class MigrateDataCommand extends AbstractCommand {
         this.days[file.replace('.json', '')]['worklogs'] = parsed.worklogs;
       }
     });
-  }
-
-  private getFiles(): string [] {
-    const files = fs.readdirSync(this.getHomeDir());
-    return files.filter((el) => /[0-9]{4}_[0-9]{2}_[0-9]{2}.json$/gm.test(el));
   }
 
   private migrateToSqlite(): void {
@@ -158,6 +198,11 @@ export class MigrateDataCommand extends AbstractCommand {
     }).finally(() => {
       console.log('done');
     });
+  }
+
+  private getFiles(): string [] {
+    const files = fs.readdirSync(this.getHomeDir());
+    return files.filter((el) => /[0-9]{4}_[0-9]{2}_[0-9]{2}.json$/gm.test(el));
   }
 
   private parseFileToJson(file): object {

@@ -8,6 +8,10 @@ export class ConnectionManager {
   public entityManager;
 
   public async getConnection(): Promise<Connection> {
+    if (this.connection) {
+      return this.connection;
+    }
+
     try {
       return await getConnection();
     } catch (ConnectionNotFoundError) {
@@ -16,6 +20,8 @@ export class ConnectionManager {
   }
 
   protected async createConnection(): Promise<Connection> {
-    return await createConnection(config);
+    this.connection = await createConnection(config);
+
+    return this.connection;
   }
 }

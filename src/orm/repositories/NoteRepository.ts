@@ -1,6 +1,6 @@
 import {AbstractRepository} from './AbstractRepository';
 import {injectable} from 'inversify';
-import {Between, Equal} from 'typeorm';
+import {Between, Equal, UpdateResult} from 'typeorm';
 import {NoteEntity} from '../entities/Note.entity';
 
 @injectable()
@@ -26,7 +26,7 @@ export class NoteRepository extends AbstractRepository {
     return connection.getRepository(NoteEntity).find();
   }
 
-  public async update(iteratorNumber: number, text: string): Promise<NoteEntity> {
+  public async update(iteratorNumber: number, text: string): Promise<UpdateResult> {
     const connection = await this.connectionManager.getConnection();
 
     return connection.getRepository(NoteEntity).update(
@@ -35,10 +35,10 @@ export class NoteRepository extends AbstractRepository {
     );
   }
 
-  public async delete(iteratorNumber: number): Promise<void> {
+  public async delete(iteratorNumber: number): Promise<UpdateResult> {
     const connection = await this.connectionManager.getConnection();
 
-    connection.getRepository(NoteEntity).update(
+    return connection.getRepository(NoteEntity).update(
         {'iterator': Equal(iteratorNumber)},
         {'deleted': true}
     );

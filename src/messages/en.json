@@ -81,6 +81,10 @@
         "time": {
           "description": "Specify the finish time",
           "flag": "-t, --time <hour:minute>"
+        },
+        "unexpected": {
+          "description": "Add unexpected informations for this worklog",
+          "flag": "-u, --unexpected <your information here> (sadly currenlty only a string is support - please tick your data between \" or ')"
         }
       },
       "description": "Handle worklogs",
@@ -94,6 +98,15 @@
         "missingOptions": "Please provide a value for the worklog `wib track <key> <value>`",
         "invalidTime": "The provided time is invalid! Please adjust your input"
       }
+    },
+    "migrate": {
+      "option": {
+        "data": {
+          "description": "Migrate your existing data",
+          "flag": "-d, --data"
+        }
+      },
+      "description": "Migrate data from filesystem to sqlite"
     }
   },
   "format": {

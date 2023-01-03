@@ -1,8 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import {MigrateDataCommand, ListCommand, WorklogCommand, NoteCommand, StartCommand, StopCommand} from '../command';
+import {MigrateCommand, ListCommand, WorklogCommand, NoteCommand, StartCommand, StopCommand} from '../command';
 
 const IDENTIFIERS_COMMAND = {
-  MigrateDataCommand: Symbol.for('MigrateDataCommand'),
+  MigrateCommand: Symbol.for('MigrateCommand'),
   WorklogCommand: Symbol.for('WorklogCommand'),
   ListCommand: Symbol.for('ListCommand'),
   NoteCommand: Symbol.for('NoteCommand'),

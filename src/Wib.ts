@@ -18,8 +18,8 @@ export default new class Wib {
     this.injectCommands();
   }
 
-  injectCommands(): void {
-    const migrateCommand = container.get<AbstractCommand>(IDENTIFIERS.Command.MigrateDataCommand);
+  private injectCommands(): void {
+    const migrateCommand = container.get<AbstractCommand>(IDENTIFIERS.Command.MigrateCommand);
     const worklogCommand = container.get<AbstractCommand>(IDENTIFIERS.Command.WorklogCommand);
     const listCommand = container.get<AbstractCommand>(IDENTIFIERS.Command.ListCommand);
     const noteCommand = container.get<AbstractCommand>(IDENTIFIERS.Command.NoteCommand);

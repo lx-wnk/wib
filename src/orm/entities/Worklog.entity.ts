@@ -22,6 +22,13 @@ export class WorklogEntity extends AbstractEntity {
   @Column('boolean', {default: false})
   rest: boolean;
 
+  @Column('varchar', {default: ''})
+  unexpected = '';
+
   @ManyToOne((type) => DayEntity, (day) => day.worklogs)
   day: DayEntity;
+
+  isUnexpected() {
+    return this.unexpected.length > 0;
+  }
 }

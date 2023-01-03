@@ -49,7 +49,7 @@ export class ListService {
     return this.formatter.toTable(listData, false);
   }
 
-  private formatNotes(notes: NoteEntity[]): object {
+  private formatNotes(notes: NoteEntity[]): object[] {
     const hydratedNotes = [];
 
     notes.forEach((note) => {
@@ -62,12 +62,12 @@ export class ListService {
     return hydratedNotes;
   }
 
-  private formatWorklogs(worklogs: WorklogEntity[], start: Date = new Date()): object {
+  private formatWorklogs(worklogs: WorklogEntity[], start: Date = new Date()): object[] {
     const hydratedWorklogs = [];
     let latestTrack = start;
 
     worklogs.forEach((worklog) => {
-      const tmp = {
+      const worklogFormatData = {
         'duration': null,
         'iterator': worklog.iterator,
         'time': worklog.time,
@@ -80,11 +80,11 @@ export class ListService {
         duration = latestTrack.getTime() - worklog.time.getTime();
       }
 
-      tmp.duration = duration;
+      worklogFormatData.duration = duration;
 
       hydratedWorklogs.push({
-        'key': this.formatter.applyFormat(tmp, 'format.list.keys', worklog.rest ? 'rest' : 'worklog'),
-        'value': this.formatter.applyFormat(tmp, 'format.list.values', worklog.rest ? 'rest' : 'worklog')
+        'key': this.formatter.applyFormat(worklogFormatData, 'format.list.keys', worklog.rest ? 'rest' : 'worklog'),
+        'value': this.formatter.applyFormat(worklogFormatData, 'format.list.values', worklog.rest ? 'rest' : 'worklog')
       });
 
       latestTrack = worklog.time;

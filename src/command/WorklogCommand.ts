@@ -20,6 +20,10 @@ export class WorklogCommand extends AbstractCommand {
     {
       flag: 'command.worklog.option.time.flag',
       description: 'command.worklog.option.time.description'
+    },
+    {
+      flag: 'command.worklog.option.unexpected.flag',
+      description: 'command.worklog.option.unexpected.description'
     }
   ];
   public description = 'Handle worklogs';
@@ -43,6 +47,7 @@ export class WorklogCommand extends AbstractCommand {
   exec(options, args): void {
     const commandValues: string[] = args.args;
     let trackTime;
+    const unexpected = options.unexpected ?? '';
 
     if (options.delete) {
       this.worklogService.delete(options.delete);
@@ -63,8 +68,7 @@ export class WorklogCommand extends AbstractCommand {
     }
 
     if (options.edit) {
-      console.log(options.edit);
-      this.worklogService.update(options.edit, commandValues, trackTime);
+      this.worklogService.update(options.edit, commandValues, unexpected, trackTime);
 
       return;
     }
@@ -75,7 +79,7 @@ export class WorklogCommand extends AbstractCommand {
       return;
     }
 
-    this.worklogService.create(commandValues, trackTime).then((res) => {
+    this.worklogService.create(commandValues, unexpected, trackTime).then((res) => {
       console.log(this.formatter.applyFormat(res, 'command.worklog.execution', 'create'));
     });
   }

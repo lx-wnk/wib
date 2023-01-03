@@ -1,6 +1,6 @@
 export {default as AbstractCommand} from './AbstractCommand';
 export {ListCommand} from './ListCommand';
-export {MigrateDataCommand} from './MigrateDataCommand';
+export {MigrateCommand} from './MigrateCommand';
 export {NoteCommand} from './NoteCommand';
 export {WorklogCommand} from './WorklogCommand';
 export {StartCommand} from './StartCommand';

@@ -9,12 +9,4 @@ export abstract class AbstractRepository {
   constructor(@inject(IDENTIFIERS.ORM.Connection) connectionManager: ConnectionManager) {
     this.connectionManager = connectionManager;
   }
-
-  // public abstract create(AbstractEntity);
-  //
-  // public abstract read(id?: string);
-  //
-  // public abstract update(AbstractEntity);
-  //
-  // public abstract delete(id: string);
 }

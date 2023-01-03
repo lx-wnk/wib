@@ -47,9 +47,9 @@ export class NoteCommand extends AbstractCommand {
     if (options.edit) {
       this.noteRepository.update(options.edit, commandValues.join(' '))
           .then(() => {
-            console.log(this.message.translation('command.note.execution.edit', {'id': options.delete}));
+            console.log(this.message.translation('command.note.execution.edit', {'id': options.edit}));
           }).catch(() => {
-            console.log(this.message.translation('command.note.execution.couldNotEdit', {'id': options.delete}));
+            console.log(this.message.translation('command.note.execution.couldNotEdit', {'id': options.edit}));
           });
 
       return;
