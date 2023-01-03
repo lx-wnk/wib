@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import {Container} from 'inversify';
 import {IDENTIFIERS} from '../identifiers';
 
-import {AbstractCommand, ListCommand, MigrateCommand, NoteCommand, StartCommand, WorklogCommand, StopCommand} from '../command';
+import {AbstractCommand, ListCommand, MigrateCommand, NoteCommand, StartCommand, WorklogCommand, StopCommand, RestCommand} from '../command';
 import {ConnectionManager} from '../orm';
 import {MessageService, ConfigService, WorklogService, Formatter, ListService} from '../components';
 import {AbstractRepository, DayRepository, NoteRepository, WorklogRepository} from '../orm/repositories';
@@ -23,6 +23,7 @@ container.bind<AbstractCommand>(IDENTIFIERS.Command.ListCommand).to(ListCommand)
 container.bind<AbstractCommand>(IDENTIFIERS.Command.NoteCommand).to(NoteCommand);
 container.bind<AbstractCommand>(IDENTIFIERS.Command.StartCommand).to(StartCommand);
 container.bind<AbstractCommand>(IDENTIFIERS.Command.StopCommand).to(StopCommand);
+container.bind<AbstractCommand>(IDENTIFIERS.Command.RestCommand).to(RestCommand);
 
 // orm
 container.bind<ConnectionManager>(IDENTIFIERS.ORM.Connection).to(ConnectionManager);

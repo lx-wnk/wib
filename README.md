@@ -25,7 +25,6 @@ Usage: wib list|l [options]
 
 *Possible Options*:
 * `-d, --day <day>` List a specific date
-* `-m, --month <month>` Date from specific month
 * `-y, --yesterday` List yesterday
 * `-f, --full` List the full data (unshortened)
 * `-o, --order <key>` Order by (time, key, value, id) (default: "time")
@@ -46,7 +45,6 @@ Usage: wib rest|b [options]
 
 *Possible Options*:
 * `-t, --time <hour:minute>` Create a rest with specified time
-* `-e, --edit <key>`         Change the rest ending to now or by -t to a specified time
 </details>
 
 <details>
@@ -67,6 +65,7 @@ Usage: wib track|t [options]
 * `-d, --delete <key>` Delete a specified work log
 * `-e, --edit <key>` Edit a specified work log
 * `-t, --time <hour:minute>` Specify the finish time
+* `-u, --unexpected "the description"` Specify the the reason why this is unexpected
 </details>
 
 ## Configuration

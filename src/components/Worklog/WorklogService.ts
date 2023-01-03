@@ -20,6 +20,20 @@ export class WorklogService extends AbstractWorklogService {
     return this.worklogRepository.create(worklog);
   }
 
+  public async createRest(time: Date = new Date()): Promise<WorklogEntity> {
+    const currentDay = await this.getCurrentDay();
+    const worklog = new WorklogEntity();
+
+    worklog.time = time;
+    worklog.key = 'rest';
+    worklog.day = currentDay;
+    worklog.rest = true;
+    worklog.value = '';
+    worklog.iterator= (await this.worklogRepository.getUndeletedListForDate(currentDay.start)).length + 1;
+
+    return this.worklogRepository.create(worklog);
+  }
+
   public update(iterator: number, commandValues: string[], unexpected: string, time: Date): void {
     this.worklogRepository.getByDateIterator(new Date(), iterator)
         .then((result) => {

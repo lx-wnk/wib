@@ -58,7 +58,7 @@
         }
       },
       "execution": {
-        "create": "Rest lastet {duration} and ended at: ",
+        "create": "Rest finished at {{time}}",
         "couldNotEdit": "Could not edit rest with id: "
       }
     },
@@ -117,7 +117,7 @@
         "stop": "Clocked out",
         "note": "Note({{iterator}}) [{{time:datetime}}]",
         "worklog": "Worklog({{iterator}}) [{{time:time}}]",
-        "rest": "Break"
+        "rest": "Break({{iterator}}) [{{time:time}}]"
       },
       "values": {
         "day": "{{start:date}}",
@@ -132,7 +132,7 @@
       "start": "You clocked in at: {{start:time}}",
       "stop": "You clocked out at: {{finish:time}}"
     },
-    "break": {
+    "rest": {
       "key": {
         "type": "Break"
       },

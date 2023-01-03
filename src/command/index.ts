@@ -5,3 +5,4 @@ export {NoteCommand} from './NoteCommand';
 export {WorklogCommand} from './WorklogCommand';
 export {StartCommand} from './StartCommand';
 export {StopCommand} from './StopCommand';
+export {RestCommand} from './RestCommand';
