@@ -5,28 +5,28 @@ import {AbstractEntity} from './Abstract.entity';
 @Entity('WorklogEntity')
 export class WorklogEntity extends AbstractEntity {
   @Column('int')
-  iterator: number;
+    iterator: number;
 
   @Column('varchar')
-  key: string;
+    key: string;
 
   @Column('varchar')
-  value: string;
+    value: string;
 
   @Column('datetime')
-  time: Date;
+    time: Date;
 
   @Column('boolean', {default: false})
-  deleted: boolean;
+    deleted: boolean;
 
   @Column('boolean', {default: false})
-  rest: boolean;
+    rest: boolean;
 
   @Column('varchar', {default: ''})
-  unexpected = '';
+    unexpected = '';
 
   @ManyToOne((type) => DayEntity, (day) => day.worklogs)
-  day: DayEntity;
+    day: DayEntity;
 
   isUnexpected() {
     return this.unexpected.length > 0;

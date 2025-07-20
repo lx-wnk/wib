@@ -2,17 +2,25 @@
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "es6",
+    "target": "es2020",
     "outDir": "dist",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "removeComments": true,
-    "declaration": false,
-    "sourceMap": false,
+    "allowSyntheticDefaultImports": true,
+    "removeComments": false,
+    "declaration": true,
+    "sourceMap": true,
     "rootDir": "./src",
     "baseUrl": "./src",
+    "strict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictPropertyInitialization": false,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
     "paths": {
       "*": [
         "node_modules/*",
@@ -25,5 +33,8 @@
     "src/**/*.json",
     "src/**/*",
     ".data/**/*"
+  ],
+  "exclude": [
+    "node_modules/**/*"
   ]
 }

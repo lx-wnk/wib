@@ -1,4 +1,10 @@
+# env specific
+.DS_Store
+
+# IDE specific
 /.idea
+
+# project specific
 /node_modules
 /dist
 /.nyc_output

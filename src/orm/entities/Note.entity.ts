@@ -4,14 +4,14 @@ import {AbstractEntity} from './Abstract.entity';
 @Entity('NoteEntity')
 export class NoteEntity extends AbstractEntity {
   @Column('int')
-  iterator: number;
+    iterator: number;
 
   @Column('varchar')
-  value: string;
+    value: string;
 
   @Column('datetime')
-  time: Date;
+    time: Date;
 
   @Column('boolean', {default: false})
-  deleted: boolean;
+    deleted: boolean;
 }

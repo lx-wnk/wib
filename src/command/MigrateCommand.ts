@@ -1,15 +1,26 @@
-import {inject, injectable} from 'inversify';
+import {inject, injectable, optional} from 'inversify';
 import AbstractCommand from './AbstractCommand';
-import {getConnection} from 'typeorm';
 import process from 'process';
 import {homedir} from 'os';
 import * as fs from 'fs';
+import * as path from 'path';
 import {DayEntity} from '../orm/entities/Day.entity';
 import {WorklogEntity} from '../orm/entities/Worklog.entity';
 import {NoteEntity} from '../orm/entities/Note.entity';
 import {ConnectionManager} from '../orm';
-import {IDENTIFIERS} from '../identifiers';
+import {ServiceIdentifiers, ORMIdentifiers} from '../identifiers';
 import {MessageService} from '../components';
+
+interface DataDay {
+  start?: { time: string };
+  stop?: { time: string };
+  notes?: Record<string, unknown>;
+  worklogs?: Record<string, unknown>;
+}
+
+interface MigrationData {
+  [key: string]: DataDay;
+}
 
 @injectable()
 export class MigrateCommand extends AbstractCommand {
@@ -23,37 +34,37 @@ export class MigrateCommand extends AbstractCommand {
   ];
   public description = 'command.migrate.description';
 
-  private days = {};
+  private days: MigrationData = {};
   private connectionManager: ConnectionManager;
 
   constructor(
-    @inject(IDENTIFIERS.Message) messages: MessageService,
-    @inject(IDENTIFIERS.ORM.Connection) connectionManager: ConnectionManager
+    @inject(ServiceIdentifiers.MessageService) @optional() messages: MessageService,
+    @inject(ORMIdentifiers.ConnectionManager) connectionManager: ConnectionManager
   ) {
     super(messages);
     this.connectionManager = connectionManager;
   }
 
-  exec(options): void {
-    const sleep = async (milliseconds) => {
+  exec(options: any, args?: any[]): void {
+    const sleep = async (milliseconds: number) => {
       await new Promise((resolve) => {
         return setTimeout(resolve, milliseconds);
       });
     };
 
-    console.log('START: migration');
+    console.log(this.message.translation('command.migrate.execution.start'));
 
-    console.log('STEP(START): missing migrations');
+    console.log(this.message.translation('command.migrate.execution.stepStart', {step: 'missing migrations'}));
     this.executeMissingMigrations();
-    console.log('STEP(DONE): missing migrations');
+    console.log(this.message.translation('command.migrate.execution.stepDone', {step: 'missing migrations'}));
 
     if (options.data) {
       (async () => {
-        console.log('STEP(START): data migration in 5 seconds');
+        console.log(this.message.translation('command.migrate.execution.waitingSeconds', {step: 'data migration', seconds: 5}));
         await sleep(5000);
 
         this.migrateData();
-        console.log('STEP(DONE): data migration');
+        console.log(this.message.translation('command.migrate.execution.stepDone', {step: 'data migration'}));
       })();
     }
   }
@@ -63,16 +74,16 @@ export class MigrateCommand extends AbstractCommand {
       this.connectionManager.getConnection()
           .then((connection) => {
             connection.runMigrations({transaction: 'all'})
-                .catch((err) => {
-                  console.error('Please roll back to latest version due to an error while migration execution');
+                .catch((err: Error) => {
+                  console.error(this.message.translation('command.migrate.execution.error'));
                   console.error(err);
                 });
-          }).catch((err) => {
-            console.error('Please roll back to latest version due to an error while migration execution');
+          }).catch((err: Error) => {
+            console.error(this.message.translation('command.migrate.execution.error'));
             console.error(err);
           });
     } catch (err) {
-      console.error('Please roll back to latest version due to an error while migration execution');
+      console.error(this.message.translation('command.migrate.execution.error'));
       console.error(err);
     }
   }
@@ -86,7 +97,7 @@ export class MigrateCommand extends AbstractCommand {
                 this.migrateToSqlite();
               });
         }).finally(() => {
-          console.log('FINISH: migrations');
+          console.log(this.message.translation('command.migrate.execution.finish'));
         });
   }
 
@@ -107,109 +118,124 @@ export class MigrateCommand extends AbstractCommand {
         return;
       }
 
-      this.days[file.replace('.json', '')] = {};
+      const typedParsed = parsed as any;
+      const dayKey = file.replace('.json', '');
 
-      if (parsed.start) {
-        this.days[file.replace('.json', '')]['start'] = parsed.start;
+      this.days[dayKey] = {} as DataDay;
+
+      if (typedParsed.start) {
+        this.days[dayKey].start = typedParsed.start;
       }
 
-      if (parsed.stop) {
-        this.days[file.replace('.json', '')]['stop'] = parsed.stop;
+      if (typedParsed.stop) {
+        this.days[dayKey].stop = typedParsed.stop;
       }
 
-      if (parsed.notes) {
-        this.days[file.replace('.json', '')]['notes'] = parsed.notes;
+      if (typedParsed.notes) {
+        this.days[dayKey].notes = typedParsed.notes;
       }
 
-      if (parsed.worklogs) {
-        this.days[file.replace('.json', '')]['worklogs'] = parsed.worklogs;
+      if (typedParsed.worklogs) {
+        this.days[dayKey].worklogs = typedParsed.worklogs;
       }
     });
   }
 
   private migrateToSqlite(): void {
-    const connection = getConnection();
-    const dayRepository = connection.getRepository(DayEntity);
-    const noteRepository = connection.getRepository(NoteEntity);
-    const days = [];
-    const notes = [];
+    this.connectionManager.getConnection()
+        .then((connection) => {
+          const dayRepository = connection.getRepository(DayEntity);
+          const noteRepository = connection.getRepository(NoteEntity);
+          const days: DayEntity[] = [];
+          const notes: NoteEntity[] = [];
 
-    for (const date in this.days) {
-      const day = new DayEntity();
+          for (const date in this.days) {
+            const day = new DayEntity();
 
-      if (this.days[date]['start'] && this.days[date]['start']['time']) {
-        day.start = new Date(this.days[date]['start']['time']);
-      }
+            const dayData = this.days[date];
+            if (dayData && dayData.start && dayData.start.time) {
+              day.start = new Date(dayData.start.time);
+            }
 
-      if (this.days[date]['stop'] && this.days[date]['stop']['time']) {
-        day.finish = new Date(this.days[date]['stop']['time']);
-      }
+            if (dayData && dayData.stop && dayData.stop.time) {
+              day.finish = new Date(dayData.stop.time);
+            }
 
-      if (this.days[date]['worklogs']) {
-        day.worklogs = [];
+            if (dayData && dayData.worklogs) {
+              day.worklogs = [];
 
-        Object.values(this.days[date]['worklogs']).forEach((entry) => {
-          const worklog = new WorklogEntity();
-          worklog.iterator = entry['id'];
-          worklog.key = entry['key'];
-          worklog.value = entry['value'];
-          worklog.time = new Date(entry['time']);
-          worklog.deleted = entry['deleted'];
-          worklog.rest = entry['dataKey'] === 'rest';
+              const worklogs = dayData.worklogs;
+              if (worklogs) {
+                Object.values(worklogs).forEach((entry: any) => {
+                  const worklog = new WorklogEntity();
+                  worklog.iterator = entry['id'];
+                  worklog.key = entry['key'];
+                  worklog.value = entry['value'];
+                  worklog.time = new Date(entry['time']);
+                  worklog.deleted = entry['deleted'];
+                  worklog.rest = entry['dataKey'] === 'rest';
 
-          if (!worklog.key || ! worklog.value) {
-            return;
+                  if (!worklog.key || !worklog.value) {
+                    return;
+                  }
+
+                day.worklogs!.push(worklog);
+                });
+              }
+            }
+
+            if (dayData && dayData.notes) {
+              const noteEntries = dayData.notes;
+              if (noteEntries) {
+                Object.values(noteEntries).forEach((entry: any) => {
+                  const note = new NoteEntity();
+                  note.iterator = notes.length;
+                  note.value = entry['value'];
+                  note.time = new Date(entry['time']);
+                  note.deleted = entry['deleted'];
+
+                  notes.push(note);
+                });
+              }
+            }
+
+            if (!day.start && day.worklogs && day.worklogs[0]) {
+              day.start = day.worklogs[0].time;
+            }
+
+            if (day.start) {
+              days.push(day);
+            }
           }
 
-          day.worklogs.push(worklog);
+          return dayRepository.save(days)
+              .then(() => {
+                return noteRepository.save(notes);
+              })
+              .catch((err: Error) => {
+                console.error(err);
+                process.exit(1);
+              });
+        })
+        .catch((err: Error) => {
+          console.error(err);
+          process.exit(1);
+        })
+        .finally(() => {
+          console.log(this.message.translation('command.migrate.execution.done'));
         });
-      }
-
-      if (this.days[date]['notes']) {
-        Object.values(this.days[date]['notes']).forEach((entry) => {
-          const note = new NoteEntity();
-          note.iterator = notes.length;
-          note.value = entry['value'];
-          note.time = new Date(entry['time']);
-          note.deleted = entry['deleted'];
-
-          notes.push(note);
-        });
-      }
-
-      if (!day.start && day.worklogs && day.worklogs[0]) {
-        day.start = day.worklogs[0].time;
-      }
-
-      if (day.start) {
-        days.push(day);
-      }
-    }
-
-    dayRepository.save(days).then(() => {
-      noteRepository.save(notes)
-          .catch((err) => {
-            console.error(err);
-            process.exit(1);
-          });
-    }).catch((err) => {
-      console.error(err);
-      process.exit(1);
-    }).finally(() => {
-      console.log('done');
-    });
   }
 
-  private getFiles(): string [] {
+  private getFiles(): string[] {
     const files = fs.readdirSync(this.getHomeDir());
     return files.filter((el) => /[0-9]{4}_[0-9]{2}_[0-9]{2}.json$/gm.test(el));
   }
 
-  private parseFileToJson(file): object {
+  private parseFileToJson(file: string): any {
     return JSON.parse(fs.readFileSync(file, 'utf8'));
   }
 
   public getHomeDir(): string {
-    return homedir + '/.wib/';
+    return homedir() + '/.wib/';
   }
 }

@@ -1,95 +1,77 @@
-import {inject, injectable} from 'inversify';
-import {IDENTIFIERS} from '../identifiers';
+import {injectable, inject} from 'inversify';
+import {ServiceIdentifiers, ORMIdentifiers} from '../identifiers';
 import {Formatter} from './Formatter';
+import {ListItemFormatter} from './ListItemFormatter';
 import {DayRepository, WorklogRepository, NoteRepository} from '../orm/repositories';
-import {NoteEntity} from '../orm/entities/Note.entity';
-import {WorklogEntity} from '../orm/entities/Worklog.entity';
+import {ListData} from '../interfaces/ListData.interface';
 
 @injectable()
 export class ListService {
-  protected noteRepository: NoteRepository;
-  protected worklogRepository: WorklogRepository;
-  protected dayRepository: DayRepository;
-  protected formatter: Formatter;
-
+  private noteRepository: NoteRepository;
+  private worklogRepository: WorklogRepository;
+  private dayRepository: DayRepository;
+  private formatter: Formatter;
+  private listItemFormatter: ListItemFormatter;
   constructor(
-    @inject(IDENTIFIERS.ORM.repositories.note) noteRepository: NoteRepository,
-    @inject(IDENTIFIERS.ORM.repositories.worklog) worklogRepository: WorklogRepository,
-    @inject(IDENTIFIERS.ORM.repositories.day) dayRepository: DayRepository,
-    @inject(IDENTIFIERS.Formatter) formatter: Formatter
+    @inject(ORMIdentifiers.Repositories.NoteRepository) noteRepository: NoteRepository,
+    @inject(ORMIdentifiers.Repositories.WorklogRepository) worklogRepository: WorklogRepository,
+    @inject(ORMIdentifiers.Repositories.DayRepository) dayRepository: DayRepository,
+    @inject(ServiceIdentifiers.Formatter) formatter: Formatter,
+    @inject(ServiceIdentifiers.ListItemFormatter) listItemFormatter: ListItemFormatter
   ) {
     this.noteRepository = noteRepository;
     this.worklogRepository = worklogRepository;
     this.dayRepository = dayRepository;
     this.formatter = formatter;
+    this.listItemFormatter = listItemFormatter;
   }
 
-  public async getList(order?: string, fullOutput?: string): Promise<string> {
-    // TODO: Add handling for order and full output
-    const listData = {'day': null, 'start': null, 'finish': null, 'notes': [], 'worklogs': []};
-    const notes = await this.noteRepository.getUndeletedList();
-    const worklogs = await this.worklogRepository.getUndeletedListForDate();
-    const day = await this.dayRepository.getByDate();
 
-    listData.day = {
-      'key': this.formatter.applyFormat(day, 'format.list.keys', 'day'),
-      'value': this.formatter.applyFormat(day, 'format.list.values', 'day')
-    };
-    listData.start = {
-      'key': this.formatter.applyFormat(day, 'format.list.keys', 'start'),
-      'value': this.formatter.applyFormat(day, 'format.list.values', 'start'),
-    };
-    listData.finish = {
-      'key': this.formatter.applyFormat(day, 'format.list.keys', 'stop'),
-      'value': this.formatter.applyFormat(day, 'format.list.values', 'stop'),
-    };
-    listData.notes = this.formatNotes(notes);
-    listData.worklogs = this.formatWorklogs(worklogs, day.start);
-
-    return this.formatter.toTable(listData, false);
+  public init(
+      noteRepository: NoteRepository,
+      worklogRepository: WorklogRepository,
+      dayRepository: DayRepository,
+      formatter: Formatter,
+      listItemFormatter: ListItemFormatter
+  ): void {
+    this.noteRepository = noteRepository;
+    this.worklogRepository = worklogRepository;
+    this.dayRepository = dayRepository;
+    this.formatter = formatter;
+    this.listItemFormatter = listItemFormatter;
   }
 
-  private formatNotes(notes: NoteEntity[]): object[] {
-    const hydratedNotes = [];
 
-    notes.forEach((note) => {
-      hydratedNotes.push({
-        'key': this.formatter.applyFormat(note, 'format.list.keys', 'note'),
-        'value': this.formatter.applyFormat(note, 'format.list.values', 'note')
-      });
-    });
+  public async getList(targetDate: Date, order?: string, fullOutput?: string): Promise<string> {
+    const listData: ListData = {
+      day: null,
+      start: null,
+      finish: null,
+      notes: [],
+      worklogs: []
+    };
 
-    return hydratedNotes;
-  }
+    const day = await this.dayRepository.getByDate(targetDate);
+    const notes = await this.noteRepository.getUndeletedList(targetDate);
+    let worklogs = await this.worklogRepository.getUndeletedListForDate(targetDate);
 
-  private formatWorklogs(worklogs: WorklogEntity[], start: Date = new Date()): object[] {
-    const hydratedWorklogs = [];
-    let latestTrack = start;
 
-    worklogs.forEach((worklog) => {
-      const worklogFormatData = {
-        'duration': null,
-        'iterator': worklog.iterator,
-        'time': worklog.time,
-        'key': worklog.key,
-        'value': worklog.value
-      };
-      let duration = worklog.time.getTime() - latestTrack.getTime();
+    if (order && order.toLowerCase() === 'desc') {
+      worklogs = worklogs.reverse();
+    }
 
-      if (worklog.time.getTime() < latestTrack.getTime()) {
-        duration = latestTrack.getTime() - worklog.time.getTime();
-      }
 
-      worklogFormatData.duration = duration;
+    const showFullOutput = fullOutput === 'true';
 
-      hydratedWorklogs.push({
-        'key': this.formatter.applyFormat(worklogFormatData, 'format.list.keys', worklog.rest ? 'rest' : 'worklog'),
-        'value': this.formatter.applyFormat(worklogFormatData, 'format.list.values', worklog.rest ? 'rest' : 'worklog')
-      });
 
-      latestTrack = worklog.time;
-    });
+    listData.day = this.listItemFormatter.formatDayItem(day, 'day');
+    listData.start = this.listItemFormatter.formatDayItem(day, 'start');
+    listData.finish = this.listItemFormatter.formatDayItem(day, 'stop');
 
-    return hydratedWorklogs;
+
+    listData.notes = this.listItemFormatter.formatNotes(notes);
+    listData.worklogs = this.listItemFormatter.formatWorklogs(worklogs, day.start);
+
+    return this.formatter.toTable(listData, showFullOutput);
   }
 }

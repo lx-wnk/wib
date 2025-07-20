@@ -1,57 +1,60 @@
-import {AbstractRepository} from './AbstractRepository';
+import {inject, injectable} from 'inversify';
+import {ConnectionManager} from '../ConnectionManager';
+import {TYPES} from '../../identifiers';
 import {DayEntity} from '../entities/Day.entity';
-import {AbstractEntity} from '../entities/Abstract.entity';
-import {injectable} from 'inversify';
-import {Between} from 'typeorm';
+
 
 @injectable()
-export class DayRepository extends AbstractRepository {
-  public async create(entity: AbstractEntity): Promise<DayEntity> {
+export class DayRepository {
+  constructor(
+        @inject(TYPES.ORM.ConnectionManager) protected readonly connectionManager: ConnectionManager
+  ) {
+  }
+
+  public async upsert(entity: DayEntity): Promise<DayEntity> {
     const connection = await this.connectionManager.getConnection();
 
     return connection.getRepository(DayEntity).save(entity);
   }
 
-  public async read(id?: string) {
-    this.connectionManager.getConnection().then((con) => {
-      if (id.length > 0) {
-        // TODO
-        // con.getRepository(DayEntity).findOne(id)
-      } else {
-        // TODO
-      }
-    });
-  }
-
-  public async update(entity: AbstractEntity): Promise<DayEntity> {
+  public async read(id?: string): Promise<DayEntity | DayEntity[]> {
     const connection = await this.connectionManager.getConnection();
+    const repository = connection.getRepository(DayEntity);
 
-    return connection.getRepository(DayEntity).save(entity);
+    if (id && id.length > 0) {
+      return await repository.findOneOrFail({where: {id}});
+    }
+
+    return repository.find();
   }
 
   public async delete(id: string): Promise<void> {
     const connection = await this.connectionManager.getConnection();
-
-    connection.getRepository(DayEntity).delete(id);
+    await connection.getRepository(DayEntity).delete(id);
   }
 
+  // Get a day by date, creating a new one if it doesn't exist
+  // All dates are stored in UTC
   public async getByDate(date: Date = new Date()): Promise<DayEntity> {
     const connection = await this.connectionManager.getConnection();
-    const tmp = new Date(date.setHours(0, 0, 0, 0));
 
-    let dayEntity = await connection.getRepository(DayEntity).findOne({
-      where: [
-        {start: Between(tmp.toISOString(), new Date(date.setHours(24, 59, 59, 0)).toISOString())}
-      ]
-    });
+    const dayEntity = await connection.getRepository(DayEntity)
+        .createQueryBuilder('day')
+        .where('day.date = :date', {
+          date: date.getFullYear() + '-' +
+                String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                String(date.getDate()).padStart(2, '0')
+        })
+        .getOne();
 
-    if (!dayEntity) {
-      dayEntity = new DayEntity();
-      dayEntity.start = new Date();
-
-      return this.create(dayEntity);
+    if (dayEntity instanceof DayEntity) {
+      return dayEntity;
     }
 
-    return dayEntity;
+    // Create a new day entity since none was found for the given date
+    const newDay = new DayEntity();
+    newDay.date = date;
+    console.log('inner', newDay);
+    return newDay;
   }
 }

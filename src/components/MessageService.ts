@@ -1,91 +1,131 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import {inject, injectable} from 'inversify';
+import {injectable, optional, inject, postConstruct} from 'inversify';
 import {ConfigService} from '../components';
-import {IDENTIFIERS} from '../identifiers';
+import {ServiceIdentifiers} from '../identifiers';
+
+interface TranslationData {
+  [key: string]: string | TranslationData;
+}
 
 @injectable()
 export class MessageService {
   private defaultLanguage = 'en';
-  private fallbackData: object;
-  private configService: ConfigService;
-
-  constructor(@inject(IDENTIFIERS.Config) configService: ConfigService) {
+  private fallbackData: TranslationData = {};
+  private configService?: ConfigService;
+  constructor(@optional() @inject(ServiceIdentifiers.ConfigService) configService?: ConfigService) {
     this.configService = configService;
+    this.loadFallbackData();
   }
 
-  public applyTranslationToString(translatable: string): string {
-    let isTranslatable = true,
-      translatedString = translatable;
 
+  public applyTranslationToString(translatable: string): string {
     if (!translatable) {
-      return translatedString;
+      return translatable || '';
     }
 
-    if (translatable.indexOf('$tc(') !== -1) {
-      do {
-        const transStart = translatable.indexOf('$tc('),
-          transEnd = translatable.indexOf(')', transStart),
-          transKey = translatable.substring(transStart + 4, transEnd);
+    let translatedString = translatable;
 
-        translatedString = translatable.split('$tc('+transKey+')').join(this.translation(transKey));
-        if (translatedString.indexOf('$tc(') === -1) {
-          isTranslatable = false;
-        }
-      } while (isTranslatable);
+    // Process all $tc() translation keys
+    while (translatedString.indexOf('$tc(') !== -1) {
+      const transStart = translatedString.indexOf('$tc(');
+      const transEnd = translatedString.indexOf(')', transStart);
+
+      if (transEnd === -1) break; // Prevent infinite loop if closing bracket is missing
+
+      const transKey = translatedString.substring(transStart + 4, transEnd);
+      const translation = this.translation(transKey);
+
+      translatedString = translatedString.split('$tc('+transKey+')').join(translation);
     }
 
     return translatedString;
   }
 
-  public translation(transalationKey: string, parameters?: object): string {
-    const languageFile = this.configService.getLanguage() + '.json',
-      defaultLanguageFile = '../messages/' + this.defaultLanguage + '.json';
-    let translationData: object;
-    this.fallbackData = JSON.parse(fs.readFileSync(path.resolve(__dirname, defaultLanguageFile)).toString());
 
-    if (defaultLanguageFile !== languageFile && fs.existsSync(path.resolve(__dirname, defaultLanguageFile))) {
-      translationData = JSON.parse(fs.readFileSync(path.resolve(__dirname, defaultLanguageFile)).toString());
-    }
+  public translation(translationKey: string, parameters?: Record<string, any>): string {
+    const translationData = this.getTranslationData();
+    const resolvedTranslation = this.resolveKey(translationKey, translationData);
 
-    if (translationData === null || undefined === translationData) {
-      translationData = this.fallbackData;
-    }
-
-    return this.resolveParameters(this.resolveKey(transalationKey, translationData), parameters);
+    return this.resolveParameters(resolvedTranslation, parameters);
   }
 
-  private resolveParameters(translation: string, parameters: object): string {
-    if (!parameters) {
-      return translation;
+
+  private resolveParameters(translation: string, parameters?: Record<string, any>): string {
+    if (!parameters || !translation) {
+      return translation || '';
     }
 
+    let result = translation;
     Object.keys(parameters).forEach((paramKey) => {
-      const mockedParamKey = '{{' + paramKey + '}}';
-
-      if (translation.indexOf(mockedParamKey) !== -1) {
-        translation = translation.replace(mockedParamKey, parameters[paramKey]);
-      }
+      const placeholder = '{{' + paramKey + '}}';
+      result = result.replace(new RegExp(placeholder, 'g'), parameters[paramKey].toString());
     });
 
-    return translation;
+    return result;
   }
 
-  private resolveKey(translationKey: string, transData: object, isFallback = false): string {
-    const transPath = translationKey.split('.');
-    let result;
 
-    for (const key in transPath) {
-      if (undefined !== transData[transPath[key]]) {
-        result = transData[transPath[key]];
-        transData = transData[transPath[key]];
-      } else if (!isFallback) {
-        return this.resolveKey(translationKey, this.fallbackData, true);
-      } else {
-        return;
+  private resolveKey(
+      translationKey: string,
+      transData: TranslationData,
+      isFallback = false
+  ): string {
+    const transPath = translationKey.split('.');
+    let current: TranslationData | string = transData;
+
+    for (const pathSegment of transPath) {
+      if (typeof current !== 'object' || current === null || !(pathSegment in current)) {
+        if (!isFallback) {
+          return this.resolveKey(translationKey, this.fallbackData, true);
+        }
+        return translationKey;
       }
+      current = current[pathSegment];
     }
 
-    return result ?? translationKey;
+    return typeof current === 'string' ? current : translationKey;
+  }
+
+
+  private getTranslationData(): TranslationData {
+    try {
+      if (this.configService && this.configService.getLanguage() !== this.defaultLanguage) {
+        // First try to load the specific language
+        const language = this.configService.getLanguage();
+        const languageFile = path.resolve(__dirname, '..', 'messages', `${language}.json`);
+        if (fs.existsSync(languageFile)) {
+          return JSON.parse(fs.readFileSync(languageFile, 'utf8')) as TranslationData;
+        } else {
+
+          console.log(`Translation file for ${language} not found, using fallback.`);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading translation file:', error);
+    }
+
+    return this.fallbackData;
+  }
+
+
+  private loadFallbackData(): void {
+    try {
+
+      const filePath = path.resolve(__dirname, '..', 'messages', `${this.defaultLanguage}.json`);
+
+      if (fs.existsSync(filePath)) {
+        this.fallbackData = JSON.parse(fs.readFileSync(filePath, 'utf8')) as TranslationData;
+      } else {
+        const srcPath = path.resolve(process.cwd(), 'src', 'messages', `${this.defaultLanguage}.json`);
+        if (fs.existsSync(srcPath)) {
+          this.fallbackData = JSON.parse(fs.readFileSync(srcPath, 'utf8')) as TranslationData;
+        } else {
+          console.error(`Fallback translation file not found. Checked: ${filePath} and ${srcPath}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading fallback translation file:', error);
+    }
   }
 }

@@ -1,72 +1,82 @@
-import {AbstractRepository} from './AbstractRepository';
-import {injectable} from 'inversify';
+import {inject, injectable} from 'inversify';
 import {Between, Equal, UpdateResult} from 'typeorm';
+import {ConnectionManager} from '../ConnectionManager';
+import {TYPES} from '../../identifiers';
 import {NoteEntity} from '../entities/Note.entity';
 
 @injectable()
-export class NoteRepository extends AbstractRepository {
+export class NoteRepository {
+  constructor(
+    @inject(TYPES.ORM.ConnectionManager) protected readonly connectionManager: ConnectionManager
+  ) {}
+
   public async create(value: string): Promise<NoteEntity> {
     const connection = await this.connectionManager.getConnection();
-
     const note = new NoteEntity();
+
     note.value = value;
     note.time = new Date();
     note.iterator = await this.getIteratorNumber();
 
     return connection.getRepository(NoteEntity).save(note);
   }
-
-  public async read(iteratorNumber?: number): Promise<NoteEntity|NoteEntity[]> {
+  public async read(iteratorNumber?: number): Promise<NoteEntity | NoteEntity[]> {
     const connection = await this.connectionManager.getConnection();
+    const repository = connection.getRepository(NoteEntity);
 
-    if (iteratorNumber.toString().length > 0) {
-      return connection.getRepository(NoteEntity).findOne({'iterator': Equal(iteratorNumber)});
+    if (iteratorNumber !== undefined && iteratorNumber.toString().length > 0) {
+      const result = await repository.findOne({
+        where: {iterator: Equal(iteratorNumber)}
+      });
+      return result || [];
     }
 
-    return connection.getRepository(NoteEntity).find();
+    return repository.find();
   }
+
 
   public async update(iteratorNumber: number, text: string): Promise<UpdateResult> {
     const connection = await this.connectionManager.getConnection();
 
     return connection.getRepository(NoteEntity).update(
-        {'iterator': Equal(iteratorNumber)},
-        {'value': text}
+        {iterator: Equal(iteratorNumber)},
+        {value: text}
     );
   }
+
 
   public async delete(iteratorNumber: number): Promise<UpdateResult> {
     const connection = await this.connectionManager.getConnection();
 
     return connection.getRepository(NoteEntity).update(
-        {'iterator': Equal(iteratorNumber)},
-        {'deleted': true}
+        {iterator: Equal(iteratorNumber)},
+        {deleted: true}
     );
   }
 
+
   public async getIteratorNumber(): Promise<number> {
     const connection = await this.connectionManager.getConnection();
-
     return await connection.getRepository(NoteEntity).count();
   }
 
-  public async getByDateIterator(date: Date = new Date(), iterator: number): Promise<NoteEntity[]> {
+
+  public async getUndeletedList(date?: Date): Promise<NoteEntity[]> {
     const connection = await this.connectionManager.getConnection();
-    const tmp = new Date(date.setHours(0, 0, 0, 0));
+    const where: any = {deleted: Equal(false)};
+
+    if (date) {
+      const start = new Date(date);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(date);
+      end.setHours(23, 59, 59, 999);
+
+      where.time = Between(start, end);
+    }
 
     return await connection.getRepository(NoteEntity).find({
-      where: [
-        {'day.start': Between(tmp.toISOString(), new Date(date.setHours(24, 59, 59, 0)).toISOString())},
-        {iterator: iterator}
-      ]
-    });
-  }
-
-  public async getUndeletedList(): Promise<NoteEntity[]> {
-    const connection = await this.connectionManager.getConnection();
-
-    return await connection.getRepository(NoteEntity).find({
-      where: [{'deleted': Equal(false)}]
+      where,
+      order: {time: 'ASC'}
     });
   }
 }

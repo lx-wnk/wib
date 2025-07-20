@@ -1,0 +1,16 @@
+---
+applyTo: '**'
+---
+- Follow the project's coding style and conventions.
+- Write clear, maintainable code with appropriate comments.
+- Keep dependencies up to date and follow best practices for security.
+- Document any significant changes to the codebase or architecture.
+- Ensure all new code is covered by tests.
+- Always update tests and the documentation when making changes to the codebase.
+- Use meaningful commit messages that describe the changes made.
+- Ensure that the code is compatible with the project's existing architecture and design patterns.
+- Avoid introducing unnecessary complexity or technical debt.
+- Use the KISS, DRY, SOLID and Single-Responsibility principle.
+- Always use defensive architecture/development style and early returns
+- Always use best practices when writing code or implementing architecture
+- Only write comments for complex logic which is not directly understandable

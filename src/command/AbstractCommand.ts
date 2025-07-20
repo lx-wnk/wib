@@ -1,6 +1,7 @@
-import * as Command from 'commander';
-import {injectable} from 'inversify';
+import {Command} from 'commander';
+import {injectable, inject, optional} from 'inversify';
 import {MessageService} from '../components';
+import {ServiceIdentifiers} from '../identifiers';
 
 @injectable()
 export default abstract class AbstractCommand {
@@ -11,36 +12,37 @@ export default abstract class AbstractCommand {
 
   protected message: MessageService;
 
-  constructor(message: MessageService) {
-    this.message = message;
+  constructor(@inject(ServiceIdentifiers.MessageService) @optional() message?: MessageService) {
+    this.message = message || new MessageService();
   }
 
-  init(): Command.Command {
-    const newCommand = new Command.Command(this.name);
+  init(): Command {
+    const newCommand = new Command(this.name);
 
     this.options.forEach((option) => {
       let translatedFlag = option.flag,
-        translatedDescription = option.description;
+        translatedDescription = option.description || '';
 
       if (translatedFlag) {
         translatedFlag = this.message.translation(option.flag);
       }
 
-      if (translatedFlag) {
-        translatedDescription = this.message.translation(option.description);
+      if (translatedDescription) {
+        translatedDescription = this.message.translation(translatedDescription);
       }
 
-      newCommand.option(translatedFlag, translatedDescription, option.defaultValue
-      );
+      newCommand.option(translatedFlag, translatedDescription, option.defaultValue);
     });
 
     this.aliases.forEach((aliasName) => {
       newCommand.alias(aliasName);
     });
 
-    newCommand.description(this.description).action((args, opts) => {
-      this.exec(args, opts);
-    });
+    // Use translated description
+    newCommand.description(this.message.translation(this.description))
+        .action((options: any, command: Command) => {
+          this.exec(options, command.args);
+        });
 
     return newCommand;
   }

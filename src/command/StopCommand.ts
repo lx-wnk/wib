@@ -1,67 +1,56 @@
 import AbstractCommand from './AbstractCommand';
-
 import {inject, injectable} from 'inversify';
-import {ConnectionManager} from '../orm';
 import {Formatter, MessageService} from '../components';
-import {IDENTIFIERS} from '../identifiers';
+import {ServiceIdentifiers, ORMIdentifiers} from '../identifiers';
 import {DayRepository} from '../orm/repositories';
 import {DayEntity} from '../orm/entities/Day.entity';
-
+import {DateHelper} from '../helper';
 @injectable()
 export class StopCommand extends AbstractCommand {
   name = 'stop';
   aliases = ['bye'];
   options = [];
-  description = 'todo';
+  description = 'command.stop.description';
 
-  private connectionManager: ConnectionManager;
   private dayRepository: DayRepository;
   private formatter: Formatter;
 
   constructor(
-    @inject(IDENTIFIERS.Message) messages: MessageService,
-    @inject(IDENTIFIERS.ORM.Connection) connectionManager: ConnectionManager,
-    @inject(IDENTIFIERS.ORM.repositories.day) dayRepository: DayRepository,
-    @inject(IDENTIFIERS.Formatter) formatter: Formatter
+    @inject(ServiceIdentifiers.MessageService) messages: MessageService,
+    @inject(ORMIdentifiers.Repositories.DayRepository) dayRepository: DayRepository,
+    @inject(ServiceIdentifiers.Formatter) formatter: Formatter
   ) {
     super(messages);
-    this.connectionManager = connectionManager;
     this.dayRepository = dayRepository;
     this.formatter = formatter;
   }
 
+  exec(options: any, args?: any[]): void {
+    const time = this.parseTimeFromArgs(args);
 
-  exec(args, options): void {
-    let time = options.args[0];
+    this.stopDay(time);
+  }
 
-    if (!options || !options.args || !options.args[0] || !options.args[0].includes(':')) {
-      time = (new Date()).getHours() + ':' + (new Date()).getMinutes();
+  private parseTimeFromArgs(args: any): Date {
+    const now = new Date();
+
+    if (!args || !args[0] || !args[0].includes(':')) {
+      return now;
     }
 
-    let currentDay = new DayEntity();
+    return DateHelper.parseTimeString(args[0], now);
+  }
 
-    this.dayRepository.getByDate()
+  private stopDay(finishTime: Date): void {
+    this.dayRepository.getByDate(finishTime)
         .then((result) => {
-          if (result instanceof DayEntity) {
-            currentDay = result;
-          }
+          result.finish = finishTime;
 
-          if (!currentDay.finish) {
-            currentDay.finish = new Date();
-          }
+          this.dayRepository.upsert(result);
 
-          currentDay.finish.setHours(time.split(':')[0]);
-          currentDay.finish.setMinutes(time.split(':')[1]);
-
-          if (!currentDay.id) {
-            this.dayRepository.create(currentDay);
-
-            return;
-          }
-
-          this.dayRepository.update(currentDay);
+          return result;
         })
-        .finally(() => {
+        .then((currentDay) => {
           console.log(this.formatter.applyFormat(currentDay, 'format.commandResponse', 'stop'));
         });
   }

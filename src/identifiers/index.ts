@@ -1,16 +1,41 @@
-import {IDENTIFIERS_COMMAND} from './identifiers.command';
-import {IDENTIFIERS_ORM} from './identifiers.orm';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import {MessageService, ConfigService} from '../components';
+/**
+ * Type-safe identifiers for Dependency Injection using Inversify 7.5
+ */
 
-const IDENTIFIERS = {
-  Message: Symbol.for('MessageService'),
-  Config: Symbol.for('ConfigService'),
-  worklog: Symbol.for('WorklogService'),
-  List: Symbol.for('ListService'),
+// Service identifiers
+export const ServiceIdentifiers = {
+  MessageService: Symbol.for('MessageService'),
+  ConfigService: Symbol.for('ConfigService'),
+  WorklogService: Symbol.for('WorklogService'),
+  ListService: Symbol.for('ListService'),
   Formatter: Symbol.for('Formatter'),
-  Command: IDENTIFIERS_COMMAND,
-  ORM: IDENTIFIERS_ORM
+  ListItemFormatter: Symbol.for('ListItemFormatter'),
 };
 
-export {IDENTIFIERS};
+// Command identifiers
+export const CommandIdentifiers = {
+  MigrateCommand: Symbol.for('MigrateCommand'),
+  WorklogCommand: Symbol.for('WorklogCommand'),
+  ListCommand: Symbol.for('ListCommand'),
+  NoteCommand: Symbol.for('NoteCommand'),
+  StartCommand: Symbol.for('StartCommand'),
+  StopCommand: Symbol.for('StopCommand'),
+  RestCommand: Symbol.for('RestCommand'),
+};
+
+// ORM identifiers
+export const ORMIdentifiers = {
+  ConnectionManager: Symbol.for('ConnectionManager'),
+  Repositories: {
+    DayRepository: Symbol.for('DayRepository'),
+    WorklogRepository: Symbol.for('WorklogRepository'),
+    NoteRepository: Symbol.for('NoteRepository'),
+  }
+};
+
+// Group all identifiers together for organization
+export const TYPES = {
+  Services: ServiceIdentifiers,
+  Commands: CommandIdentifiers,
+  ORM: ORMIdentifiers
+};

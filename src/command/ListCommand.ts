@@ -1,8 +1,9 @@
 import {inject, injectable} from 'inversify';
 import AbstractCommand from './AbstractCommand';
 import {MessageService} from '../components';
-import {IDENTIFIERS} from '../identifiers';
+import {ServiceIdentifiers} from '../identifiers';
 import {ListService} from '../components';
+import {DateHelper} from '../helper';
 
 @injectable()
 export class ListCommand extends AbstractCommand {
@@ -31,30 +32,30 @@ export class ListCommand extends AbstractCommand {
   private listService: ListService;
 
   constructor(
-    @inject(IDENTIFIERS.Message) messages: MessageService,
-    @inject(IDENTIFIERS.List) listService: ListService
+    @inject(ServiceIdentifiers.MessageService) messages: MessageService,
+    @inject(ServiceIdentifiers.ListService) listService: ListService
   ) {
     super(messages);
     this.listService = listService;
   }
 
-  exec(options): void {
-    const outputDate = new Date();
+  exec(options: any, args?: any[]): void {
+    const outputDate = this.determineOutputDate(options);
 
-    if (options.yesterday) {
-      outputDate.setUTCDate(outputDate.getUTCDate() - 1);
+    this.displayList(outputDate, options.order, options.full);
+  }
 
-      return;
-    }
+  private determineOutputDate(options: any): Date {
+    return DateHelper.getDateForDay(options.day, options.yesterday);
+  }
 
-    if (options.day) {
-      outputDate.setUTCDate(options.day);
-
-      return;
-    }
-
-    this.listService.getList(options.order, options.full).then((result) => {
-      console.log(result);
-    });
+  private displayList(date: Date, order?: string, fullOutput?: string): void {
+    this.listService.getList(date, order, fullOutput)
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((error) => {
+          console.error(this.message.translation('command.list.execution.error', {error}));
+        });
   }
 }

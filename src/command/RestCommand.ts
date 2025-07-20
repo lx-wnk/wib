@@ -1,7 +1,7 @@
 import AbstractCommand from './AbstractCommand';
 import {Formatter, MessageService, WorklogService} from '../components';
 import {inject, injectable} from 'inversify';
-import {IDENTIFIERS} from '../identifiers';
+import {ServiceIdentifiers} from '../identifiers';
 
 @injectable()
 export class RestCommand extends AbstractCommand {
@@ -17,31 +17,46 @@ export class RestCommand extends AbstractCommand {
   private formatter: Formatter;
 
   constructor(
-    @inject(IDENTIFIERS.Message) messages: MessageService,
-    @inject(IDENTIFIERS.worklog) worklogService: WorklogService,
-    @inject(IDENTIFIERS.Formatter) formatter: Formatter
+    @inject(ServiceIdentifiers.MessageService) messages: MessageService,
+    @inject(ServiceIdentifiers.WorklogService) worklogService: WorklogService,
+    @inject(ServiceIdentifiers.Formatter) formatter: Formatter
   ) {
     super(messages);
     this.worklogService = worklogService;
     this.formatter = formatter;
   }
 
-  exec(options): void {
-    let trackTime;
+  exec(options: any, args?: any[]): void {
+    const trackTime = this.parseTimeOption(options.time);
+    this.createRest(trackTime);
+  }
 
-    if (options.time) {
-      trackTime = new Date();
-      const timeArgs = options.time.split(':');
-      trackTime.setHours(timeArgs[0]);
-      trackTime.setMinutes(timeArgs[1]);
-
-      if (trackTime.toString() === 'Invalid Date') {
-        console.log(this.message.translation('command.worklog.execution.invalidTime'));
-      }
+  private parseTimeOption(timeOption: string): Date | undefined {
+    if (!timeOption) {
+      return undefined;
     }
 
-    this.worklogService.createRest(trackTime).then((res) => {
-      console.log(this.formatter.applyFormat(res, 'command.rest.execution', 'create'));
-    });
+    const trackTime = new Date();
+    const timeArgs = timeOption.split(':');
+
+    trackTime.setHours(parseInt(timeArgs[0], 10));
+    trackTime.setMinutes(parseInt(timeArgs[1], 10));
+
+    if (trackTime.toString() === 'Invalid Date') {
+      console.log(this.message.translation('command.rest.execution.invalidTime'));
+      return undefined;
+    }
+
+    return trackTime;
+  }
+
+  private createRest(time?: Date): void {
+    this.worklogService.createRest(time)
+        .then((res) => {
+          console.log(this.formatter.applyFormat(res, 'command.rest.execution', 'create'));
+        })
+        .catch((error) => {
+          console.error('Error creating rest entry:', error);
+        });
   }
 }
