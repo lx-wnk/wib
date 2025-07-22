@@ -98,7 +98,7 @@ export class MessageService {
           return JSON.parse(fs.readFileSync(languageFile, 'utf8')) as TranslationData;
         } else {
 
-          console.log(`Translation file for ${language} not found, using fallback.`);
+          console.warn(`Translation file for ${language} not found, using fallback.`);
         }
       }
     } catch (error) {

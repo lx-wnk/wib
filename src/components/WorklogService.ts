@@ -45,8 +45,8 @@ export class WorklogService {
     this.worklogRepository.getByDateIterator(new Date(), iterator)
         .then((result) => {
           if (result.length !== 1) {
-            console.log('Error: Expected exactly one worklog entry, found ' + result.length);
-            console.log('Please provide a valid iterator number');
+            console.error('Error: Expected exactly one worklog entry, found ' + result.length);
+            console.error('Please provide a valid iterator number');
             return;
           }
 
@@ -84,8 +84,8 @@ export class WorklogService {
     this.worklogRepository.getByDateIterator(new Date(), iterator)
         .then((result) => {
           if (result.length !== 1) {
-            console.error('Could not delete worklog. Please make sure the worklog is not already deleted.');
-            console.log('If you made sure, everything is fine please feel free to file a bug report.');
+            console.warn('Could not delete worklog. Please make sure the worklog is not already deleted.');
+            console.warn('If you made sure, everything is fine please feel free to file a bug report.');
             console.error('Error: Failed to delete worklog with iterator ' + iterator + '. Found ' + result.length + ' records.');
             return;
           }

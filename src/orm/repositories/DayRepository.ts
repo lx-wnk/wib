@@ -54,7 +54,7 @@ export class DayRepository {
     // Create a new day entity since none was found for the given date
     const newDay = new DayEntity();
     newDay.date = date;
-    console.log('inner', newDay);
+
     return newDay;
   }
 }

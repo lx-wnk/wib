@@ -62,7 +62,6 @@ export class WorklogCommand extends AbstractCommand {
 
   private parseTimeOption(timeOption: string): Date | undefined {
     // Parse time option (format HH:MM) into a Date object or undefined if not provided
-    console.log('parseTimeOption', timeOption);
     if (!timeOption) {
       return undefined;
     }
