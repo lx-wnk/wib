@@ -58,8 +58,8 @@ Usage: wib stop|bye [options]
 </details>
 
 <details>
-<summary>Click to open the track command</summary>
-Usage: wib track|t [options]
+<summary>Click to open the worklog command</summary>
+Usage: wib worklog|t|w [options]
 
 *Possible Options*:
 * `-d, --delete <key>` Delete a specified work log

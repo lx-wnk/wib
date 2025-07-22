@@ -7,7 +7,3 @@
 # project specific
 /node_modules
 /dist
-/.nyc_output
-/coverage.lcov
-/coverage
-/.wib_test

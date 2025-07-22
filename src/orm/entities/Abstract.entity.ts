@@ -1,6 +1,6 @@
-import {PrimaryGeneratedColumn} from 'typeorm';
+import { PrimaryGeneratedColumn } from 'typeorm';
 
 export abstract class AbstractEntity {
-  @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn('uuid')
     id: string;
 }

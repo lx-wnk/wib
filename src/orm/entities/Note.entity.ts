@@ -1,17 +1,17 @@
-import {Entity, Column} from 'typeorm';
-import {AbstractEntity} from './Abstract.entity';
+import { Entity, Column } from 'typeorm';
+import { AbstractEntity } from './Abstract.entity';
 
 @Entity('NoteEntity')
 export class NoteEntity extends AbstractEntity {
-  @Column('int')
+    @Column('int')
     iterator: number;
 
-  @Column('varchar')
+    @Column('varchar')
     value: string;
 
-  @Column('datetime')
+    @Column('datetime')
     time: Date;
 
-  @Column('boolean', {default: false})
+    @Column('boolean', { default: false })
     deleted: boolean;
 }

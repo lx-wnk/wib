@@ -116,7 +116,8 @@
         "stepDone": "STEP(DONE): {{step}}",
         "waitingSeconds": "{{step}} in {{seconds}} seconds",
         "finish": "FINISH: migrations",
-        "done": "done",
+        "done": "STEP(DONE): {{step}}",
+        "dataMigrated": "Migrated days: {{days}}, worklogs: {{worklogs}}, notes: {{notes}}",
         "error": "Please roll back to latest version due to an error while migration execution"
       }
     }
